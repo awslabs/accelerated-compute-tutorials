@@ -1,59 +1,158 @@
-# Contributing Guidelines
+# Contributing to Accelerated Compute Tutorials
 
-Thank you for your interest in contributing to our project. Whether it's a bug report, new feature, correction, or additional
-documentation, we greatly value feedback and contributions from our community.
+기여해 주셔서 감사합니다! 🎉
 
-Please read through this document before submitting any issues or pull requests to ensure we have all the necessary
-information to effectively respond to your bug report or contribution.
+이 문서는 프로젝트에 기여하기 위한 가이드라인을 설명합니다.
 
+---
 
-## Reporting Bugs/Feature Requests
+## 📋 How to Contribute
 
-We welcome you to use the GitHub issue tracker to report bugs or suggest features.
+### 이슈 보고
 
-When filing an issue, please check existing open, or recently closed, issues to make sure somebody else hasn't already
-reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
+버그, 오타, 개선 사항이 있다면 [GitHub Issues](https://github.com/awslabs/accelerated-compute-tutorials/issues)에 이슈를 생성해 주세요.
 
-* A reproducible test case or series of steps
-* The version of our code being used
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
+### Pull Request
 
+1. 이 레포지토리를 **Fork** 합니다.
+2. 새로운 브랜치를 생성합니다:
+   ```bash
+   git checkout -b feature/my-new-tutorial
+   ```
+3. 변경 사항을 커밋합니다:
+   ```bash
+   git commit -m "Add tutorial: vLLM deployment on Trainium"
+   ```
+4. Fork한 레포지토리에 Push 합니다:
+   ```bash
+   git push origin feature/my-new-tutorial
+   ```
+5. **Pull Request**를 생성합니다.
 
-## Contributing via Pull Requests
-Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
+---
 
-1. You are working against the latest source on the *main* branch.
-2. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
-3. You open an issue to discuss any significant work - we would hate for your time to be wasted.
+## 📝 Writing Guidelines
 
-To send us a pull request, please:
+### 문서 구조
 
-1. Fork the repository.
-2. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
-3. Ensure local tests pass.
-4. Commit to your fork using clear commit messages.
-5. Send us a pull request, answering any default questions in the pull request interface.
-6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
+각 튜토리얼은 다음 구조를 따릅니다:
 
-GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and
-[creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
+```markdown
+---
+title: 튜토리얼 제목
+description: 간단한 설명
+tags:
+  - inference
+  - neuron
+---
 
+# 튜토리얼 제목
 
-## Finding contributions to work on
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
+## 개요
 
+무엇을 배우는지, 왜 중요한지 설명합니다.
 
-## Code of Conduct
-This project has adopted the [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct).
-For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact
-opensource-codeofconduct@amazon.com with any additional questions or comments.
+## 사전 요구사항
 
+- 필요한 AWS 리소스
+- 필요한 소프트웨어
 
-## Security issue notifications
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
+## 단계별 가이드
 
+### Step 1: ...
+### Step 2: ...
 
-## Licensing
+## 정리 (Clean Up)
 
-See the [LICENSE](LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+AWS 리소스 삭제 방법
+
+## 참고 자료
+
+관련 링크
+```
+
+### 다국어 문서
+
+- **한국어** 문서는 `docs/ko/` 에 작성합니다.
+- **영어** 문서는 `docs/en/` 에 작성합니다.
+- 파일명은 동일하게 유지합니다 (예: `docs/ko/inference/vllm-on-neuron.md`, `docs/en/inference/vllm-on-neuron.md`).
+- 한국어가 기본 언어이므로, 한국어 문서를 먼저 작성하는 것을 권장합니다.
+
+### 코드 블록
+
+- 모든 코드 블록에 언어를 명시합니다.
+- 복사 가능하도록 `content.code.copy` 가 활성화되어 있습니다.
+- 긴 명령어는 `\` 로 줄바꿈합니다.
+
+```bash
+kubectl apply -f deployment.yaml \
+  --namespace inference \
+  --context my-cluster
+```
+
+### Admonitions
+
+중요한 정보는 admonition을 활용합니다:
+
+```markdown
+!!! warning "주의"
+    이 튜토리얼은 비용이 발생할 수 있습니다.
+
+!!! tip "팁"
+    Spot 인스턴스를 활용하면 비용을 절감할 수 있습니다.
+
+!!! info "참고"
+    Neuron SDK 2.18 이상이 필요합니다.
+```
+
+---
+
+## 🔧 Local Development
+
+### 환경 설정
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 로컬 미리보기
+
+```bash
+mkdocs serve
+```
+
+`http://127.0.0.1:8000` 에서 실시간 미리보기가 가능합니다.
+
+### 빌드 검증
+
+```bash
+mkdocs build --strict
+```
+
+`--strict` 플래그는 깨진 링크, 누락된 파일 등을 에러로 처리합니다.
+
+---
+
+## ✅ PR Checklist
+
+Pull Request 제출 전 확인사항:
+
+- [ ] `mkdocs build --strict` 가 에러 없이 통과
+- [ ] 한국어/영어 문서 쌍이 모두 존재
+- [ ] 코드 블록에 언어가 명시됨
+- [ ] 이미지가 있는 경우 `docs/assets/` 에 저장
+- [ ] 네비게이션(`mkdocs.yml`의 `nav`)에 새 페이지 추가
+
+---
+
+## 📄 License
+
+이 프로젝트에 기여함으로써, 귀하의 기여가 [MIT-0 License](LICENSE)에 따라 라이선스됨에 동의합니다.
+
+---
+
+## 🙋 Questions?
+
+궁금한 점이 있으면 [Discussions](https://github.com/awslabs/accelerated-compute-tutorials/discussions)에서 질문해 주세요.

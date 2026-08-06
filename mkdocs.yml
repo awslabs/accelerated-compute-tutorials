@@ -1,0 +1,205 @@
+site_name: Accelerated Compute Tutorials
+site_url: https://awslabs.github.io/accelerated-compute-tutorials/
+site_author: AWS
+site_description: >-
+  AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하기 위한
+  실전 튜토리얼 모음
+
+# Repository
+repo_name: awslabs/accelerated-compute-tutorials
+repo_url: https://github.com/awslabs/accelerated-compute-tutorials
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2024–2026 Amazon Web Services, Inc.
+
+# Configuration
+theme:
+  name: material
+  custom_dir: overrides
+  language: ko
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: 다크 모드로 전환
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: 라이트 모드로 전환
+  font:
+    text: Noto Sans KR
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+
+# Plugins
+plugins:
+  - search:
+      lang:
+        - ko
+        - en
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: ko
+          default: true
+          name: 한국어
+          build: true
+        - locale: en
+          name: English
+          build: true
+          nav_translations:
+            개요: Overview
+            시작하기: Getting Started
+            AWS AI Chip: AWS AI Chip
+            NVIDIA GPU on AWS: NVIDIA GPU on AWS
+            AI Infra 공통: AI Infra Common
+            업데이트: Updates
+            추론: Inference
+            학습: Training
+            NKI Kernel: NKI Kernel
+            프로파일링: Profiling
+            고급 설정: Advanced
+            영상 콘텐츠: Video Content
+            교육: Education
+            GPU 선택 가이드: GPU Selection Guide
+            가속기 선택 가이드: Accelerator Selection Guide
+            AI 인프라 설계: AI Infrastructure Design
+            가속기 구매 옵션: Accelerator Purchase Options
+            최적화 가이드: Optimization Guide
+            벤치마크 & PoC 방법론: Benchmark & PoC Methodology
+            PoC 사례: PoC Case Studies
+            이벤트 및 교육: Events & Education
+            이벤트: Events
+            지난 이벤트: Past Events
+            사전 준비: Preparation
+            교육: Education Programs
+            모니터링 & 스케일링: Monitoring & Scaling
+            AI 인프라 운영: AI Infra Operations
+  - tags
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Navigation — 콘텐츠 준비된 페이지만 노출
+# 새 페이지 추가 시 해당 섹션에 경로 추가
+nav:
+  - 개요:
+      - index.md
+      - 시작하기: getting-started.md
+  - AWS AI Chip:
+      - aws-ai-chip/index.md
+      - 고객 사례: aws-ai-chip/case-studies/index.md
+  - NVIDIA GPU on AWS:
+      - nvidia-gpu/index.md
+  - AI Infra 공통:
+      - ai-infra/index.md
+      - AI 인프라 설계:
+          - ai-infra/decisions/index.md
+          - 가속기 선택 가이드: ai-infra/gpu-selection-guide.md
+          - 리전 선택 고려사항: ai-infra/self-hosted-llm-considerations.md
+          - 용량: ai-infra/capacity-planning.md
+      - AI 인프라 구축/환경구성:
+          - ai-infra/environment/index.md
+          - Docker/DLC: ai-infra/docker-dlc.md
+          - 네트워킹: ai-infra/efa-networking.md
+          - 스토리지: ai-infra/storage.md
+      - AI 인프라 운영:
+          - ai-infra/operations/index.md
+          - 모니터링 & 스케일링: ai-infra/operations/monitoring-scaling.md
+      - AI 인프라 Application:
+          - ai-infra/application/index.md
+      - AI 인프라 Deep Dive:
+          - ai-infra/deep-dive/index.md
+          - 스토리지: ai-infra/deep-dive/storage.md
+          - 네트워킹: ai-infra/deep-dive/networking.md
+          - 최적화 가이드: ai-infra/optimization-guide.md
+          - 벤치마크 & PoC 방법론: ai-infra/benchmark-poc.md
+      - 구매 옵션:
+          - ai-infra/purchase-options/index.md
+          - Capacity Blocks: ai-infra/capacity-blocks-guide.md
+  - 이벤트 및 교육:
+      - events/index.md
+      - 교육:
+          - events/education/index.md
+          - Neuron Foundations (NFD): events/education/neuron-foundations/index.md
+          - Neuron Deep Dive (NDD):
+              - events/education/neuron-deep-dive/index.md
+              - 사전 준비: events/education/neuron-deep-dive/preparation.md
+      - 이벤트: events/upcoming/index.md
+      - 지난 이벤트: events/past/index.md
+  - 업데이트:
+      - updates/index.md
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/awslabs/accelerated-compute-tutorials
+  generator: false
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+
+extra_css:
+  - stylesheets/extra.css
+
+

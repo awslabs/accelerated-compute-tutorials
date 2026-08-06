@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block announce %}
+  <a href="https://github.com/awslabs/accelerated-compute-tutorials">
+    ⭐ 유용하셨다면 GitHub Star를 눌러주세요!
+  </a>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    /* 사이트 타이틀 클릭 시 홈으로 이동 */
+    document.addEventListener("DOMContentLoaded", function() {
+      var topic = document.querySelector(".md-header__topic .md-ellipsis");
+      if (topic) {
+        topic.style.cursor = "pointer";
+        topic.addEventListener("click", function() {
+          window.location.href = document.querySelector(".md-header__button.md-logo").href || "/";
+        });
+      }
+    });
+  </script>
+  <script>
+    /* 이전/다음 footer를 본문 content 영역 안으로 이동 */
+    document.addEventListener("DOMContentLoaded", function() {
+      var footer = document.querySelector(".md-footer");
+      var content = document.querySelector(".md-content__inner");
+      if (footer && content) {
+        content.appendChild(footer);
+      }
+    });
+  </script>
+  <script>
+    /* 좌측 nav 토글 버튼 */
+    document.addEventListener("DOMContentLoaded", function() {
+      var sidebar = document.querySelector(".md-sidebar--primary");
+      if (!sidebar) return;
+
+      /* sidebar 내부 최상단에 토글 버튼 삽입 */
+      var btn = document.createElement("button");
+      btn.className = "nav-toggle-btn";
+      btn.setAttribute("aria-label", "메뉴 토글");
+      btn.title = "메뉴 숨기기/보이기";
+      btn.innerHTML = "« 접기";
+      sidebar.insertBefore(btn, sidebar.firstChild);
+
+      /* 상태 로컬스토리지에서 복원 */
+      var hidden = localStorage.getItem("nav-hidden") === "true";
+      if (hidden) {
+        document.body.classList.add("nav-hidden");
+      }
+
+      btn.addEventListener("click", function() {
+        document.body.classList.toggle("nav-hidden");
+        var isHidden = document.body.classList.contains("nav-hidden");
+        localStorage.setItem("nav-hidden", isHidden);
+      });
+
+      /* nav 숨김 상태에서 복원 버튼 (header 아래 작은 탭) */
+      var restoreBtn = document.createElement("button");
+      restoreBtn.className = "nav-restore-btn";
+      restoreBtn.innerHTML = "»";
+      restoreBtn.title = "메뉴 열기";
+      document.body.appendChild(restoreBtn);
+
+      restoreBtn.addEventListener("click", function() {
+        document.body.classList.remove("nav-hidden");
+        localStorage.setItem("nav-hidden", "false");
+      });
+    });
+  </script>
+  <script>
+    /* 작성 중인(준비중) 페이지의 좌측 nav 항목에 배지 표시.
+       새 페이지가 준비중이면 아래 목록에 슬러그를 추가하고,
+       내용이 채워지면 목록에서 제거하면 된다. */
+    document.addEventListener("DOMContentLoaded", function() {
+      var pending = [
+        "self-hosted-llm-considerations",
+        "capacity-blocks",
+        "efa-networking",
+        "storage",
+        "docker-dlc",
+        "optimization-guide",
+        "benchmark-poc"
+      ];
+
+      document.querySelectorAll(".md-nav--primary a.md-nav__link").forEach(function(link) {
+        /* href 마지막 경로 세그먼트로 판별 (trailing slash 제거) */
+        var slug = link.getAttribute("href");
+        if (!slug) return;
+        slug = slug.replace(/\/$/, "").split("/").pop();
+        if (pending.indexOf(slug) === -1) return;
+
+        if (link.querySelector(".nav-pending-badge")) return;
+
+        /* .md-ellipsis 바깥(링크 직속)에 붙여 말줄임 처리와 분리 */
+        var badge = document.createElement("span");
+        badge.className = "nav-pending-badge";
+        badge.textContent = "준비중";
+        badge.title = "작성 중인 페이지입니다";
+        link.appendChild(badge);
+        link.classList.add("nav-pending");
+      });
+    });
+  </script>
+{% endblock %}

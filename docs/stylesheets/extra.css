@@ -1,0 +1,503 @@
+/* Custom color scheme - AWS inspired */
+:root {
+  --md-primary-fg-color: #232f3e;
+  --md-primary-fg-color--light: #37475a;
+  --md-primary-fg-color--dark: #131a22;
+  --md-accent-fg-color: #ff9900;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #1a2332;
+  --md-primary-fg-color--light: #2d3d50;
+  --md-primary-fg-color--dark: #0d1117;
+  --md-accent-fg-color: #ffb347;
+  --md-default-fg-color: rgba(255, 255, 255, 0.92);
+  --md-default-fg-color--light: rgba(255, 255, 255, 0.72);
+  --md-default-fg-color--lighter: rgba(255, 255, 255, 0.54);
+  --md-default-fg-color--lightest: rgba(255, 255, 255, 0.32);
+  --md-typeset-a-color: #ffb347;
+}
+
+/* ===== 테이블 가운데 정렬 ===== */
+.md-typeset__scrollwrap {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: fit-content !important;
+  max-width: 100%;
+}
+
+.md-typeset__table {
+  width: fit-content !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.md-typeset table:not([class]) {
+  width: fit-content !important;
+}
+
+/* ===== 테이블 테두리 + 셀 글자 가운데 정렬 ===== */
+.md-typeset table:not([class]) th {
+  text-align: center !important;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  padding: 0.5em 0.8em;
+}
+
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  padding: 0.5em 0.8em;
+  text-align: center !important;
+}
+
+/* H2 섹션 제목 강조 — 하단 border를 accent가 아닌 subtle로 */
+
+/* ===== 본문 글자 크기 축소 ===== */
+.md-typeset {
+  font-size: 0.74rem;
+  line-height: 1.7;
+}
+
+/* ===== H2 섹션 제목 강조 ===== */
+.md-typeset h2 {
+  font-weight: 700;
+  font-size: 1.4em;
+  margin-top: 2.4em;
+  padding-bottom: 0.3em;
+  border-bottom: 3px solid var(--md-accent-fg-color);
+}
+
+/* Dark mode - sidebar navigation text */
+[data-md-color-scheme="slate"] .md-nav__link {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: #ffb347;
+}
+
+/* Card grid enhancements */
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.4rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Hero section styling */
+.md-typeset h1 {
+  font-weight: 700;
+}
+
+/* Code block enhancements */
+.md-typeset pre > code {
+  font-size: 0.82rem;
+}
+
+/* Navigation tabs styling */
+.md-tabs {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Dark mode - announcement bar */
+[data-md-color-scheme="slate"] .md-banner {
+  color: rgba(255, 255, 255, 0.85);
+  background-color: #1a2332;
+}
+
+/* Dark mode - TOC (table of contents) */
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link {
+  color: rgba(255, 255, 255, 0.70);
+}
+
+/* Admonition custom colors */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: #ff9900;
+}
+
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+  background-color: rgba(255, 153, 0, 0.1);
+}
+
+/* Button styling */
+.md-typeset .md-button--primary {
+  background-color: var(--md-accent-fg-color);
+  border-color: var(--md-accent-fg-color);
+  color: #232f3e;
+}
+
+.md-typeset .md-button--primary:hover {
+  background-color: #ec7211;
+  border-color: #ec7211;
+}
+
+/* ===== Navigation Hierarchy Enhancement ===== */
+
+/* Level 1 (탭 아래 섹션 타이틀) — 볼드 */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item > label .md-nav__link {
+  font-weight: 700;
+  font-size: 0.59rem;
+  letter-spacing: 0.04em;
+  opacity: 0.88;
+  margin-top: 0.35rem;
+}
+
+/* Level 2 (서브섹션 그룹 라벨) — 밝은 accent */
+.md-nav--primary .md-nav .md-nav__item--nested > .md-nav__link,
+.md-nav--primary .md-nav .md-nav__item--nested > label .md-nav__link {
+  padding-left: 0;
+  font-weight: 400;
+  font-size: 0.61rem;
+  letter-spacing: 0.03em;
+  padding-top: 0.15rem;
+  margin-top: 0.15rem;
+  opacity: 1;
+  color: inherit;
+}
+
+/* 섹션 label 자체의 추가 indent 제거 */
+.md-nav--primary .md-nav .md-nav__item--nested > label {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Level 3 (실제 페이지 링크) — 왼쪽 보더로 소속감 표현 */
+.md-nav--primary .md-nav .md-nav .md-nav__link {
+  border-left: 2px solid transparent;
+  padding-left: 0.8rem;
+  font-size: 0.61rem;
+  transition: border-color 0.2s;
+}
+
+.md-nav--primary .md-nav .md-nav .md-nav__link:hover,
+.md-nav--primary .md-nav .md-nav .md-nav__link--active {
+  border-left-color: var(--md-accent-fg-color);
+}
+
+/* ===== Level 3의 하위 그룹(예: XC 구매 옵션) =====
+   navigation.indexes 로 index.md가 부모와 병합되면 구조가
+   li > div.md-nav__container > (a.md-nav__link + label.md-nav__link) 가 된다.
+   접기/펼치기 화살표 없이 들여쓰기만으로 계층을 표현한다. */
+
+/* 컨테이너 div도 .md-nav__link 클래스를 가져 위 Level 3 규칙이 중복 적용된다.
+   (0.8rem + 0.8rem) 이중 들여쓰기를 없애 형제 링크와 같은 위치에 맞춤. */
+.md-nav--primary .md-nav .md-nav > .md-nav__list > .md-nav__item--nested
+  > .md-nav__link.md-nav__container {
+  padding-left: 0;
+  border-left: none;
+  font-weight: 400;
+  font-size: 0.61rem;
+  margin-top: 0.625em;
+  padding-top: 0;
+}
+
+/* 펼침 화살표(label) 숨김 — 하위 목록을 항상 펼쳐두므로 불필요 */
+.md-nav--primary .md-nav .md-nav .md-nav__container > label.md-nav__link {
+  display: none;
+}
+
+/* 화살표를 없앴으므로 하위 목록을 항상 펼친 상태로 유지.
+   Material은 토글 체크박스로 하위 nav를 접으므로 강제 해제. */
+.md-nav--primary .md-nav .md-nav .md-nav__item--nested > .md-nav {
+  display: block;
+}
+
+/* 하위 nav 내부의 중복 제목(label.md-nav__title) 숨김 */
+.md-nav--primary .md-nav .md-nav .md-nav > label.md-nav__title {
+  display: none;
+}
+
+/* 4단계 항목 — 부모보다 한 단계(0.8rem) 더 들여쓰기.
+   중첩 nav 자체에 padding-left 0.4rem이 누적되므로 0.4rem만 더한다. */
+.md-nav--primary .md-nav .md-nav .md-nav .md-nav__link {
+  padding-left: 1.2rem;
+}
+
+/* 네비게이션 내 중첩 들여쓰기 강화 */
+.md-nav--primary .md-nav .md-nav {
+  padding-left: 0.4rem;
+}
+
+/* ===== 준비중 배지 (좌측 nav) =====
+   main.html의 스크립트가 준비중 페이지 링크에 삽입한다. */
+/* 배지가 항목 텍스트와 같은 줄에 남도록 링크를 flex로 */
+.md-nav--primary .md-nav__link.nav-pending {
+  display: flex;
+  align-items: center;
+  opacity: 0.72;
+}
+
+/* 긴 제목은 말줄임 처리하고 배지 자리를 확보 */
+.md-nav--primary .md-nav__link.nav-pending > .md-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.nav-pending-badge {
+  flex: 0 0 auto;
+  margin-left: 0.25rem;
+  padding: 0 0.18rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.15rem;
+  font-size: 0.4rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--md-default-fg-color--light);
+  white-space: nowrap;
+}
+
+/* ===== TOC (우측 목차) — 호버 시에만 콘텐츠 표시 ===== */
+.md-sidebar--secondary .md-sidebar__scrollwrap {
+  opacity: 0.08;
+  transform: translateX(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.md-sidebar--secondary:hover .md-sidebar__scrollwrap {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.md-nav--secondary .md-nav__link {
+  font-size: 0.58rem;
+  line-height: 1.4;
+}
+
+.md-nav--secondary .md-nav__item {
+  padding: 0.1rem 0;
+}
+
+/* ===== Announce 바 오른쪽 정렬 ===== */
+.md-banner .md-banner__inner {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===== 헤더 사이트 제목 크기 확대 ===== */
+.md-header__topic .md-ellipsis {
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* 헤더에 현재 페이지 제목 표시 안 함 (사이트 타이틀만) */
+.md-header__topic ~ .md-header__topic {
+  display: none;
+}
+
+/* ===== 헤더 로고 + 타이틀 간격 축소 ===== */
+.md-header__button.md-logo,
+.md-header .md-logo {
+  display: none;
+}
+
+/* 타이틀을 왼쪽 끝으로 당기기 */
+.md-header__topic {
+  margin-left: 0;
+  padding-left: 0.6rem;
+}
+
+/* ===== 2. 좌측 nav Level 1 (AI INFRA 공통) 더 크게 + 강조 ===== */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item > label .md-nav__link {
+  font-weight: 800;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  color: var(--md-accent-fg-color);
+  margin-top: 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--md-accent-fg-color);
+}
+
+/* ===== 3. 상단 탭바 (개요, AWS AI Chip, ...) 메뉴스럽게 ===== */
+.md-tabs {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  overflow: visible;
+}
+
+.md-tabs__list {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  gap: 0;  /* no gap */
+}
+
+.md-tabs__item {
+  display: flex;
+  align-items: stretch;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.md-tabs__link {
+  display: flex;
+  align-items: center;
+  margin: 0;  /* no margin between items */
+  opacity: 1;
+  font-weight: 600;
+  font-size: 0.62rem;
+  padding: 0 0.8rem !important;
+  margin: 0 !important;
+  height: 100%;
+  border-radius: 0;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.md-tabs__link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--md-accent-fg-color);
+}
+
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  background-color: rgba(255, 179, 71, 0.12);
+  color: var(--md-accent-fg-color);
+  box-shadow: inset 0 -3px 0 var(--md-accent-fg-color);
+}
+
+/* Light mode 탭 호버 */
+[data-md-color-scheme="default"] .md-tabs__link:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+[data-md-color-scheme="default"] .md-tabs__link--active,
+[data-md-color-scheme="default"] .md-tabs__item--active .md-tabs__link {
+  background-color: rgba(255, 153, 0, 0.08);
+}
+
+/* ===== 이전/다음 페이지 네비게이션 — JS로 .md-content__inner 안으로 이동됨 ===== */
+.md-footer {
+  border-top: none;
+  margin-top: 1.5rem;
+  padding: 0.6rem 0;
+  background: transparent;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  width: 100%;
+}
+
+.md-footer__link {
+  padding: 0.3rem 0;
+  font-size: 0.51rem;
+}
+
+.md-footer__inner {
+  padding: 0;
+}
+
+.md-footer__title {
+  font-size: 0.6rem;
+}
+
+.md-footer__direction {
+  font-size: 0.47rem;
+  opacity: 0.7;
+}
+
+/* footer 하단 meta (Built with MkDocs 등) 숨기기 */
+.md-footer-meta {
+  display: none;
+}
+
+/* ===== 테이블 셀 overflow 방지 ===== */
+.md-typeset table {
+  word-break: keep-all;
+  overflow-x: auto;
+  display: block;
+}
+
+.md-typeset table td,
+.md-typeset table th {
+  white-space: normal;
+}
+
+/* ===== Nav 토글 버튼 ===== */
+.nav-toggle-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--md-default-fg-color--lighter);
+  font-size: 0.6rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  text-align: right;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.nav-toggle-btn:hover {
+  opacity: 1;
+  color: var(--md-accent-fg-color);
+}
+
+/* 복원 버튼 (sidebar 숨김 상태에서만 표시) */
+.nav-restore-btn {
+  display: none;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  z-index: 100;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  background: var(--md-primary-fg-color);
+  color: white;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.nav-restore-btn:hover {
+  opacity: 1;
+}
+
+/* 데스크톱 */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    transition: transform 0.3s ease, width 0.3s ease, opacity 0.2s ease;
+  }
+
+  .nav-hidden .md-sidebar--primary {
+    transform: translateX(-100%);
+    opacity: 0;
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .nav-hidden .md-main__inner {
+    margin-left: 15vw;
+  }
+
+  .nav-hidden .md-content {
+    margin-left: 0;
+    max-width: none;
+  }
+
+  .nav-hidden .nav-restore-btn {
+    display: block;
+  }
+}
+
+/* 모바일: 둘 다 숨김 */
+@media screen and (max-width: 76.24em) {
+  .nav-toggle-btn {
+    display: none;
+  }
+  .nav-restore-btn {
+    display: none !important;
+  }
+}
