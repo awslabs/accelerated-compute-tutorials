@@ -150,10 +150,10 @@ nav:
       - 시작하기: getting-started.md
   - AWS AI Chip:
       - aws-ai-chip/index.md
-      - 고객 사례: aws-ai-chip/case-studies/index.md
       - 학습하기:
           - aws-ai-chip/education/index.md
           - 학습경로: aws-ai-chip/education/learning-path.md
+      - 고객 사례: aws-ai-chip/case-studies/index.md
   - NVIDIA GPU on AWS:
       - nvidia-gpu/index.md
       - NVIDIA GPU 인스턴스: nvidia-gpu/instance-guide.md
