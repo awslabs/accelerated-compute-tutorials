@@ -8,6 +8,14 @@ AWS에서 NVIDIA GPU 인스턴스(P5, P5e, G6e, G7e 등)를 활용하여 AI/ML �
 
 <div class="grid cards" markdown>
 
+-   :material-chip:{ .lg .middle } **NVIDIA GPU 인스턴스**
+
+    ---
+
+    P·G 계열 구분, 아키텍처 매핑, Blackwell 세대, 인스턴스 사양 비교.
+
+    [:octicons-arrow-right-24: 인스턴스 가이드](instance-guide.md)
+
 -   :material-server:{ .lg .middle } **추론 (Inference)**
 
     ---

@@ -97,6 +97,9 @@ plugins:
             교육: Education Programs
             모니터링 & 스케일링: Monitoring & Scaling
             AI 인프라 운영: AI Infra Operations
+            학습하기: Learning
+            학습경로: Learning Path
+            NVIDIA GPU 인스턴스: NVIDIA GPU Instances
   - tags
 
 # Extensions
@@ -148,8 +151,12 @@ nav:
   - AWS AI Chip:
       - aws-ai-chip/index.md
       - 고객 사례: aws-ai-chip/case-studies/index.md
+      - 학습하기:
+          - aws-ai-chip/education/index.md
+          - 학습경로: aws-ai-chip/education/learning-path.md
   - NVIDIA GPU on AWS:
       - nvidia-gpu/index.md
+      - NVIDIA GPU 인스턴스: nvidia-gpu/instance-guide.md
   - AI Infra 공통:
       - ai-infra/index.md
       - AI 인프라 설계:
