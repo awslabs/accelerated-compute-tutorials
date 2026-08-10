@@ -15,8 +15,9 @@
 | **EBS** | 최소 200GB gp3 | 모델 캐시 + NEFF 컴파일 캐시 |
 | **Security Group** | SSH (22) | 참가자 접속용 |
 |  | 포트 8000 | vLLM API 테스트용 |
-|  | 포트 3001 | Neuron Profiler (Perfetto trace viewer) |
-|  | 포트 8888 | Neuron Explorer Web UI |
+|  | 포트 3001 | Neuron Explorer Web UI |
+|  | 포트 3002 | Neuron Explorer API Backend |
+|  | 포트 8888 | Jupyter Notebook (선택) |
 | **아웃바운드** | 443 (HTTPS) | HuggingFace Hub, PyPI, ECR 접근 |
 | **HuggingFace** | HF 계정 + Access Token | gated 모델(Llama 3.1 등) 사전 라이센스 동의 필요 |
 | **IAM — ECR** | ① Public ECR 사용 | `public.ecr.aws/neuron/...` — 별도 IAM 불필요 |
@@ -26,19 +27,18 @@
 
 | 구분 | 항목 | 상세 |
 | --- | --- | --- |
-| **OS/AMI** | Neuron DLAMI (Ubuntu 22.04 또는 24.04) | Neuron 드라이버 + SDK + vLLM 사전 설치. Docker 불필요 |
-| **모델 접근** | `meta-llama/Llama-3.1-8B-Instruct` | [HuggingFace에서 Meta 라이센스 동의](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) 사전 필요 |
+| **OS/AMI** | Neuron DLAMI (Ubuntu 24.04) | ImageID:ami-098a48f87d9c99e69<br>Neuron 드라이버 + SDK + vLLM 사전 설치|
+| **모델 접근** | `meta-llama/Llama-3.2-1B-Instruct` | [HuggingFace에서 Meta 라이센스 동의](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct) 사전 필요 |
 
 ### Day 2 전용
 
 | 구분 | 항목 | 상세 |
 | --- | --- | --- |
-| **OS/AMI** | Ubuntu 22.04 또는 24.04 + Docker | DLC 컨테이너 기반 실습 |
+| **OS/AMI** | Ubuntu 24.04 + Docker | DLC 컨테이너 기반 실습 |
 | **Docker** | 설치 + 참가자 docker 그룹 권한 | `usermod -aG docker <user>` |
 | **DLC 이미지** | PyTorch Native DLC (Private Beta) | 이미지 URI 별도 공유. 사전 pull 권장 (용량 큼) |
 | **추가 디스크** | EBS 총 300GB+ 권장 | NKI 아티팩트, NEFF 캐시, 프로파일 데이터 누적 |
 
----
 
 ## 2. 사전 지식 (참가자용)
 
@@ -64,7 +64,9 @@
 | GPU 커널 개념 | 권장 | CUDA/Triton 경험 있으면 NKI 이해 빠름 |
 | Profiler 사용 경험 | 권장 | torch.profiler 또는 Nsight 경험 |
 
----
+!!! info "학습경로 안내"
+    Day1 수강 전 공식 Documents 기반 사전학습을 위한 학습 경로는 [학습경로](../../../aws-ai-chip/education/learning-path.md) 페이지를 참조해 주세요
+
 
 ## 3. 요약 비교
 
