@@ -545,13 +545,13 @@ lm_eval --model local-completions \
 
 
 !!! tip "핵심 포인트"
-    1B 모델이라 절대 점수는 낮지만, 중요한 것은 **GPU 레퍼런스와 동일한 점수**(Meta 공식 ~33-36%)가 나왔다는 것 — Neuron 컴파일이 모델 정확도에 영향을 주지 않음을 검증한 것입니다.
+    1B 모델이라 절대 점수는 낮지만, 중요한 것은 **GPU 레퍼런스와 동일한 점수** (Meta 공식 ~33-36%)가 나왔다는 것 — Neuron 컴파일이 모델 정확도에 영향을 주지 않음을 검증한 것입니다.
 
     ⏱️ **소요 시간**: 1,319 문제 × 5-shot ≈ 4분 (~5.35 it/s)
 
 
 !!! warning "1B 모델 참고"
-    Llama-3.2-1B는 소형 모델이라 GSM8K 점수가 높지 않습니다. 여기서는 **정확도 벤치마크 워크플로우를 익히는 것**이 목적입니다. 실전에서는 70B+ 모델에서 양자화(FP8 KV, MXFP4) 전후 비교에 활용합니다.
+    Llama-3.2-1B는 소형 모델이라 GSM8K 점수가 높지 않습니다. 여기서는 **정확도 벤치마크 워크플로우를 익히는 것** 이 목적입니다. 실전에서는 70B+ 모델에서 양자화(FP8 KV, MXFP4) 전후 비교에 활용합니다.
 
 
 !!! tip "실전 활용 시나리오"
@@ -561,13 +561,13 @@ lm_eval --model local-completions \
     - 새 Neuron SDK 버전 업그레이드 후 회귀 테스트
 
 
-✅ **체크포인트**: `lm_eval` 실행 완료 + 결과 파일에서 `acc` 점수 확인
+✅ **체크포인트** : `lm_eval` 실행 완료 + 결과 파일에서 `acc` 점수 확인
 
 
 ## Lab 3: 모니터링 & 프로파일링 (25분)
 
 !!! tip "목표"
-    neuron-top으로 실시간 상태를 보고, Neuron Explorer로 Prefill/Decode 구간을 구분 **배우는 것**: NeuronCore 활용률 의미, KV-cache 메모리 변화, 프로파일 타임라인 읽기
+    neuron-top으로 실시간 상태를 보고, Neuron Explorer로 Prefill/Decode 구간을 구분 **배우는 것** : NeuronCore 활용률 의미, KV-cache 메모리 변화, 프로파일 타임라인 읽기
 
 
 ### 3-1. neuron-top 실시간 관찰 (터미널 2)
@@ -602,14 +602,14 @@ curl -s http://localhost:8000/v1/chat/completions \
 ```
 neuron-top에서 관찰:
 
-- **요청 전**: NeuronCore utilization ~0%, Memory 고정 (모델 weights만)
-- **Prefill 순간**: utilization 스파이크 (짧고 높음)
-- **Decode 중**: utilization 중간 레벨 유지 (반복적 패턴)
-- **완료 후**: utilization 0%로 복귀, Memory에서 KV-cache 해제
+- **요청 전** : NeuronCore utilization ~0%, Memory 고정 (모델 weights만)
+- **Prefill 순간** : utilization 스파이크 (짧고 높음)
+- **Decode 중** : utilization 중간 레벨 유지 (반복적 패턴)
+- **완료 후** : utilization 0%로 복귀, Memory에서 KV-cache 해제
 
 ![](../../../../images/ko/ndd-day1-lab/lab3-neuron-top-req.png)
 
-✅ **체크포인트**: neuron-top에서 요청 처리 중 활용률 변화 패턴 확인 완료
+✅ **체크포인트** : neuron-top에서 요청 처리 중 활용률 변화 패턴 확인 완료
 
 
 
@@ -619,7 +619,20 @@ neuron-top에서 관찰:
     vLLM Neuron Plugin은 **HTTP 엔드포인트 방식** 으로 프로파일을 캡처합니다. 서버를 재시작하지 않고, 실행 중인 서버에서 원하는 구간만 정확히 캡처할 수 있습니다. 📖 [공식 문서: How to profile vLLM Neuron workloads](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/vllm-neuron/docs/guides/how-to-profile-workloads.html)
 
 
+**Step0: 프로파일을 위한 환경변수 설정**
+```
+# Operator Table + HLO stats를 위해 (컴파일 시 NEFF에 메타데이터 삽입)
+export XLA_IR_DEBUG=1
+export XLA_HLO_DEBUG=1
+
+# NKI 소스코드 매핑이 필요하면 (선택)
+export NEURON_FRAMEWORK_DEBUG=1
+
+# DMA 상세 데이터를 위해 (런타임 캡처 시) -> overflow 발생 가능성 있어 해제
+unset NEURON_RT_ENABLE_DGE_NOTIFICATIONS
+
 **Step 1: 프로파일링 활성화 상태로 서버 시작**
+```
 
 ```bash
 # 기존 서버 종료 후, --profiler-config 추가하여 재시작
@@ -641,7 +654,6 @@ NEURON_SKIP_EFA_AFFINITY=1 vllm serve meta-llama/Llama-3.2-1B-Instruct \
         "output_dir": "/home/ubuntu/neuron-profiles"
       }
     }'
-
 ```
 
 !!! warning "핵심"
@@ -654,7 +666,7 @@ NEURON_SKIP_EFA_AFFINITY=1 vllm serve meta-llama/Llama-3.2-1B-Instruct \
 | --- | --- | --- | --- |
 | `activities` | list[str] | `["device_profile", "system_profile"]` | 캡처할 프로파일 유형 |
 | `neuron_cores` | list[int] | null | null (rank 0만) |
-| `output_dir` | str | `~/neuron_profiles` | 출력 디렉토리 |
+| `output_dir` | str | `~/neuron-profiles` | 출력 디렉토리 |
 | `sys_trace_max_events_per_nc` | int | null | null (NRT 기본값) |
 
 > `activities`** 유효 값**: `"system_profile"`, `"device_profile"`, `"host_memory"`, `"cpu_util"`, `"all"`
@@ -665,14 +677,13 @@ NEURON_SKIP_EFA_AFFINITY=1 vllm serve meta-llama/Llama-3.2-1B-Instruct \
 # delay_iterations: N번의 forward pass를 건너뛴 후 캡처 시작
 # max_iterations: N번의 forward pass 후 자동 종료
 # → 웜업(컴파일/캐시) 구간을 깨끗하게 건너뛸 수 있음
-
 NEURON_SKIP_EFA_AFFINITY=1 vllm serve meta-llama/Llama-3.2-1B-Instruct \
     --tensor-parallel-size 4 \
     --max-model-len 4096 \
     --max-num-seqs 4 \
     --max-num-batched-tokens 4096 \
     --no-enable-prefix-caching \
-    --profiler-config '{"profiler": "cuda", "delay_iterations": 50, "max_iterations": 5}' \
+    --profiler-config '{"profiler": "cuda", "delay_iterations": 0, "max_iterations": 5}' \
     --additional-config '{
       "neuron_config": {
         "num_batched_tokens_buckets": [4096],
@@ -684,11 +695,8 @@ NEURON_SKIP_EFA_AFFINITY=1 vllm serve meta-llama/Llama-3.2-1B-Instruct \
         "output_dir": "/home/ubuntu/neuron-profiles"
       }
     }'
-
-# start_profile 호출 → 50 iteration 대기 → 5 iteration 캡처 → 자동 종료
-curl -X POST http://localhost:8000/start_profile
-
 ```
+
 
 | 설정 | 동작 |
 | --- | --- |
@@ -717,14 +725,28 @@ curl -s http://localhost:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "meta-llama/Llama-3.2-1B-Instruct",
-    "messages": [{"role": "user", "content": "Explain cloud computing architecture in detail."}],
-    "max_tokens": 256
+    "messages": [{"role": "user", "content": "Write a detailed step-by-step guide on how to make chocolate cake from scratch. Include all ingredients and measurements."}],
+    "max_tokens": 64
   }'
 
 ```
 
-!!! tip "왜 1개만?"
+!!! tip "1개의 리퀘스트만 수행하는 이유"
     프로파일 분석 목적은 "하나의 요청이 Prefill→Decode로 어떻게 흘러가는지" 엔진별로 추적하는 것입니다. 여러 요청을 겹치면 타임라인이 복잡해져 교육 분석이 어렵습니다.
+
+* all 을 activity 로 설정하는 경우 명령어 실행 시간이지연될수록 프로파일 데이터가 증가하므로 아래와같이 명령어를 한번에 실행하여 순차적 실행 후 바로 종료 되도록 합니다. 
+
+```bash
+curl -X POST http://localhost:8000/start_profile \
+&& curl -s http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.2-1B-Instruct",
+    "messages": [{"role": "user", "content": "Write a detailed step-by-step guide on how to make chocolate cake from scratch. Include all ingredients and measurements."}],
+    "max_tokens": 5
+  }' \
+&& curl -X POST http://localhost:8000/stop_profile
+```
 
 
 **Step 4: 프로파일 종료**
@@ -739,7 +761,7 @@ curl -X POST http://localhost:8000/stop_profile
 **Step 5: 출력 확인**
 
 ```bash
-ls ~/neuron_profiles/
+ls ~/neuron-profiles/
 # 정상이면 i-<instance>_pid_<pid>/ 디렉토리와 neffs/ 폴더가 보입니다
 
 ```
@@ -747,7 +769,7 @@ ls ~/neuron_profiles/
 Profile Output Structure
 
 ```
-~/neuron_profiles/
+~/neuron-profiles/
 ├── i-<instance_id>_pid_<pid>/
 │   └── <timestamp>/
 │       ├── profile_nc_0_session_0.ntff    # Device Profile (NTFF)
@@ -758,6 +780,48 @@ Profile Output Structure
 └── neffs/
     ├── graph_<hash1>.neff                 # 컴파일된 NEFF (compile cache에서 자동 복사)
     └── graph_<hash2>.neff
+
+```
+
+* 폴더가 정상적으로 생성되고 2차적으로 캡쳐가 잘 수행됐는지 서버 시작전에 체크 합니다. 
+* 다음과 같은 요약 데이터가 보인다면 정상적으로 프로파일이 가능한 상태입니다.
+```
+neuron-explorer view -d neuron-profiles --output-format summary-text
+
+s_2b34ee2866d9218f6a487d2535f8008b7e887e99
+    total_duration_ns    1786270865722793417
+    message_count:
+        Cpu_Util_Message_Count          0
+        Host_Mem_Usage_Message_Count    0
+        Trace_Events_Message_Count      9634
+    event_type_count:
+        kbl_exec_post                         20
+        nrta_execute_schedule                 20
+        nrt_tensor_free                       4800
+        cc_exec_barrier                       20
+        notification_consume_errors           40
+        nrt_tensor_write                      280
+        kbl_exec_wait                         20
+        exec_consume_gpsimd_stdio             40
+        nrt_dma_mem_alloc                     982
+        nrt_tensor_allocate                   340
+        dmem_buf_copyin                       1082
+        kbl_exec_pre                          20
+        nrt_profile_add_node_info             20
+        exec_consume_cc_core_notifications    20
+        nrt_dma_mem_dealloc                   460
+        nrt_model_submit                      20
+        cc_running                            720
+        nc_exec_running                       40
+        nrt_tensor_read                       305
+        dmem_buf_copyout                      385
+n_7792fe1daf87c456c04c96497296393233c1c7b1
+    activate_instruction_count                        5220
+    throttle_activity_0_avg_util_limit_nc4_percent    1
+    adjusted_hardware_flops                           161563672576
+    hardware_dynamic_dma_size_percent                 0.041778316085653945
+    throttle_gpio_1_active_time_nc4_percent           0.005344930435136431
+    throttle_active_nc5_time_ns                       22297550
 
 ```
 
@@ -772,7 +836,7 @@ Profile Output Structure
 
 ![](../../../../images/ko/ndd-day1-lab/lab3-profile-dir.png)
 
-> ℹ️ **NEFF 자동 복사**: vLLM Neuron은 `/stop_profile` 시 compile cache에서 NEFF를 `neffs/` 폴더로 자동 복사합니다. 만약 없으면 `VLLM_CACHE_ROOT` 경로(`$VLLM_CACHE_ROOT/neuron/compile_cache`)를 확인하세요.
+> ℹ️ **NEFF 자동 복사** : vLLM Neuron은 `/stop_profile` 시 compile cache에서 NEFF를 `neffs/` 폴더로 자동 복사합니다. 만약 없으면 `VLLM_CACHE_ROOT` 경로(`$VLLM_CACHE_ROOT/neuron/compile_cache`)를 확인하세요.
 
 !!! warning "캡처 실패 트러블슈팅"
     | 증상 | 원인 | 해결 |
@@ -783,7 +847,7 @@ Profile Output Structure
     | 프로파일에 활동 없음 | start/stop 사이에 요청 미전송 | 부하 전송 후 stop 호출 |
 
 
-✅ **체크포인트**: `ls ~/neuron_profiles/` 에서 `i-*_pid_*/` 디렉토리 + `neffs/` 폴더 확인
+✅ **체크포인트** : `ls ~/neuron-profiles/` 에서 `i-*_pid_*/` 디렉토리 + `neffs/` 폴더 확인
 
 
 
@@ -816,7 +880,7 @@ neuron-explorer view -v 2 -d /home/ubuntu/neuron-profiles --display-name "lab1-v
 
 경로 레벨 — 어디까지 줘야 하나?
 
-최상위 `neuron_profiles/` 디렉토리를 줍니다. Explorer가 하위 PID 폴더 + `neffs/` 를 자동 스캔합니다.
+최상위 `neuron-profiles/` 디렉토리를 줍니다. Explorer가 하위 PID 폴더 + `neffs/` 를 자동 스캔합니다.
 
 ```
 neuron-explorer view -v 2 -d ~/neuron-profiles
@@ -868,7 +932,7 @@ System Profile은 **호스트에서 본 타임라인** 입니다. `nrt_execute` 
 | `nrt_tensor_read` | 디바이스→호스트 텐서 읽기 |
 | `nrt_load_collectives` | AllReduce 등 collective op 로드 |
 
-> 🔍 **찾는 법**: Perfetto에서 `nrt_execute` 클릭 → Arguments 패널 → `model_name` 필드에서 `context_encoding_model`(=Prefill) 또는 `token_generation_model`(=Decode) 확인
+> 🔍 **찾는 법** : Perfetto에서 `nrt_execute` 클릭 → Arguments 패널 → `model_name` 필드에서 `context_encoding_model`(=Prefill) 또는 `token_generation_model`(=Decode) 확인
 
 Step 2: Device Profile — "코어 안에서 뭐가 바쁘고 뭐가 쉬었나"
 
@@ -893,7 +957,7 @@ Step 3: 병목 판단 체크리스트
     Prefill = Compute-bound (TensorE가 쉬면 비정상), Decode = Memory-bound (DMA가 쉬면 비정상). Session 3에서 배운 Roofline을 실제 프로파일에서 확인하는 것.
 
 
-✅ **체크포인트**: Explorer에서 Prefill→Decode 전환 패턴 식별 + 엔진별 busy/idle 구간 확인 완료
+✅ **체크포인트** : Explorer에서 Prefill→Decode 전환 패턴 식별 + 엔진별 busy/idle 구간 확인 완료
 
 
 ## 마무리 (5분)
