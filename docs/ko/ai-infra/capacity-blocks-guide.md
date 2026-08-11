@@ -8,19 +8,20 @@ tags:
 
 # Capacity Blocks 실전 가이드
 
-GPU/Trainium 클러스터를 단기간(1~14일) 확정 예약하는 **EC2 Capacity Blocks for ML** 사용법을 단계별로 안내합니다.
+본 페이지는 **Capacity Blocks for ML** 사용법을 단계별로 안내합니다. [GPU/Trainium 구매 옵션 비교 페이지](https://awslabs.github.io/accelerated-compute-tutorials/ai-infra/purchase-options/)를 먼저 읽으신 후 본 페이지를 읽으시기를 권장합니다.
 
 ---
 
-## 🎯 Capacity Blocks란?
+## 🎯 Capacity Blocks 주요 특징
 
 | 항목 | 설명 |
 |------|------|
-| **목적** | ML 학습/추론을 위한 단기 GPU/Trainium 용량 확보 |
-| **예약 기간** | 1일 ~ 14일 (시작일 지정) |
-| **결제** | 예약 시 선불 (시작 전 취소 가능) |
-| **지원 인스턴스** | p5.48xlarge, p5e.48xlarge, p5en.48xlarge, trn1.32xlarge, trn2.48xlarge 등 |
-| **용량 보장** | 예약 확정 시 100% 보장 |
+| **예약 가능 시점** | 사용 시작일 최소 30분 전 ~ 최대 8주 전까지 용량 조회 및 예약 |
+| **예약 기간** | 최소 1일 ~ 최대 182일 (1~14일은 1일 단위, 14일 이상은 7일 단위).<br>※ 가용 용량이 있는 경우 구매 후 기간 연장 가능 ([기간 연장 가이드](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-extend.html)) |
+| **수량** | 최대 64개 인스턴스 |
+| **결제** | 예약 시점에 전액 선불 결제. 구매 후 취소 및 변경 불가 (사용 여부와 무관) |
+| **지원 인스턴스** | P 인스턴스(P4d, P4de, P5, P5e, P5en, P6-B200, P6-B300, P6e-GB200) 및 Trainium(Trn1, Trn2) |
+| **용량 보장** | 예약 확정 시 100% 보장, EC2 UltraCluster 내 근접 배치 |
 
 ---
 
@@ -40,18 +41,13 @@ Capacity Blocks는 On-Demand 쿼터와 별도입니다. Service Quotas에서 확
 
 ### 2. 리전 선택
 
-Capacity Blocks가 제공되는 리전에서만 사용 가능합니다:
-
-| 인스턴스 | 주요 가용 리전 |
-|---------|--------------|
-| p5.48xlarge | us-east-1, us-east-2, us-west-2 |
-| p5e.48xlarge | us-east-1, us-east-2, us-west-2 |
-| p5en.48xlarge | us-east-1, us-west-2, ap-northeast-2 |
-| trn1.32xlarge | us-east-1, us-east-2, us-west-2 |
-| trn2.48xlarge | us-east-1, us-east-2, us-west-2, ap-northeast-2, sa-east-1, ap-southeast-4 |
+Capacity Blocks이 제공되는 리전은 [Amazon EC2 Capacity Blocks for ML pricing](https://aws.amazon.com/ec2/capacityblocks/pricing/) 페이지를 참고하시기 바랍니다.
 
 !!! tip "최신 가용성은 콘솔에서 확인"
-    리전/인스턴스별 가용 오퍼링은 수시로 변경됩니다.
+    리전/인스턴스별 가용 오퍼링은 수시로 변경됩니다. 특히 최신 Blackwell 세대(P6-B200/B300)는 리전이 계속 확대되고 있으므로, 실제 예약 전 EC2 콘솔의 Capacity Blocks 오퍼링 조회로 확인하세요.
+
+!!! info "시작·종료 시각 (UTC 고정)"
+    모든 Capacity Blocks은 리전에 관계없이 11:30 UTC에 시작하고 11:30 UTC에 종료됩니다. (한국 시간 오후 8시 30분)
 
 ### 3. IAM 권한
 
@@ -227,11 +223,11 @@ if offerings:
 
 | 항목 | 내용 |
 |------|------|
-| **취소** | 시작일 이전에만 가능 (시작 후 환불 불가) |
+| **취소** | 구매 후 취소 및 변경 불가 (사용 여부와 무관) |
 | **미사용** | 인스턴스를 안 띄워도 비용 발생 (선불 완료) |
-| **종료** | 예약 종료 시 인스턴스 자동 종료됨 — 데이터 백업 필수 |
+| **종료** | Capacity Blocks 예약 기간 만료 30분 전부터 인스턴스가 자동 종료되기 시작하므로 데이터 백업 필수 |
 | **EBS** | 인스턴스 종료 시 EBS도 함께 삭제될 수 있음 (`DeleteOnTermination` 확인) |
-| **시간대** | 모든 시간은 UTC 기준 |
+| **시간대** | 모든 시간은 리전에 관계없이 11:30 UTC 기준 (한국 시간 오후 8시 30분) |
 | **쿼터** | CB 쿼터 ≠ On-Demand 쿼터 (별도 관리) |
 
 ---
@@ -262,7 +258,7 @@ aws ec2 describe-capacity-reservations \
 1. **리전 확인** — 해당 인스턴스가 CB 지원되는 리전인지
 2. **쿼터 확인** — CB 쿼터가 0이면 오퍼링 자체가 안 보임
 3. **수량** — 너무 큰 수량 요청 시 매칭 안 될 수 있음 (줄여서 재시도)
-4. **기간** — 1~14일 범위만 지원
+4. **기간** — 최소 1일 ~ 최대 182일 지원 (1~14일은 1일 단위, 이후 7일 단위)
 
 ---
 
