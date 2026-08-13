@@ -1,14 +1,14 @@
 ---
-title: Capacity Blocks 실전 가이드
+title: Capacity Blocks for ML 실전 가이드
 tags:
   - 의사결정
   - 비용
-  - Capacity Blocks
+  - Capacity Blocks for ML
 ---
 
-# Capacity Blocks 실전 가이드
+# Capacity Blocks for ML 실전 가이드
 
-본 페이지는 **Capacity Blocks for ML** 사용법을 단계별로 안내합니다. [GPU/Trainium 구매 옵션 비교 페이지](https://awslabs.github.io/accelerated-compute-tutorials/ai-infra/purchase-options/)를 먼저 읽으신 후 본 페이지를 읽으시기를 권장합니다.
+본 페이지는 **Capacity Blocks for ML** 사용법을 단계별로 안내합니다. GPU/Trainium 구매 옵션에 대한 상세 설명은 [GPU/Trainium 구매 옵션 비교 페이지](https://awslabs.github.io/accelerated-compute-tutorials/ai-infra/purchase-options/)를 참조하시기 바랍니다.
 
 ---
 
@@ -18,10 +18,11 @@ tags:
 |------|------|
 | **예약 가능 시점** | 사용 시작일 최소 30분 전 ~ 최대 8주 전까지 용량 조회 및 예약 |
 | **예약 기간** | 최소 1일 ~ 최대 182일 (1~14일은 1일 단위, 14일 이상은 7일 단위).<br>※ 가용 용량이 있는 경우 구매 후 기간 연장 가능 ([기간 연장 가이드](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-blocks-extend.html)) |
-| **수량** | 최대 64개 인스턴스 |
+| **수량** | 최대 64대 인스턴스 |
 | **결제** | 예약 시점에 전액 선불 결제. 구매 후 취소 및 변경 불가 (사용 여부와 무관) |
-| **지원 인스턴스** | P 인스턴스(P4d, P4de, P5, P5e, P5en, P6-B200, P6-B300, P6e-GB200) 및 Trainium(Trn1, Trn2) |
+| **지원 인스턴스** | P 인스턴스(P4d, P4de, P5, P5e, P5en, P6-B200, P6-B300, P6e-GB200) </br> 및 Trainium 인스턴스 (Trn1, Trn2) |
 | **용량 보장** | 예약 확정 시 100% 보장, EC2 UltraCluster 내 근접 배치 |
+| **시작 및 종료 시간** | 리전에 관계 없이 11:30 UTC (한국 시간 오후 8시 30분) 시작, </br> 11:00 UTC부터 종료 (한국 시간 오후 8시) |
 
 ---
 
@@ -37,17 +38,34 @@ Capacity Blocks는 On-Demand 쿼터와 별도입니다. Service Quotas에서 확
 ```
 
 !!! warning "쿼터가 0이면 예약 불가"
-    신규 계정은 기본값 0일 수 있습니다. 쿼터 증가 요청 먼저 하세요.
+    신규 계정은 기본값 0일 수 있습니다. 쿼터 증가 요청 먼저 하세요. 필요 시 AWS 어카운트팀 지원을 받으시기 바랍니다.
 
-### 2. 리전 선택
+### 2. 리전 및 가격 확인
+Capacity Blocks을 지원하는 인스턴스 및 리전은 아래 표와 같습니다. 가용 리전 및 오퍼링은 수시로 변경되므로 실제 예약 전 [Amazon EC2 Capacity Blocks for ML pricing](https://aws.amazon.com/ec2/capacityblocks/pricing/) 및 EC2 콘솔을 통해 확인하시기 바랍니다. 또한 Capacity Blocks for ML의 가격은 수요·공급 트렌드에 따라 분기 단위로 조정될 수 있습니다. (1/4/7/10월 초)
 
-Capacity Blocks이 제공되는 리전은 [Amazon EC2 Capacity Blocks for ML pricing](https://aws.amazon.com/ec2/capacityblocks/pricing/) 페이지를 참고하시기 바랍니다.
+| 인스턴스 타입 | 지원 리전 ('26년 8월 기준) |
+|------|------|
+| P4d.24xlarge | N. Virginia, Ohio, Oregon |
+| P4de.24xlarge | N. Virginia, Oregon |
+| P5.48xlarge | Atlanta Local Zone, N. Virginia, Ohio, Oregon, N. California, Tokyo, Jakarta, Mumbai, Sydney, London, Stockholm, Sao Paulo |
+| P5.4xlarge | N. Virginia, Ohio, Oregon, Tokyo, Mumbai, Sydney, London, Sao Paulo |
+| P5e.48xlarge | Ohio, N. California, Oregon, Phoenix Local Zone, Jakarta, Mumbai, Tokyo, Sydney, London, Stockholm, Sao Paulo |
+| P5en.48xlarge | N. Virginia, Ohio, N. California, Oregon, Jakarta, Mumbai, Seoul, Tokyo, London, Spain, Stockholm |
+| p6-b200.48xlarge | N. Virginia, Ohio, Oregon, Mumbai, US-West GovCloud, US-East GovCloud |
+| p6-b300.48xlarge | N. Virginia, Oregon, Atlanta Local Zone, US-East GovCloud |
+| u-p6e-gb200x72 | Dallas Local Zone |
+| u-p6e-gb200x36 | Dallas Local Zone |
+| Trn1.32xlarge | N. Virginia, Ohio, Oregon, Mumbai, Melbourne, Sydney, Stockholm |
+| Trn2.48xlarge | Ohio |
+| Trn2.3xlarge | Melbourne, Sao Paulo |
 
-!!! tip "최신 가용성은 콘솔에서 확인"
-    리전/인스턴스별 가용 오퍼링은 수시로 변경됩니다. 특히 최신 Blackwell 세대(P6-B200/B300)는 리전이 계속 확대되고 있으므로, 실제 예약 전 EC2 콘솔의 Capacity Blocks 오퍼링 조회로 확인하세요.
-
-!!! info "시작·종료 시각 (UTC 고정)"
-    모든 Capacity Blocks은 리전에 관계없이 11:30 UTC에 시작하고 11:30 UTC에 종료됩니다. (한국 시간 오후 8시 30분)
+!!! warning "리전 선택 시 유의사항"
+    Capacity Blocks 구매 전, GPU와 함께 이용 예정인 서비스(예: FSx for Lustre)가 해당 리전에서 지원되는지 사전 확인하시기 바랍니다. Capacity Blocks은 구매 후 취소 및 환불이 불가합니다.
+    
+!!! warning "옵트인 리전 선택 시 활성화"
+    Jakarta, Melbourne, Spain 리전은 옵트인 리전이므로 기본적으로 AWS 계정에서 비활성화가 되어 있습니다 (2019년 3월 20일 이후에 시작된 리전들은 모두 옵트인 리전에 해당합니다). 옵트인 리전을 사용하려면 먼저 활성화가 필요합니다. 활성화 방법은 [AWS 리전 에서 활성화 또는 비활성화](https://docs.aws.amazon.com/ko_kr/accounts/latest/reference/manage-acct-regions.html#rande-manage-enable)를 참고하시기 바랍니다.
+    
+  
 
 ### 3. IAM 권한
 
@@ -75,42 +93,37 @@ Capacity Blocks이 제공되는 리전은 [Amazon EC2 Capacity Blocks for ML pri
 
 ---
 
-## 🚀 Step-by-Step: 콘솔에서 예약하기
+## 🛒 Capacity Block 구매
 
-### Step 1: 오퍼링 조회
+콘솔의 **EC2 > Capacity Reservations > Purchase Capacity Blocks for ML** 메뉴로 진입합니다.
 
-1. **EC2 콘솔** → 좌측 메뉴 → **Capacity Reservations** → **Capacity Blocks** 탭
-2. **Find Capacity Blocks** 클릭
-3. 필터 입력:
-    - **Instance type**: 원하는 인스턴스 (예: `p5en.48xlarge`)
-    - **Instance quantity**: 필요한 대수
-    - **Duration**: 예약 기간 (예: 7일)
-    - **Start date range**: 시작 가능 기간
-4. **Search** 클릭 → 가용 오퍼링 목록 표시
+![콘솔 메뉴 진입](1_CB_console_menu.png)
 
-### Step 2: 오퍼링 선택 & 구매
+### Step 1: 인스턴스 및 기간 선택
 
-1. 원하는 오퍼링의 **Purchase** 버튼 클릭
-2. 요약 확인:
-    - 인스턴스 타입/수량
-    - 시작~종료 일시 (UTC)
-    - 총 비용
-3. **Purchase capacity block** 클릭
-4. 상태가 `payment-pending` → `active` (시작일)로 변경됨
+원하는 인스턴스 타입(`trn2.48xlarge`)과 기간, 시작 날짜를 선택합니다.
 
-### Step 3: 인스턴스 실행
+![인스턴스 및 기간 선택](2_CB_console_search.png)
 
-예약 시작 시간 이후:
+### Step 2: 가용 블록 확인 및 선택
 
-1. **EC2 콘솔** → **Launch Instance**
-2. 인스턴스 타입: 예약한 타입 선택
-3. **Advanced details** → **Capacity reservation**:
-    - Capacity Reservation target: **Specific capacity reservation**
-    - Capacity Reservation ID 선택
-4. **Launch instance**
+가용 날짜 및 가격을 확인합니다. CB는 특정 Availability Zone(AZ)에 고정되어 제공됩니다.
 
-!!! info "예약 시간 = UTC 기준"
-    한국 시간(KST)은 UTC+9입니다. 예: UTC 00:00 시작 = KST 09:00 시작
+![블록 선택 1](3_CB_console_availability.png)
+
+!!! warning "중요"
+    여기서 배정받은 AZ (예: `us-east-2b`)를 반드시 기억해야 합니다. 추후 이 AZ에 서브넷을 만들어야 인스턴스를 띄울 수 있습니다.
+
+!!! warning "즉시 시작 옵션"
+    Capacity Block은 시작시간이 기본적으로 한국시간 20:30이지만, 조회시점에 바로 가용한 인스턴스가 있다면 즉시 시작하는 옵션을 선택하고 1일 단위가 아닌 추가 시간 및 금액이 표기된 CB를 선택하여 바로 작업을 시작할 수 있습니다.
+
+
+### Step 3: 구매 확정 (Confirm)
+
+가격과 시간을 최종 확인하고, 텍스트 입력창에 `confirm`을 입력하여 구매를 확정합니다.
+![블록 선택 2](4_CB_console_addtag.png)
+
+![블록 선택 3](5_CB_console_confirm.png)
 
 ---
 
@@ -171,6 +184,34 @@ aws ec2 run-instances \
 
 ---
 
+## 🔍 예약 상태 확인
+
+Capcity Blocks 예약 관련 상태값
+
+| 상태 | 의미 |
+|------|------|
+| `payment-pending` | 결제 처리 중 |
+| `payment-failed` | 결제 실패 (카드/한도 확인) |
+| `scheduled` | 예약 확정, 시작 대기 |
+| `active` | 현재 사용 가능 |
+| `expired` | 기간 만료 |
+| `cancelled` | 사용자 취소 |
+
+
+구매가 완료되면 상태가 `Payment-pending`에서 `Scheduled`로 변경됩니다.
+
+![예약 상태 1](6_CB_payment_pending.png)
+
+- **Scheduled (예정됨):** 구매는 성공했으나, 아직 시작 시간이 되지 않은 상태입니다.
+![예약 상태 2](7_CB_scheduled.png)
+
+- **Active (활성):** 예약 시간이 되어 인스턴스를 실행할 수 있는 상태입니다.
+![Scheduled 상태 1](8_CB_active.png)
+
+
+
+---
+
 ## 📐 활용 패턴
 
 ### 패턴 1: 학습 스프린트
@@ -217,6 +258,27 @@ if offerings:
     print(f"Reserved: {best['StartDate']} ~ {best['EndDate']}")
 ```
 
+
+---
+
+## AWS Organization 내 Capacity Blocks 공유
+Capacity Blocks for ML을 구매하면 [AWS Resource Access Manager](https://docs.aws.amazon.com/ram/latest/userguide/what-is.html)(AWS RAM)를 사용하여 AWS Organization 내의 다른 계정과 공유할 수 있습니다. AWS RAM을 통해 조직 내 계정 간에 AWS 리소스를 공유할 수 있으며, 공유받은 계정(소비자 계정)은 해당 용량을 사용하여 인스턴스를 실행할 수 있습니다.
+
+소유자 계정이 선불 예약 비용을 부담하고 소유권을 유지하며, 소비자 계정에서 인스턴스를 실행하는 경우 [운영 체제 라이선스 요금](https://aws.amazon.com/ec2/capacityblocks/pricing/) 등의 추가 비용은 소비자 계정이 부담합니다. Capacity Blocks은 동시에 여러 계정에 공유할 수 있으며, 전체 Capacity Block 예약이 선착순으로 공유됩니다.
+
+자세한 내용은 [Sharing Capacity Blocks for ML across your AWS Organization](https://aws.amazon.com/blogs/compute/sharing-capacity-blocks-for-ml-across-your-aws-organization/) 문서를 참고하시기 바랍니다.
+
+
+---
+
+
+## 📚 참고 자료
+
+- [Capacity Blocks for ML 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html)
+- [EC2 Capacity Blocks 요금](https://aws.amazon.com/ec2/pricing/capacity-blocks/)
+- [Capacity Blocks FAQ](https://aws.amazon.com/ec2/faqs/#Capacity_Blocks_for_ML)
+- [XC 구매 옵션 비교](purchase-options/index.md)
+
 ---
 
 ## ⚠️ 주의사항
@@ -229,42 +291,3 @@ if offerings:
 | **EBS** | 인스턴스 종료 시 EBS도 함께 삭제될 수 있음 (`DeleteOnTermination` 확인) |
 | **시간대** | 모든 시간은 리전에 관계없이 11:30 UTC 기준 (한국 시간 오후 8시 30분) |
 | **쿼터** | CB 쿼터 ≠ On-Demand 쿼터 (별도 관리) |
-
----
-
-## 🔍 모니터링 & 트러블슈팅
-
-### 예약 상태 확인
-
-```bash
-aws ec2 describe-capacity-reservations \
-  --filters "Name=instance-type,Values=p5en.48xlarge" \
-  --region ap-northeast-2
-```
-
-상태값:
-
-| 상태 | 의미 |
-|------|------|
-| `payment-pending` | 결제 처리 중 |
-| `payment-failed` | 결제 실패 (카드/한도 확인) |
-| `scheduled` | 예약 확정, 시작 대기 |
-| `active` | 현재 사용 가능 |
-| `expired` | 기간 만료 |
-| `cancelled` | 사용자 취소 |
-
-### 오퍼링이 안 보일 때
-
-1. **리전 확인** — 해당 인스턴스가 CB 지원되는 리전인지
-2. **쿼터 확인** — CB 쿼터가 0이면 오퍼링 자체가 안 보임
-3. **수량** — 너무 큰 수량 요청 시 매칭 안 될 수 있음 (줄여서 재시도)
-4. **기간** — 최소 1일 ~ 최대 182일 지원 (1~14일은 1일 단위, 이후 7일 단위)
-
----
-
-## 📚 참고 자료
-
-- [Capacity Blocks for ML 공식 문서](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-blocks.html)
-- [EC2 Capacity Blocks 요금](https://aws.amazon.com/ec2/pricing/capacity-blocks/)
-- [Capacity Blocks FAQ](https://aws.amazon.com/ec2/faqs/#Capacity_Blocks_for_ML)
-- [XC 구매 옵션 비교](purchase-options/index.md)
