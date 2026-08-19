@@ -99,6 +99,7 @@ plugins:
             AI 인프라 운영: AI Infra Operations
             학습하기: Learning
             학습경로: Learning Path
+            Capacity 모니터링: Capacity Monitoring
             NVIDIA GPU 인스턴스: NVIDIA GPU Instances
   - tags
 
@@ -172,6 +173,7 @@ nav:
       - AI 인프라 운영:
           - ai-infra/operations/index.md
           - 모니터링 & 스케일링: ai-infra/operations/monitoring-scaling.md
+          - Capacity 모니터링: ai-infra/operations/cb-monitoring-system.md
       - AI 인프라 Application:
           - ai-infra/application/index.md
       - AI 인프라 Deep Dive:

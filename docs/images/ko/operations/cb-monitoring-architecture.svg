@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" font-family="'Segoe UI', -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#232F3E"/>
+      <stop offset="100%" style="stop-color:#37475A"/>
+    </linearGradient>
+    <linearGradient id="lambdaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9900"/>
+      <stop offset="100%" style="stop-color:#EC7211"/>
+    </linearGradient>
+    <linearGradient id="snsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#D63B7B"/>
+      <stop offset="100%" style="stop-color:#A1285E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="620" rx="12" fill="#FAFBFC"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#232F3E">CB/OD Capacity Monitoring Architecture</text>
+
+  <!-- EventBridge Section -->
+  <rect x="40" y="55" width="820" height="150" rx="10" fill="none" stroke="#4A90D9" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <rect x="40" y="55" width="820" height="30" rx="10" fill="url(#headerGrad)"/>
+  <rect x="40" y="75" width="820" height="10" fill="url(#headerGrad)"/>
+  <text x="60" y="76" font-size="13" font-weight="600" fill="white">Amazon EventBridge</text>
+
+  <!-- Urgent Rule -->
+  <rect x="70" y="100" width="340" height="85" rx="8" fill="white" filter="url(#shadow)" stroke="#4A90D9" stroke-width="1"/>
+  <rect x="70" y="100" width="340" height="28" rx="8" fill="#4A90D9"/>
+  <rect x="70" y="118" width="340" height="10" fill="#4A90D9"/>
+  <text x="90" y="120" font-size="12" font-weight="600" fill="white">⏰ Urgent Rule</text>
+  <text x="90" y="148" font-size="11" fill="#555">주기: 4시간마다</text>
+  <text x="90" y="166" font-size="11" fill="#555">Input: {"mode": "urgent"}</text>
+
+  <!-- Daily Summary Rule -->
+  <rect x="490" y="100" width="340" height="85" rx="8" fill="white" filter="url(#shadow)" stroke="#4A90D9" stroke-width="1"/>
+  <rect x="490" y="100" width="340" height="28" rx="8" fill="#4A90D9"/>
+  <rect x="490" y="118" width="340" height="10" fill="#4A90D9"/>
+  <text x="510" y="120" font-size="12" font-weight="600" fill="white">📋 Daily Summary Rule</text>
+  <text x="510" y="148" font-size="11" fill="#555">주기: 매일 09:00 KST</text>
+  <text x="510" y="166" font-size="11" fill="#555">Input: {"mode": "daily_summary"}</text>
+
+  <!-- Arrows from EventBridge to Lambda -->
+  <path d="M240 185 L240 230 L450 230 L450 255" fill="none" stroke="#4A90D9" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <path d="M660 185 L660 230 L450 230 L450 255" fill="none" stroke="#4A90D9" stroke-width="2"/>
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#4A90D9"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#EC7211"/>
+    </marker>
+    <marker id="arrowPink" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#A1285E"/>
+    </marker>
+  </defs>
+
+  <!-- Lambda Section -->
+  <rect x="120" y="255" width="660" height="190" rx="10" fill="white" filter="url(#shadow)" stroke="#EC7211" stroke-width="1.5"/>
+  <rect x="120" y="255" width="660" height="32" rx="10" fill="url(#lambdaGrad)"/>
+  <rect x="120" y="277" width="660" height="10" fill="url(#lambdaGrad)"/>
+  <text x="145" y="278" font-size="13" font-weight="600" fill="white">AWS Lambda</text>
+
+  <!-- Lambda Steps -->
+  <g font-size="12" fill="#333">
+    <!-- Step 1 -->
+    <rect x="145" y="300" width="24" height="24" rx="12" fill="#FFF3E0" stroke="#EC7211" stroke-width="1"/>
+    <text x="157" y="317" text-anchor="middle" font-size="11" font-weight="700" fill="#EC7211">1</text>
+    <text x="180" y="317" font-size="11.5" fill="#333">환경변수 TARGETS에서 모니터링 대상 로드</text>
+
+    <!-- Step 2 -->
+    <rect x="145" y="332" width="24" height="24" rx="12" fill="#FFF3E0" stroke="#EC7211" stroke-width="1"/>
+    <text x="157" y="349" text-anchor="middle" font-size="11" font-weight="700" fill="#EC7211">2</text>
+    <text x="180" y="349" font-size="11.5" fill="#333">Binary Search로 가용 수량 탐색 (ThreadPoolExecutor 병렬)</text>
+
+    <!-- Step 3 -->
+    <rect x="145" y="364" width="24" height="24" rx="12" fill="#FFF3E0" stroke="#EC7211" stroke-width="1"/>
+    <text x="157" y="381" text-anchor="middle" font-size="11" font-weight="700" fill="#EC7211">3</text>
+    <text x="180" y="381" font-size="11.5" fill="#333">모드별 필터링 (urgent → 7일 이내 슬롯만)</text>
+
+    <!-- Step 4 -->
+    <rect x="145" y="396" width="24" height="24" rx="12" fill="#FFF3E0" stroke="#EC7211" stroke-width="1"/>
+    <text x="157" y="413" text-anchor="middle" font-size="11" font-weight="700" fill="#EC7211">4</text>
+    <text x="180" y="413" font-size="11.5" fill="#333">메시지 구성 → SNS Publish</text>
+  </g>
+
+  <!-- TARGETS badge -->
+  <rect x="560" y="360" width="195" height="70" rx="6" fill="#FFF8E1" stroke="#FFA726" stroke-width="1"/>
+  <text x="580" y="382" font-size="10" font-weight="600" fill="#E65100">ENV: TARGETS (JSON)</text>
+  <text x="580" y="400" font-size="10" fill="#666">재배포 없이 타겟 추가/삭제</text>
+  <text x="580" y="416" font-size="10" fill="#666">InstanceCount 1→64 탐색</text>
+
+  <!-- Arrow from Lambda to SNS -->
+  <path d="M450 445 L450 480" fill="none" stroke="#A1285E" stroke-width="2" marker-end="url(#arrowPink)"/>
+
+  <!-- SNS Section -->
+  <rect x="250" y="480" width="400" height="50" rx="8" fill="white" filter="url(#shadow)" stroke="#A1285E" stroke-width="1.5"/>
+  <rect x="250" y="480" width="400" height="28" rx="8" fill="url(#snsGrad)"/>
+  <rect x="250" y="498" width="400" height="10" fill="url(#snsGrad)"/>
+  <text x="275" y="501" font-size="13" font-weight="600" fill="white">Amazon SNS Topic</text>
+  <text x="450" y="518" text-anchor="middle" font-size="11" fill="#666">알림 분배</text>
+
+  <!-- Arrows from SNS to destinations -->
+  <path d="M350 530 L350 555 L220 555 L220 565" fill="none" stroke="#A1285E" stroke-width="1.5" marker-end="url(#arrowPink)"/>
+  <path d="M550 530 L550 555 L680 555 L680 565" fill="none" stroke="#A1285E" stroke-width="1.5" marker-end="url(#arrowPink)"/>
+
+  <!-- Slack -->
+  <rect x="120" y="565" width="200" height="42" rx="8" fill="white" filter="url(#shadow)" stroke="#4A154B" stroke-width="1.2"/>
+  <text x="145" y="585" font-size="20">💬</text>
+  <text x="172" y="591" font-size="12" font-weight="500" fill="#333">AWS Chatbot → Slack</text>
+
+  <!-- Email -->
+  <rect x="580" y="565" width="200" height="42" rx="8" fill="white" filter="url(#shadow)" stroke="#4A90D9" stroke-width="1.2"/>
+  <text x="605" y="585" font-size="20">📧</text>
+  <text x="632" y="591" font-size="12" font-weight="500" fill="#333">Email Subscription</text>
+
+  <!-- Cost badge -->
+  <rect x="735" y="60" width="110" height="28" rx="14" fill="#E8F5E9" stroke="#4CAF50" stroke-width="1"/>
+  <text x="790" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#2E7D32">💰 ~$0/월</text>
+
+</svg>
