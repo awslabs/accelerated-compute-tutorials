@@ -128,8 +128,6 @@ tensor([[-0.4285,  1.3709],
 ```
 
 
----
-
 ## **Lab 1: PyTorch Native 시작하기 (35분)**
 
 !!! abstract "학습 목표"
@@ -253,7 +251,7 @@ for epoch in range(10):
 
 ### **Step 3: torch.compile with Neuron Backend (~15분)**
 
-**목표**: `torch.compile(backend="neuron")`으로 모델을 컴파일하면, Neuron 컴파일러가 전체 그래프를 최적화하여 성능이 크게 향상되는 것을 확인합니다.
+**목표:** torch.compile(backend="neuron")으로 모델을 컴파일하여 NEFF가 생성되고 정상 실행되는 것을 확인합니다. 첫 실행 시 컴파일 시간이 발생하고, 이후 캐시됩니다.
 
 ```bash
 python torch_compile.py
@@ -478,6 +476,33 @@ llama_nki_experimental/ → 레이어 전체를 1개 mega-kernel (HBM 왕복 1�
 
 **즉, 여러분이 바꾸는 건** `--model` **인자뿐이고, 코드 내부에서는 동일한 weight에 같은 입력을 넣되 forward() 경로만 달라집니다.** `nki_ops.py`**를 열어보면 S2에서 배운** `@nki_op` **+** `wrap_nki` **패턴이 그대로 사용됩니다.**
 
+!!! info "LLM 레이어 구성 요소 — 왜 이걸 교체하는가?" 
+    Transformer의 레이어 1개는 이렇게 생겼습니다:
+
+    ```
+    입력 → [RMSNorm] → [QKV Linear] → [RoPE] → [Attention] → [Output Linear] → [RMSNorm] → [MLP(SwiGLU)] → 출력
+    ```
+
+    | 구성 요소 | 하는 일 (한 줄) |
+    |----------|---------------|
+    | **RMSNorm** | 텐서 크기를 정규화 (학습 안정화) |
+    | **QKV Linear** | 입력을 Query, Key, Value 3개로 변환 |
+    | **RoPE** | 토큰 위치 정보를 회전(rotation)으로 인코딩 |
+    | **Attention** | "어디를 볼까" — Q×K로 유사도 계산 후 V에서 정보 추출 |
+    | **MLP (SwiGLU)** | "정보를 변환" — gate로 걸러서 비선형 변환 (Linear 3개 + SiLU) |
+
+    **문제**: PyTorch 기본 코드에서는 각 구성 요소 사이마다 결과를 HBM에 저장하고 다음이 다시 읽음.
+
+    ```
+    base:          [RMSNorm]↕HBM → [QKV]↕HBM → [RoPE]↕HBM → [Attn]↕HBM → [MLP] = 5회 왕복
+    core:          [RMSNorm+QKV]↕HBM → [RoPE+Attn]↕HBM → [MLP(nki)]             = 3회 왕복
+    experimental:  [전부 SBUF 안에서 처리]                                         = 1회 왕복
+    ```
+
+    NKI 커널이 하는 일 = 이 **HBM 왕복을 줄이는 것**. GPU에서도 동일한 문제가 있어서 Flash Attention, CUDA Fused Kernel이 존재합니다. Neuron에서는 SBUF(28MB)가 GPU Shared Memory(수백KB)보다 훨씬 크므로, 더 넓은 범위의 Fusion이 가능합니다.
+
+
+
 ---
 
 ### **Step 1: Baseline 실행 (~5분)**
@@ -606,7 +631,7 @@ Throughput      : 537.4 tok/s
 
 ---
 
-### Step 5: 성능 비교 정리
+### **Step 5: 성능 비교 정리**
 
 | 변종 | Throughput | base 대비 | 변경 내용 |
 | --- | --- | --- | --- |
@@ -618,40 +643,62 @@ Throughput      : 537.4 tok/s
 
 ### **Step 6: 프로파일링 — CPU fallback 확인**
 
-**목표**: 어떤 op이 NeuronCore에서 실행되고 어떤 op이 CPU로 빠지는지 확인합니다.
+**목표**: 모델에서 어떤 op이 NeuronCore에서 실행되고, 어떤 op이 CPU로 빠지는지 확인합니다.
 
-**테스트 파일 생성:**
+#### `run.py`에 fallback 체크 코드 추가
 
-```bash
-# cpu_fallback_test.py
-import torch
-import torch_neuronx
+`run.py`의 `Generated IDs` 출력 바로 다음 줄에 **한 줄**만 추가합니다:
 
-x = torch.randn(4, 256, dtype=torch.bfloat16).to("neuron")
-
-# 다양한 op 실행
-_ = torch.unique(x)       # ← CPU fallback 발생
-_ = torch.topk(x, k=5)   # ← Neuron 실행
-_ = torch.mm(x.reshape(4, 256), torch.randn(256, 128, dtype=torch.bfloat16).to("neuron"))
-
-# Fallback 확인
-fallback_ops = torch_neuronx.get_fallback_ops()
-print(f"CPU fallback ops ({len(fallback_ops)}):")
-for op in fallback_ops:
-    print(f"  - {op}")
-
+```python
+    print(f"\nCPU fallback ops: {torch_neuronx.get_fallback_ops()}")
 ```
 
-!!! info 
-    이 Lab의 llama\_base 코드에서는 CPU fallback이 발생하지 않습니다" llama\_base는 Neuron 지원 op만으로 작성되어 있어 모든 op이 NC에서 실행됩니다. 실무에서 HuggingFace 모델을 그대로 올릴 때는 일부 op이 CPU로 빠질 수 있습니다. 아래 예시로 fallback이 어떻게 감지되는지 체험해보세요.
+> `torch_neuronx`는 이미 import 되어있으므로 추가 import 불필요. 인덴트는 위 print문과 동일 (스페이스 4칸).
 
-
-**기대 출력:**
+#### Greedy 모드 실행
 
 ```bash
-CPU fallback ops (1):
-  - aten::_unique2
+python run.py --model base --compile --greedy
 ```
+
+**기대 출력 (마지막 줄):**
+
+```bash
+CPU fallback ops: ['aten::argmax.out']
+```
+
+→ `argmax`도 CPU fallback이지만, 1회 호출로 throughput 영향은 미미합니다 (426 tok/s).
+
+#### Sampling 모드 실행 (성능 영향 큰 fallback)
+
+```bash
+python run.py --model base --compile
+```
+
+**기대 출력 (마지막 줄):**
+
+```bash
+CPU fallback ops: ['aten::sort.values_stable', 'aten::multinomial']
+```
+
+→ top-p 필터링에 필요한 `sort`와 `multinomial`이 CPU로 빠지면서 **매 토큰마다** HBM↔CPU 왕복 발생 → 52 tok/s (8배 느림!).
+
+!!! info "왜 이런 차이가 나는가?"
+    | 모드 | Fallback ops | Throughput | 영향 |
+    |------|-------------|-----------|------|
+    | `--greedy` | `argmax.out` (1개) | 426 tok/s | 미미 (토큰당 1회) |
+    | sampling | `sort` + `multinomial` (2개) | 52 tok/s | **심각** (매 토큰 반복) |
+
+    같은 모델, 같은 compile인데 **CPU fallback ops 차이로 8배 성능 차이**가 발생합니다.
+
+    실무에서는 vLLM이 sampling을 자체 처리하므로 이 fallback은 문제되지 않습니다.
+    여기서는 **fallback을 감지하는 방법**을 익히는 것이 목적입니다.
+
+!!! tip "핵심 API"
+    ```python
+    torch_neuronx.get_fallback_ops()
+    ```
+    현재 프로세스에서 CPU로 빠진 op의 누적 목록을 리턴합니다. 모델 코드 수정 없이, 실행 후 호출하면 됩니다.
 
 ---
 
@@ -679,9 +726,9 @@ CPU fallback ops (1):
 ## 마무리
 
 !!! quote "오늘 배운 것"
-    - **Lab 1**: PyTorch Native에서 `.to('neuron')` 한 줄로 GPU 코드가 Neuron에서 동작 
-    - **Lab 2**: nkilib 커널 교체 10줄로 1.5x 성능 향상 — 커널을 직접 작성하지 않아도 됨 
-    - **핵심 메시지**: NKI는 "처음부터 작성"이 아닌 "검증된 커널을 갖다 쓰는 것"부터 시작
+    - **Lab 1** : PyTorch Native에서 `.to('neuron')` 한 줄로 GPU 코드가 Neuron에서 동작 
+    - **Lab 2** : nkilib 커널 교체 10줄로 1.5x 성능 향상 — 커널을 직접 작성하지 않아도 됨 
+    - **핵심 메시지** : NKI는 "처음부터 작성"이 아닌 "검증된 커널을 갖다 쓰는 것"부터 시작
 
 ---
 
