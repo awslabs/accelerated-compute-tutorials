@@ -154,6 +154,13 @@ nav:
       - 학습하기:
           - aws-ai-chip/education/index.md
           - 학습경로: aws-ai-chip/education/learning-path.md
+          - NDD Day 1 Hands-on Lab: aws-ai-chip/education/ndd-day1-hands-on-lab.md
+          - NDD Day 2 Hands-on Lab: aws-ai-chip/education/ndd-day2-hands-on-lab.md
+      - 추론:
+          - aws-ai-chip/inference/index.md
+          - vLLM on Neuron:
+              - aws-ai-chip/inference/vllm/index.md
+              - 모델 온보딩: aws-ai-chip/inference/vllm/model-onboarding.md
       - 고객 사례: aws-ai-chip/case-studies/index.md
   - NVIDIA GPU on AWS:
       - nvidia-gpu/index.md
