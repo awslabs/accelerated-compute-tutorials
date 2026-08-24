@@ -161,6 +161,13 @@ nav:
           - vLLM on Neuron:
               - aws-ai-chip/inference/vllm/index.md
               - 모델 온보딩: aws-ai-chip/inference/vllm/model-onboarding.md
+          - vLLM + NxDI (Classic):
+              - aws-ai-chip/inference/vllm-nxdi-classic/index.md
+              - Llama 3.1 70B: aws-ai-chip/inference/vllm-nxdi-classic/llama3.1-70b.md
+              - Qwen2.5 72B: aws-ai-chip/inference/vllm-nxdi-classic/qwen2.5-72b.md
+              - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
+              - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
+              - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
       - 고객 사례: aws-ai-chip/case-studies/index.md
   - NVIDIA GPU on AWS:
       - nvidia-gpu/index.md
