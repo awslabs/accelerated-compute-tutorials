@@ -286,7 +286,7 @@ du -sh ~/.cache/vllm/neuron/compile_cache/
     
     ```
 
-![](../../../../images/ko/ndd-day1-lab/lab1-vllm-dir.png)
+![](../../../images/ko/ndd-day1-lab/lab1-vllm-dir.png)
 
 ## Lab 1-B: 오프라인 배치 추론 (참고)
 
@@ -332,7 +332,7 @@ for output in outputs:
 python offline_inference.py
 
 ```
-![](../../../../images/ko/ndd-day1-lab/lab1-batch-inference.png)
+![](../../../images/ko/ndd-day1-lab/lab1-batch-inference.png)
 
 > 온라인 서빙(`vllm serve`)과 동일한 컴파일/캐시 과정을 거칩니다. 서버 오버헤드 없이 빠르게 모델 동작을 확인할 때 사용합니다.
 
@@ -390,7 +390,7 @@ vllm bench serve \
     --save-result \
     --result-filename config_a.json
 ```
-![](../../../../images/ko/ndd-day1-lab/lab2-performance-benchmark.png)
+![](../../../images/ko/ndd-day1-lab/lab2-performance-benchmark.png)
 
 > 📝 결과에서 **TTFT (avg), TPOT (avg), Throughput (tok/s)** 기록
 
@@ -465,7 +465,7 @@ print(f"\nConfig B throughput vs A: {speedup:.2f}x")
 
 ```
 
-![](../../../../images/ko/ndd-day1-lab/lab2-performance-benchamrk-gap.png)
+![](../../../images/ko/ndd-day1-lab/lab2-performance-benchamrk-gap.png)
 
 | 지표 | Config A (seqs=4) | Config B (seqs=16) | 변화 |
 | --- | --- | --- | --- |
@@ -527,7 +527,7 @@ lm_eval --model local-completions \
 
 ```
 
-![](../../../../images/ko/ndd-day1-lab/lab3-benchmark-accuracy.png)
+![](../../../images/ko/ndd-day1-lab/lab3-benchmark-accuracy.png)
 
 !!! tip "해석 가이드"
     | 지표 | 의미 | 기준 |
@@ -585,7 +585,7 @@ neuron-top
 | vCPU Utilization | CPU 사용량 |
 | Device Used Memory (MB) | HBM 사용량 — 모델 로드 후 ~고정, 요청 중 KV-cache로 증가 |
 
-![](../../../../images/ko/ndd-day1-lab/lab3-neuron-top.png)
+![](../../../images/ko/ndd-day1-lab/lab3-neuron-top.png)
 
 ### 3-2. 부하 생성 & 변화 관찰 (터미널 3)
 
@@ -607,7 +607,7 @@ neuron-top에서 관찰:
 - **Decode 중** : utilization 중간 레벨 유지 (반복적 패턴)
 - **완료 후** : utilization 0%로 복귀, Memory에서 KV-cache 해제
 
-![](../../../../images/ko/ndd-day1-lab/lab3-neuron-top-req.png)
+![](../../../images/ko/ndd-day1-lab/lab3-neuron-top-req.png)
 
 ✅ **체크포인트** : neuron-top에서 요청 처리 중 활용률 변화 패턴 확인 완료
 
@@ -834,7 +834,7 @@ n_7792fe1daf87c456c04c96497296393233c1c7b1
 | `cpu_util.pb` | CPU 사용률 (activities에 `"cpu_util"` 또는 `"all"` 포함 시) |
 | `host_mem.pb` | 호스트 메모리 (activities에 `"host_memory"` 또는 `"all"` 포함 시) |
 
-![](../../../../images/ko/ndd-day1-lab/lab3-profile-dir.png)
+![](../../../images/ko/ndd-day1-lab/lab3-profile-dir.png)
 
 > ℹ️ **NEFF 자동 복사** : vLLM Neuron은 `/stop_profile` 시 compile cache에서 NEFF를 `neffs/` 폴더로 자동 복사합니다. 만약 없으면 `VLLM_CACHE_ROOT` 경로(`$VLLM_CACHE_ROOT/neuron/compile_cache`)를 확인하세요.
 
@@ -876,7 +876,7 @@ neuron-explorer view -v 2 -d /home/ubuntu/neuron-profiles --display-name "lab1-v
 
 **브라우저** → `http://localhost:3001`
 
-![](../../../../images/ko/ndd-day1-lab/lab3-neuron-explorer-profiles.png)
+![](../../../images/ko/ndd-day1-lab/lab3-neuron-explorer-profiles.png)
 
 경로 레벨 — 어디까지 줘야 하나?
 
