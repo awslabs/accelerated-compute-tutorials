@@ -1,39 +1,50 @@
 ---
 title: Agent Infrastructure
-description: Infrastructure for running AI agents on accelerated computing environments
+description: Infrastructure for running AI agents securely on AWS accelerated computing environments
 ---
 
 # Agent Infrastructure
 
-Guides for configuring infrastructure to efficiently run AI agents on AWS accelerated computing environments.
+Hands-on tutorials for running AI agents on Amazon EKS with strong workload isolation. These guides use the [kubernetes-sigs/agent-sandbox](https://github.com/kubernetes-sigs/agent-sandbox) project, tiered runtime isolation (gVisor and Kata Containers), keyless Bedrock access via Pod Identity, and Karpenter for node autoscaling.
 
 ---
-
-!!! info "Coming Soon"
-    The Agent Infrastructure section is currently under development.
-    The following topics will be added:
-
-    - LLM serving architecture for agents
-    - Multi-agent orchestration
-    - Agent execution environment optimization
-    - Integration with RAG pipelines
-
----
-
-## Planned Content
 
 <div class="grid cards" markdown>
 
--   :material-robot-outline:{ .lg .middle } **Agent Serving Architecture**
+-   :material-shield-lock-outline:{ .lg .middle } **OpenClaw on EKS with Agent Sandbox**
 
     ---
 
-    LLM serving configurations optimized for agent workloads
+    Deploy OpenClaw AI agents on EKS Standard with Karpenter, the Sandbox CRD for lifecycle management, gVisor and Kata Containers for tiered isolation, Pod Identity for keyless Bedrock access, and network policies for egress control
 
--   :material-transit-connection-variant:{ .lg .middle } **Multi-Agent Systems**
+    [:octicons-arrow-right-24: View Lab Guide](openclaw-eks-lab-guide/README.md)
+
+-   :material-chart-line:{ .lg .middle } **Crypto Trading Agent on EKS**
 
     ---
 
-    Infrastructure patterns for orchestrating multiple agents
+    Build a production-grade crypto trading assistant with the Strands Agents SDK, running portfolio analysis and options pricing in air-gapped gVisor sandboxes, with agentgateway routing LLM and MCP tool calls and Cognito for per-user authorization
+
+    [:octicons-arrow-right-24: View Implementation Guide](crypto-trading-agent/README.md)
 
 </div>
+
+---
+
+## Why Agent Sandbox?
+
+The [Agent Sandbox](https://kubernetes.io/blog/2026/03/20/running-agents-on-kubernetes-with-agent-sandbox/) project (SIG Apps) provides a Kubernetes-native abstraction purpose-built for AI agent workloads:
+
+- **Sandbox CRD** — a declarative, single-container environment with stable identity and persistent storage
+- **SandboxTemplate** — reusable runtime templates (runc, gVisor, Kata) that decouple workload config from isolation policy
+- **SandboxWarmPool** — pre-provisioned sandbox pods that eliminate cold-start latency for agents
+
+---
+
+## Runtime Isolation Tiers
+
+| Runtime | Isolation | Instance Requirement | Use Case |
+|---------|-----------|----------------------|----------|
+| **runc** | Standard container | Any | Trusted workloads |
+| **gVisor** | User-space kernel (Sentry) | Any | Untrusted code execution |
+| **Kata Containers** | Hardware-virtualized micro-VM | `.metal` instances | Strongest isolation |
