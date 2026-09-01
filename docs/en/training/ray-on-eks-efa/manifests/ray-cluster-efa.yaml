@@ -1,0 +1,135 @@
+# SPDX-License-Identifier: MIT-0
+#
+# RayCluster spanning 2x p5.48xlarge GPU workers with EFA (EKS Auto Mode).
+#
+# - Head runs on Auto Mode's built-in general-purpose (CPU) NodePool.
+# - Each worker pod occupies one whole p5.48xlarge node provisioned by the
+#   custom gpu-efa NodePool: 8x H100 GPUs, 8 EFA interfaces
+#   (vpc.amazonaws.com/efa: 8, advertised by the EFA device plugin), and
+#   hugepages required by the EFA/libfabric stack.
+# - NCCL is configured to use the EFA (OFI) provider so cross-node collective
+#   communication (used by distributed fine-tuning) runs over EFA/SRD instead
+#   of TCP. The aws-ofi-nccl plugin is baked into the worker image (ray-efa).
+# - /dev/shm is backed by an emptyDir(Memory) so NCCL/torch shared-memory
+#   transports have enough space (default 64Mi is too small).
+#
+# This RayCluster is used by the fine-tuning RayJob (Part A). The inference
+# RayService (Part B) defines its own RayCluster on the ray-efa-vllm image.
+
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-efa
+spec:
+  rayVersion: "2.58.0"
+
+  # ---- Head (CPU only) ---------------------------------------------------
+  headGroupSpec:
+    rayStartParams:
+      num-gpus: "0"                 # never schedule GPU tasks on the head
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        # Pin the head to Auto Mode's built-in general-purpose (CPU) NodePool.
+        # It has no GPUs and no GPU taint, so the head never lands on a costly
+        # g6 node. Ray best practice: keep GPU workloads off the head.
+        nodeSelector:
+          karpenter.sh/nodepool: general-purpose
+        containers:
+          - name: ray-head
+            image: 361185619080.dkr.ecr.us-east-2.amazonaws.com/ray-efa:2.58.0-efa-vllm
+            ports:
+              - containerPort: 6379
+                name: gcs
+              - containerPort: 8265
+                name: dashboard
+              - containerPort: 10001
+                name: client
+              - containerPort: 8000
+                name: serve
+            resources:
+              requests:
+                cpu: "3"
+                memory: 12Gi
+              limits:
+                cpu: "3"
+                memory: 12Gi
+            # The fine-tuning RayJob entrypoint runs `python
+            # /home/ray/scripts/finetune.py`. The RayJob entrypoint executes on
+            # the Ray head, so the finetune-script ConfigMap must be mounted
+            # here (not only on the RayJob submitter pod). Mounted optionally so
+            # the RayCluster also works for the inference path (no ConfigMap).
+            volumeMounts:
+              - name: finetune-script
+                mountPath: /home/ray/scripts
+        volumes:
+          - name: finetune-script
+            configMap:
+              name: finetune-script
+              optional: true
+
+  # ---- GPU + EFA workers -------------------------------------------------
+  workerGroupSpecs:
+    - groupName: gpu-efa-workers
+      replicas: 2                   # 2x p5.48xlarge
+      minReplicas: 2
+      maxReplicas: 2
+      rayStartParams:
+        num-gpus: "8"               # 8x H100 per p5.48xlarge node
+      template:
+        spec:
+          nodeSelector:
+            karpenter.sh/nodepool: gpu-efa      # provisioned by the gpu-efa NodePool
+          # Tolerate the gpu-efa NodePool taint and Auto Mode's nvidia.com/gpu taint.
+          tolerations:
+            - key: ray.io/node-type
+              operator: Equal
+              value: "worker"
+              effect: NoSchedule
+            - key: nvidia.com/gpu
+              operator: Exists
+              effect: NoSchedule
+          containers:
+            - name: ray-worker
+              image: 361185619080.dkr.ecr.us-east-2.amazonaws.com/ray-efa:2.58.0-efa-vllm
+              env:
+                # --- NCCL over EFA (libfabric OFI provider) ---
+                - name: FI_PROVIDER
+                  value: "efa"
+                - name: NCCL_DEBUG
+                  value: "INFO"        # prints the transport NCCL selected
+                - name: NCCL_PROTO
+                  value: "simple"
+                - name: FI_EFA_USE_DEVICE_RDMA
+                  value: "1"
+                # aws-ofi-nccl plugin (built into the custom ray-efa image).
+                # Explicitly select the OFI net plugin so NCCL uses EFA, and
+                # point the tuner at the built plugin.
+                - name: NCCL_NET_PLUGIN
+                  value: "/opt/amazon/ofi-nccl/lib/libnccl-net.so"
+                - name: NCCL_TUNER_PLUGIN
+                  value: "/opt/amazon/ofi-nccl/lib/libnccl-ofi-tuner.so"
+                - name: LD_LIBRARY_PATH
+                  value: "/opt/amazon/efa/lib:/opt/amazon/ofi-nccl/lib:/opt/amazon/ofi-nccl/lib/x86_64-linux-gnu:$(LD_LIBRARY_PATH)"
+              resources:
+                requests:
+                  cpu: "180"
+                  memory: 1800Gi
+                  nvidia.com/gpu: "8"
+                  vpc.amazonaws.com/efa: "8"   # 8 EFA interfaces per p5.48xlarge
+                  hugepages-2Mi: 5120Mi
+                limits:
+                  cpu: "180"
+                  memory: 1800Gi
+                  nvidia.com/gpu: "8"
+                  vpc.amazonaws.com/efa: "8"
+                  hugepages-2Mi: 5120Mi
+              volumeMounts:
+                - name: dshm
+                  mountPath: /dev/shm
+          volumes:
+            # Large shared-memory segment for NCCL / torch dataloaders.
+            - name: dshm
+              emptyDir:
+                medium: Memory
+                sizeLimit: 16Gi

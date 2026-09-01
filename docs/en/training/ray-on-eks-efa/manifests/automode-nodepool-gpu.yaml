@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode GPU NodePool for the Ray workers (p5.48xlarge Capacity Block).
+#
+# References the custom gpu-efa NodeClass (which attaches EFA interfaces and
+# pins to the Capacity Block cr-096902351106cb778).
+# Constrained to p5.48xlarge (8x H100, 192 vCPU, 2 TiB, up to 32 EFA interfaces).
+#
+# IMPORTANT — STATIC CAPACITY + RESERVED:
+# EFA static network interfaces (advancedNetworking.networkInterfaces in the
+# NodeClass) must be paired with a STATIC CAPACITY node pool on EKS Auto Mode.
+# Auto Mode does not dynamically scale a NodeClass with statically-defined EFA
+# interfaces from zero based on pending pods, so `replicas` is required here.
+# Capacity Blocks are consumed via karpenter.sh/capacity-type: reserved.
+# See: https://docs.aws.amazon.com/eks/latest/userguide/auto-static-capacity.html
+#      https://docs.aws.amazon.com/eks/latest/userguide/create-node-class.html#static-network-interfaces
+#      https://docs.aws.amazon.com/eks/latest/userguide/auto-odcr.html
+#
+# Static pool constraints (enforced by Auto Mode):
+#   - Only `limits.nodes` is allowed (no cpu/memory/gpu limits).
+#   - No `weight` field.
+#   - No consolidation (nodes are held at `replicas`).
+# EFA is AZ-local, so this pool is pinned to us-east-2b (the Capacity Block AZ),
+# whose subnet is tagged kubernetes.io/role/efa=1 (README Step 2).
+#
+# A taint keeps non-GPU pods off these expensive nodes; the Ray worker pods
+# carry a matching toleration. Auto Mode's NVIDIA device plugin also adds the
+# standard nvidia.com/gpu taint, which the worker pods tolerate as well.
+
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-efa
+spec:
+  # Static capacity: hold exactly 2 p5.48xlarge nodes (the Ray workers select
+  # this pool via nodeSelector karpenter.sh/nodepool: gpu-efa).
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        node-role: gpu-worker
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: gpu-efa
+      requirements:
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values: ["p5.48xlarge"]
+        # Capacity Blocks are consumed via the "reserved" capacity type.
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["reserved"]
+        # EFA is AZ-local — pin to the Capacity Block AZ (us-east-2b), whose
+        # subnet is tagged kubernetes.io/role/efa=1 (README Step 2).
+        - key: topology.kubernetes.io/zone
+          operator: In
+          values: ["us-east-2b"]
+      taints:
+        - key: ray.io/node-type
+          value: "worker"
+          effect: NoSchedule
+  # Static capacity pools support ONLY limits.nodes (not cpu/memory/gpu).
+  limits:
+    nodes: "3"                 # replicas=2 + 1 headroom for drift/replacement

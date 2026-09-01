@@ -1,0 +1,101 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Extends the Ray GPU image with EFA userspace + the aws-ofi-nccl plugin so
+# NCCL can use the EFA/libfabric (OFI) transport for cross-node collectives.
+#
+# The stock rayproject/ray:*-gpu image does NOT ship libnccl-net.so
+# (aws-ofi-nccl) or libfabric, so NCCL silently falls back to TCP (NET/Socket)
+# for cross-node traffic. The AWS EFA installer provides both:
+#   - libfabric + EFA provider  -> /opt/amazon/efa
+#   - aws-ofi-nccl (libnccl-net.so, libnccl-ofi-tuner.so) -> /opt/amazon/ofi-nccl
+#
+# Build (amd64, to match the p5.48xlarge nodes). Single image for the whole
+# lab (Ray 2.58.0 + EFA/aws-ofi-nccl + vLLM); INSTALL_VLLM defaults to true:
+#   docker buildx build --platform linux/amd64 -f Dockerfile.efa \
+#     -t <ecr>/ray-efa:2.58.0-efa-vllm --push .
+FROM rayproject/ray:2.58.0-py311-gpu
+
+USER root
+
+ARG EFA_INSTALLER_VERSION=latest
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl ca-certificates tar gzip pciutils environment-modules \
+        libhwloc-dev tcl libnl-3-200 libnl-3-dev libnl-route-3-200 libnl-route-3-dev \
+        build-essential autoconf automake libtool git
+
+# Install the AWS EFA software stack (libfabric). Newer EFA installers ship
+# libfabric + OpenMPI but NOT aws-ofi-nccl, so we build the plugin separately.
+# --skip-kmod: the host Bottlerocket AMI provides the EFA kernel driver;
+#   we only need userspace libfabric here.
+# --no-verify: container-friendly (skips the fabric self-test at build time).
+RUN cd /tmp \
+    && curl -O https://efa-installer.amazonaws.com/aws-efa-installer-${EFA_INSTALLER_VERSION}.tar.gz \
+    && tar -xf aws-efa-installer-${EFA_INSTALLER_VERSION}.tar.gz \
+    && cd aws-efa-installer \
+    && ./efa_installer.sh -y --skip-kmod --no-verify \
+    && cd /tmp && rm -rf aws-efa-installer*
+
+# Build the aws-ofi-nccl plugin (provides libnccl-net.so + libnccl-ofi-tuner.so)
+# against the image's system NCCL/CUDA and the EFA libfabric. This is what lets
+# NCCL select the EFA/OFI transport for cross-node collectives; without it NCCL
+# falls back to TCP (NET/Socket).
+ARG AWS_OFI_NCCL_VERSION=v1.13.2-aws
+RUN cd /tmp \
+    && git clone --depth 1 --branch ${AWS_OFI_NCCL_VERSION} https://github.com/aws/aws-ofi-nccl.git \
+    && cd aws-ofi-nccl \
+    && ./autogen.sh \
+    && ./configure --prefix=/opt/amazon/ofi-nccl \
+         --with-libfabric=/opt/amazon/efa \
+         --with-cuda=/usr/local/cuda \
+         --with-nccl=/usr \
+         --disable-tests \
+    && make -j"$(nproc)" \
+    && make install \
+    && cd /tmp && rm -rf aws-ofi-nccl \
+    && rm -rf /var/lib/apt/lists/*
+
+# NCCL discovers the net plugin as "libnccl-net.so" (or via NCCL_NET_PLUGIN).
+# aws-ofi-nccl v1.13.x installs libnccl-net-ofi.so / libnccl-tuner-ofi.so, so
+# create the canonical names AND the x86_64-linux-gnu path the RayCluster env
+# vars reference (NCCL_TUNER_PLUGIN / LD_LIBRARY_PATH).
+RUN cd /opt/amazon/ofi-nccl/lib \
+    && ln -sf libnccl-net-ofi.so   libnccl-net.so \
+    && ln -sf libnccl-tuner-ofi.so libnccl-ofi-tuner.so \
+    && mkdir -p x86_64-linux-gnu \
+    && ln -sf ../libnccl-net-ofi.so    x86_64-linux-gnu/libnccl-net.so \
+    && ln -sf ../libnccl-net-ofi.so    x86_64-linux-gnu/libnccl-net-ofi.so \
+    && ln -sf ../libnccl-tuner-ofi.so  x86_64-linux-gnu/libnccl-ofi-tuner.so \
+    && ln -sf ../libnccl-tuner-ofi.so  x86_64-linux-gnu/libnccl-tuner-ofi.so
+
+# Make the EFA + OFI-NCCL libraries discoverable at runtime.
+ENV LD_LIBRARY_PATH=/opt/amazon/efa/lib:/opt/amazon/ofi-nccl/lib:/opt/amazon/ofi-nccl/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
+ENV PATH=/opt/amazon/efa/bin:${PATH}
+
+# --- vLLM for the inference path (Part B) --------------------------------
+# Bake vLLM into the image instead of installing it via the RayService
+# runtime_env. Installing vLLM at runtime fails because vLLM pulls in a
+# different `ray` version and Ray forbids changing the cluster's Ray version
+# from a runtime_env ("Changing the ray version is not allowed").
+#
+# Single image for the whole lab (training + inference), Ray 2.58.0.
+# Ray 2.58.0's ray[data,llm,serve] resolves cleanly with vllm==0.26.0 (and
+# transformers>=5.x), which fully supports Qwen3. Install ray[llm] + vllm in
+# ONE pip pass so the resolver reconciles them. vLLM is only needed for the
+# inference path, but baking it into the single image keeps one Ray version
+# across training and inference (avoids head/worker version mismatch and the
+# runtime_env "Changing the ray version is not allowed" error).
+#
+# INSTALL_VLLM defaults to true (single image). Set it to false if you want a
+# smaller training-only image on the same Ray 2.58.0 base.
+ARG INSTALL_VLLM=true
+ARG VLLM_VERSION=0.26.0
+ARG RAY_VERSION=2.58.0
+RUN if [ "$INSTALL_VLLM" = "true" ]; then \
+        pip install --no-cache-dir \
+            "ray[data,llm,serve]==${RAY_VERSION}" \
+            "vllm==${VLLM_VERSION}" \
+        && python -c "import ray, vllm; print('ray', ray.__version__, 'vllm', vllm.__version__)" ; \
+    fi
+
+USER ray

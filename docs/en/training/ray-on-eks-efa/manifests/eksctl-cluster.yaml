@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode cluster for KubeRay with EFA-enabled GPU workers.
+#
+# Auto Mode manages compute with Karpenter under the hood and ships the
+# required NVIDIA GPU drivers/device plugin out of the box. It does NOT ship
+# the EFA device plugin — that is installed separately (see README Step 3) —
+# and EFA network interfaces must be declared on a custom NodeClass
+# (see automode-nodeclass-efa.yaml).
+#
+# `eksctl` bootstraps the Auto Mode cluster. We enable OIDC and let Auto Mode
+# manage the built-in "general-purpose" and "system" NodePools for CPU/system
+# pods (the Ray head lands there). The GPU + EFA capacity comes from the
+# custom NodeClass/NodePool applied after the cluster is up.
+#
+# EFA is AZ-local, so the GPU NodePool is constrained to a single AZ via the
+# NodeClass subnet selector.
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: ray-efa-lab
+  region: us-east-2
+  version: "1.36"
+
+iam:
+  withOIDC: true
+
+# Enable EKS Auto Mode. This provisions the built-in general-purpose and
+# system NodePools and the Auto Mode NodeClass. Custom NodePools (our GPU+EFA
+# pool) coexist with these.
+autoModeConfig:
+  enabled: true

@@ -1,0 +1,98 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode NodeClass that attaches EFA interfaces at launch, targeting a
+# p5.48xlarge Capacity Block.
+#
+# p5.48xlarge has 32 network cards and supports up to 32 EFA interfaces (8x H100).
+# The layout below gives each node:
+#   - networkCardIndex 0 / deviceIndex 0: a standard `interface` for IP traffic
+#   - networkCardIndex 1..7 / deviceIndex 0: `efa-only` interfaces dedicated to
+#     RDMA (no IP), which NCCL/libfabric uses. 8 EFA interfaces balances strong
+#     RDMA bandwidth against subnet IP/ENI consumption (using all 32 would be
+#     excessive for this lab). Increase toward 32 for maximum bandwidth.
+#
+# Because networkInterfaces is set, EVERY instance launched by a NodePool that
+# references this NodeClass gets the EFA interfaces — regardless of whether the
+# pod requests vpc.amazonaws.com/efa. Auto Mode does not add IPs/ENIs after
+# launch for statically-configured interfaces.
+#
+# capacityReservationSelectorTerms pins nodes to the purchased Capacity Block
+# (cr-096902351106cb778, 2x p5.48xlarge in us-east-2b). The NodePool must use
+# karpenter.sh/capacity-type: reserved to consume it.
+#
+# Requirements you must satisfy before applying (see README Step 2):
+#   - An EFA security group that allows ALL inbound/outbound traffic to/from
+#     itself (required for EFA OS-bypass). Tag it so the selector below matches.
+#   - Private subnets in a SINGLE AZ (EFA is AZ-local; must match the Capacity
+#     Block AZ, us-east-2b). Tag them so the selector matches only that AZ.
+#   - The Auto Mode node IAM role name (created by eksctl as part of Auto Mode).
+
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: gpu-efa
+spec:
+  # Auto Mode node role. eksctl names it like:
+  #   eksctl-<cluster>-cluster-AutoModeNodeRole or the role attached to the
+  #   built-in NodeClass. Confirm with:
+  #     kubectl get nodeclass default -o jsonpath='{.spec.role}'
+  role: AmazonEKSAutoNodeRole
+
+  # Single-AZ private subnets (EFA cannot cross AZ). Must be in the Capacity
+  # Block AZ (us-east-2b). Tag the target subnet with kubernetes.io/role/efa=1.
+  subnetSelectorTerms:
+    - tags:
+        kubernetes.io/role/efa: "1"
+
+  # EFA nodes need BOTH:
+  #   1. The EKS cluster security group (control-plane + intra-cluster traffic).
+  #      Without it the kubelet cannot reach the API server and the node never
+  #      registers (Auto Mode then terminates and relaunches it in a loop).
+  #   2. The EFA security group (allows all traffic to/from itself) for RDMA.
+  # Each term is OR'd; all matched SGs are attached to the node.
+  securityGroupSelectorTerms:
+    - tags:
+        kubernetes.io/cluster/confused-hiphop-ant: "owned"   # EKS cluster SG
+    - tags:
+        efa: "true"                                          # EFA self-referencing SG
+
+  # Pin nodes to the purchased p5.48xlarge Capacity Block.
+  capacityReservationSelectorTerms:
+    - id: cr-096902351106cb778
+
+  advancedNetworking:
+    networkInterfaces:
+      # Primary ENI (card 0) for pod/IP traffic — must be interfaceType interface.
+      # secondaryIPv4PrefixCount gives the node a /28 (16 IPs) pool for pods.
+      # REQUIRED: with statically-defined networkInterfaces, Auto Mode does NOT
+      # add IPs/ENIs after launch, so without this the aws-cni cannot assign a
+      # pod IP and pods fail with "failed to assign an IP address to container".
+      - networkCardIndex: 0
+        deviceIndex: 0
+        interfaceType: interface
+        secondaryIPv4PrefixCount: 2
+      # 8 EFA-only interfaces (cards 1..8) dedicated to RDMA for NCCL.
+      - networkCardIndex: 1
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 2
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 3
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 4
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 5
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 6
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 7
+        deviceIndex: 0
+        interfaceType: efa-only
+      - networkCardIndex: 8
+        deviceIndex: 0
+        interfaceType: efa-only

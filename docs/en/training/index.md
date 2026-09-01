@@ -27,6 +27,14 @@ Tutorials for efficiently training large models using AWS Trainium and GPUs.
 
     [:octicons-arrow-right-24: View Tutorial](pytorch-native.md)
 
+-   :material-hexagon-multiple:{ .lg .middle } **Distributed Fine-tuning & Inference with Ray + EFA**
+
+    ---
+
+    Run KubeRay on EKS across 2× p5.48xlarge (16× H100 GPUs) from an EC2 Capacity Block, with distributed LoRA fine-tuning (Qwen3-4B) and tensor-parallel LLM inference (Qwen3-32B, TP=16) — cross-node NCCL running over EFA via a custom aws-ofi-nccl image on EKS Auto Mode
+
+    [:octicons-arrow-right-24: View Lab Guide](ray-on-eks-efa/README.md)
+
 </div>
 
 ---

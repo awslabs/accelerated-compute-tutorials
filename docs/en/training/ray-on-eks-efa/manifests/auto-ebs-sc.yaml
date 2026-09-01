@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Default StorageClass for EKS Auto Mode.
+#
+# Auto Mode ships the EBS CSI driver but does not set a default StorageClass.
+# This makes gp3 the default so any PVCs (e.g. Ray dashboards, checkpoints, or
+# model caches you add) can bind. Not strictly required by the base lab, but
+# recommended so the cluster behaves like a normal EKS cluster.
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: auto-ebs-sc
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: eks.amazonaws.com/compute-type
+        values:
+          - auto
+provisioner: ebs.csi.eks.amazonaws.com
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: gp3
+  encrypted: "true"

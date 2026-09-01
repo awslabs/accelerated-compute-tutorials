@@ -1,0 +1,164 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Distributed fine-tuning RayJob.
+#
+# Submits a Ray Train job to the existing `ray-efa` RayCluster. The job runs
+# data-parallel LoRA fine-tuning of a causal-LM (default: Qwen3-4B, ungated)
+# across all 16 H100 GPUs (2 nodes x 8 GPUs). Cross-node gradient all-reduce
+# goes over NCCL, which is pinned to the EFA/OFI provider by the RayCluster
+# env vars.
+#
+# The training script is embedded via a ConfigMap so the lab needs no image
+# build. Swap `--model` / `--dataset` in the entrypoint to fine-tune a
+# different model.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finetune-script
+data:
+  finetune.py: |
+    """Data-parallel LoRA fine-tuning with Ray Train + HF Transformers."""
+    import argparse, os
+    import ray
+    from ray.train import ScalingConfig, RunConfig
+    from ray.train.torch import TorchTrainer
+
+
+    def train_func(config):
+        import torch
+        from datasets import load_dataset
+        from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                                   TrainingArguments, Trainer,
+                                   DataCollatorForLanguageModeling)
+        from peft import LoraConfig, get_peft_model
+        import ray.train.huggingface.transformers as ray_hf
+
+        model_id = config["model"]
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id, torch_dtype=torch.bfloat16)
+        lora = LoraConfig(r=8, lora_alpha=16, lora_dropout=0.05,
+                          task_type="CAUSAL_LM",
+                          target_modules=["q_proj", "v_proj"])
+        model = get_peft_model(model, lora)
+
+        ds = load_dataset(config["dataset"], split="train[:2000]")
+        text_col = "quote" if "quote" in ds.column_names else ds.column_names[0]
+
+        def tok(batch):
+            out = tokenizer(batch[text_col], truncation=True,
+                            padding="max_length", max_length=128)
+            return out
+
+        ds = ds.map(tok, batched=True, remove_columns=ds.column_names)
+
+        args = TrainingArguments(
+            output_dir="/tmp/out",
+            per_device_train_batch_size=4,
+            num_train_epochs=config["epochs"],
+            learning_rate=2e-4,
+            bf16=True,
+            logging_steps=10,
+            report_to=[],
+            ddp_find_unused_parameters=False,
+        )
+        trainer = Trainer(
+            model=model, args=args, train_dataset=ds,
+            data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False),
+        )
+        # NOTE: RayTrainReportCallback persists checkpoints to RunConfig
+        # storage_path, which on multi-node Ray Train must be shared storage
+        # (S3/EFS). This lab focuses on cross-node NCCL/EFA all-reduce, not
+        # checkpoint persistence, so we skip the report callback and run
+        # distributed data-parallel training without persisting checkpoints.
+        # To persist checkpoints, add the callback back AND set
+        # RunConfig(storage_path="s3://<bucket>") with worker S3 access.
+        trainer = ray_hf.prepare_trainer(trainer)
+        trainer.train()
+
+
+    if __name__ == "__main__":
+        p = argparse.ArgumentParser()
+        p.add_argument("--model", default="Qwen/Qwen3-4B")
+        p.add_argument("--dataset", default="Abirate/english_quotes")
+        p.add_argument("--num-workers", type=int, default=16)
+        p.add_argument("--epochs", type=int, default=1)
+        a = p.parse_args()
+
+        ray.init(address="auto")
+        trainer = TorchTrainer(
+            train_func,
+            train_loop_config={"model": a.model, "dataset": a.dataset,
+                               "epochs": a.epochs},
+            scaling_config=ScalingConfig(
+                num_workers=a.num_workers,          # 16 GPU workers (2 nodes x 8)
+                use_gpu=True,
+                resources_per_worker={"GPU": 1},
+            ),
+            # No RayTrainReportCallback (above) means no checkpoints are
+            # persisted, so no shared storage is required across the 2 nodes.
+            # storage_path is a local dir used only for transient run metadata.
+            run_config=RunConfig(
+                storage_path="/tmp/ray_results",
+                name="lora-finetune",
+            ),
+        )
+        result = trainer.fit()
+        print("Final metrics:", result.metrics)
+---
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: llama-lora-finetune
+spec:
+  # Attach to the RayCluster deployed from ray-cluster-efa.yaml.
+  clusterSelector:
+    ray.io/cluster: ray-efa
+  # Fine-tune across all 16 H100 GPUs. Uses an UNGATED model (Qwen3-4B) by
+  # default so the lab runs with no Hugging Face token. To use a gated model
+  # (e.g. meta-llama/Llama-3.2-1B), create the hf-token secret AND propagate
+  # HF_TOKEN to the Ray workers via runtimeEnvYAML env_vars (see below).
+  entrypoint: >
+    python /home/ray/scripts/finetune.py
+    --model Qwen/Qwen3-4B
+    --dataset Abirate/english_quotes
+    --num-workers 16
+    --epochs 1
+  shutdownAfterJobFinishes: false
+  # The base rayproject/ray image (ray-ml is deprecated) doesn't bundle the ML
+  # stack, so install training deps into the job's runtime environment.
+  runtimeEnvYAML: |
+    pip:
+      - "torch==2.5.1"
+      - "transformers==4.51.0"
+      - "accelerate==1.1.1"
+      - "peft==0.13.2"
+      - "datasets==3.0.1"
+    # For a GATED model, uncomment and set the token so the training WORKERS
+    # (not just the submitter) can authenticate to Hugging Face.
+    # env_vars:
+    #   HF_TOKEN: "hf_xxxxxxxxxxxxxxxxxxxxx"
+  submitterPodTemplate:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: ray-job-submitter
+          image: 361185619080.dkr.ecr.us-east-2.amazonaws.com/ray-efa:2.58.0-efa-vllm
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: HF_TOKEN
+                  optional: true
+          volumeMounts:
+            - name: script
+              mountPath: /home/ray/scripts
+      volumes:
+        - name: script
+          configMap:
+            name: finetune-script
