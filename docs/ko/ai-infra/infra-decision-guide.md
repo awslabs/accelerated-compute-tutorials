@@ -290,6 +290,5 @@ Self-Managed(EKS/EC2) 선택 후, 다음은 **어떤 GPU/가속기를 쓸 것인
 ## 참고
 
 - [가속기 선택 가이드](../gpu-selection-guide/) — Self-Managed 결정 후 GPU/인스턴스 매칭
-- [FlexAI Opportunity Qualification Form](https://w.amazon.com/bin/view/GCR_INFRA_SSA/Cross_Sell_2/FlexAI/) — 가중치 점수제 상세 양식
 - [EKS Best Practices: AI/ML](https://docs.aws.amazon.com/eks/latest/best-practices/aiml.html) — EKS 위 AI 워크로드 베스트 프랙티스
 
