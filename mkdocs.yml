@@ -176,6 +176,7 @@ nav:
       - ai-infra/index.md
       - AI 인프라 설계:
           - ai-infra/decisions/index.md
+          - 인프라 의사결정 가이드: ai-infra/infra-decision-guide.md
           - 가속기 선택 가이드: ai-infra/gpu-selection-guide.md
           - 리전 선택 고려사항: ai-infra/self-hosted-llm-considerations.md
           - 용량: ai-infra/capacity-planning.md
