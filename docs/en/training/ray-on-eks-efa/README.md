@@ -27,7 +27,7 @@ Target region: **us-east-2**. GPUs: **2× p5.48xlarge** (8× NVIDIA H100 80 GB p
 ### Why EFA matters here
 
 - **Fine-tuning** does a gradient **all-reduce** every step across all 16 GPUs. When those GPUs span two nodes, the cross-node hop is on the network — EFA keeps it fast.
-- **Inference** with `tensor_parallel_size=16` shards one model across all 16 GPUs. Each token requires cross-node all-reduce; EFA is what makes cross-node tensor parallelism viable.
+- **Inference** uses `tensor_parallel_size=8` within each node (NVLink) and `pipeline_parallel_size=2` across the two nodes. The cross-node pipeline hop sends stage activations over EFA — a lighter, more efficient pattern than cross-node tensor-parallel all-reduce.
 - Without EFA, NCCL falls back to TCP and cross-node steps become a bottleneck.
 
 ### The EFA software stack (how the pieces fit)
@@ -129,7 +129,7 @@ and NCCL reports `NET/Socket` instead of `NET/OFI ... Selected provider is efa`.
 │vpc.amazonaws.com/efa : from the EFA device plugin (installed in Step 3)│
 │                                                                        │
 │   Fine-tune: RayJob → TorchTrainer, 16 workers × 1 GPU (data parallel) │
-│   Inference: RayService → Ray Serve LLM + vLLM, tensor_parallel_size=16│
+│   Inference: RayService → Ray Serve LLM + vLLM, TP=8 x PP=2 (16 GPU) │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -462,7 +462,7 @@ kubectl delete -f manifests/ray-cluster-efa.yaml
 
 ### Step 9 — Deploy the inference RayService
 
-The RayService manages its own RayCluster and serves `Qwen/Qwen3-32B` with `tensor_parallel_size=16` — the ~65GB model is sharded across all 16 H100 GPUs spanning both nodes, so vLLM's tensor-parallel all-reduce runs over EFA on every layer. (Qwen3-32B has 64 attention heads, so TP must evenly divide 64; 8 or 16 both work. Qwen3-32B does not comfortably fit on a single 80GB H100 with KV cache, so multi-GPU TP is genuinely warranted.)
+The RayService manages its own RayCluster and serves `Qwen/Qwen3-32B` across all 16 H100 GPUs with a 2D parallel layout: **`tensor_parallel_size=8`** (shard each layer across the 8 GPUs within a node, over NVLink) **+ `pipeline_parallel_size=2`** (split the 64 layers into 2 stages, one per node). Only the pipeline-stage activations cross the node boundary, and that cross-node hop runs over NCCL/EFA. This is the standard multi-node serving layout — it keeps the chatty per-layer all-reduce on NVLink and moves far less data over the network than cross-node TP would. (Qwen3-32B: 64 attention heads → TP divides 64; 64 layers → PP divides the layer count. Set `tensor_parallel_size: 8` with no PP to keep everything on a single node for comparison.)
 
 > **Image note.** The RayService head and workers both use the
 > `ray-efa:2.58.0-efa-vllm` image (Step 3.5), which bakes in Ray 2.58.0 + vLLM
@@ -512,7 +512,7 @@ kubectl logs -l ray.io/node-type=worker --tail=800 \
 # Expect: NET/OFI Selected provider is efa, fabric is efa-direct (found 8 nics)
 ```
 
-Because `tensor_parallel_size=16` exceeds the 8 GPUs on a single node, vLLM must communicate across nodes — confirming cross-node tensor parallelism over EFA. Set `tensor_parallel_size: 8` in the manifest to keep the model on one node (no cross-node traffic) for comparison.
+Because `pipeline_parallel_size=2` places the two pipeline stages on different nodes, vLLM must send stage activations across the node boundary — confirming cross-node communication over EFA. To keep everything on a single node (no cross-node traffic) for comparison, set `tensor_parallel_size: 8` and remove `pipeline_parallel_size`.
 
 #### Captured inference results from an actual run
 
@@ -525,8 +525,10 @@ llm application: RUNNING
   OpenAiIngress             : HEALTHY
 ```
 
-A live chat completion returned a real response, and the response
-`system_fingerprint` confirms vLLM 0.26.0 running tensor-parallel across 16 GPUs:
+A live chat completion returned a real response. The `system_fingerprint` below
+is from an earlier run that used `tensor_parallel_size=16` (hence `tp16`); the
+manifest now uses `TP=8 × PP=2` for the same 16 GPUs, which serves identically
+but is more network-efficient. It confirms vLLM 0.26.0 sharding across 16 GPUs:
 
 ```json
 {
@@ -612,7 +614,7 @@ ray-on-eks-efa/
     ├── auto-ebs-sc.yaml             # default gp3 StorageClass for Auto Mode
     ├── ray-cluster-efa.yaml         # RayCluster with EFA, hugepages, /dev/shm, NCCL-over-EFA env
     ├── finetune-rayjob.yaml         # distributed LoRA fine-tuning RayJob (Ray Train, 16 GPUs)
-    └── inference-rayservice.yaml    # Ray Serve LLM inference, tensor_parallel_size=16 over EFA
+    └── inference-rayservice.yaml    # Ray Serve LLM inference, TP=8 x PP=2 (16 GPU) over EFA
 ```
 
 ---

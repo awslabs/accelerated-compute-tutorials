@@ -3,21 +3,30 @@
 # Inference RayService — serves an LLM with Ray Serve + vLLM.
 #
 # Ray Serve LLM exposes an OpenAI-compatible endpoint on the Ray head's :8000.
-# The model is served with tensor parallelism across GPUs. With
-# tensor_parallel_size=16 the model is sharded across all 16 H100 GPUs spanning
-# BOTH p5.48xlarge nodes, so vLLM's cross-node tensor-parallel all-reduce
-# runs over NCCL/EFA (configured in ray-cluster-efa.yaml).
+# The model is served with a 2D parallel layout across the 16 H100 GPUs:
+#   tensor_parallel_size=8  -> shard each layer across the 8 GPUs WITHIN a node
+#                              (the per-layer all-reduce stays on fast NVLink)
+#   pipeline_parallel_size=2 -> split the model's layers into 2 stages, one per
+#                              node; only pipeline-stage ACTIVATIONS cross the
+#                              node boundary (point-to-point), which is the
+#                              traffic that runs over NCCL/EFA.
+# TP*PP = 8*2 = 16 GPUs = both p5.48xlarge nodes.
 #
-# An H100 has 80GB; Qwen3-32B in bf16 (~65GB) does NOT comfortably fit on one
-# GPU with KV cache, so tensor parallelism is genuinely warranted here. TP=16
-# shards it across BOTH nodes, so the per-layer, per-token tensor-parallel
-# all-reduce runs over NCCL/EFA. Reduce tensor_parallel_size to 8 to keep the
-# model on a single node (NVLink only, no cross-node traffic) for comparison.
-# (Qwen3-32B has 64 attention heads, so TP must divide 64: 8 or 16 both work.)
+# Why TP=8 + PP=2 instead of TP=16? Cross-node TP would run the chatty per-layer
+# all-reduce over the network on every layer. Keeping TP=8 intra-node (NVLink)
+# and using PP=2 for the cross-node hop moves far less data over EFA and gives
+# better throughput — the standard multi-node LLM serving layout. The cross-node
+# PP link still exercises EFA (see the NET/OFI logs), just more efficiently.
 #
-# NOTE: RayService manages its own RayCluster from the embedded rayClusterConfig.
-# Deploy EITHER this RayService OR the standalone ray-cluster-efa.yaml +
-# finetune-rayjob.yaml — not both at once (they would double-book the GPUs).
+# Qwen3-32B fits this layout: 64 attention heads (TP must divide 64 -> 8 ok) and
+# 64 transformer layers (PP must divide the layer count -> 2 ok, 32 layers/stage).
+# An H100 has 80GB; Qwen3-32B in bf16 (~65GB) does not comfortably fit on one GPU
+# with KV cache, so the multi-GPU layout is genuinely warranted.
+#
+# NOTE: multi-node (PP=2 across nodes) still uses vLLM's Ray distributed backend
+# — RayService manages the RayCluster. Deploy EITHER this RayService OR the
+# standalone ray-cluster-efa.yaml + finetune-rayjob.yaml — not both at once
+# (they would double-book the GPUs).
 
 apiVersion: ray.io/v1
 kind: RayService
@@ -40,8 +49,9 @@ spec:
                 model_id: Qwen/Qwen3-32B
                 model_source: Qwen/Qwen3-32B
               engine_kwargs:
-                tensor_parallel_size: 16       # shard across all 16 H100 GPUs (2 nodes)
-                max_model_len: 32768           # ~4GB weights/GPU at TP=16 leaves room for a large KV cache
+                tensor_parallel_size: 8        # intra-node shard (8 GPUs / node, over NVLink)
+                pipeline_parallel_size: 2      # cross-node pipeline stages (activations over EFA)
+                max_model_len: 32768
                 dtype: bfloat16
                 gpu_memory_utilization: 0.90
               deployment_config:
