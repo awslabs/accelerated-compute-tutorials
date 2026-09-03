@@ -18,6 +18,14 @@
   --md-typeset-a-color: #ffb347;
 }
 
+/* ===== 콘텐츠 영역 폭 확장 ===== */
+.md-grid {
+  max-width: 85rem;
+}
+.md-content {
+  max-width: 52rem;
+}
+
 /* ===== 테이블 가운데 정렬 ===== */
 .md-typeset__scrollwrap {
   margin-left: auto !important;
@@ -284,9 +292,45 @@
 }
 
 /* ===== 헤더 사이트 제목 크기 확대 ===== */
+.md-header {
+  padding-top: 0.6rem;
+  padding-bottom: 0rem;
+}
+.md-tabs {
+  margin-top: 2rem;
+  background-color: #3a1f2b !important;
+}
+.md-tabs__link {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+}
+
+
+.md-header__topic {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.3;
+}
 .md-header__topic .md-ellipsis {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
+  overflow: visible;
+  white-space: normal;
+}
+.md-header__topic .md-ellipsis .site-title-accent {
+  color: var(--md-accent-fg-color);
+  font-weight: 800;
+}
+.site-subtitle {
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.55;
+  letter-spacing: 0.03em;
+  margin-top: 0.25rem;
+  white-space: nowrap;
 }
 
 /* 헤더에 현재 페이지 제목 표시 안 함 (사이트 타이틀만) */

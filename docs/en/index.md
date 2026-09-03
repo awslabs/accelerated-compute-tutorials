@@ -1,11 +1,11 @@
 ---
-title: Accelerated Compute Tutorials
+title: AI Infra on AWS Guide
 description: Hands-on tutorials for running large-scale AI/ML workloads on AWS accelerated computing infrastructure
 hide:
   - navigation
 ---
 
-# Accelerated Compute Tutorials
+# AI Infra on AWS Guide
 
 **Hands-on tutorials for running large-scale AI/ML workloads on AWS accelerated computing infrastructure**
 

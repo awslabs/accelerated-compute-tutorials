@@ -1,4 +1,4 @@
-# Contributing to Accelerated Compute Tutorials
+# Contributing to AI Infra on AWS Guide
 
 기여해 주셔서 감사합니다! 🎉
 

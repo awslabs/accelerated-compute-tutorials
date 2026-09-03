@@ -1,8 +1,8 @@
 ---
-title: Accelerated Compute Tutorials
+title: AI Infra on AWS Guide
 ---
 
-# Accelerated Compute Tutorials
+# AI Infra on AWS Guide
 
 AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하기 위한 **실전 튜토리얼** 모음입니다.
 
@@ -12,23 +12,7 @@ AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하�
 
 <div class="grid cards" markdown>
 
--   :material-chip:{ .lg .middle } **AWS AI Chip (Trainium)**
-
-    ---
-
-    AWS의 자체 설계 AI 칩에서 추론·학습·커널 개발을 시작하세요. vLLM 서빙, PyTorch 분산 학습, NKI 커스텀 커널까지 모두 다룹니다.
-
-    [:octicons-arrow-right-24: 시작하기](aws-ai-chip/index.md)
-
--   :material-expansion-card:{ .lg .middle } **NVIDIA GPU on AWS**
-
-    ---
-
-    P5, G6e, G7e 등 NVIDIA GPU 인스턴스에서 vLLM·SGLang 추론, 워크로드별 인스턴스 선택, 비용 최적화 가이드를 제공합니다.
-
-    [:octicons-arrow-right-24: 시작하기](nvidia-gpu/index.md)
-
--   :material-server-network:{ .lg .middle } **AI Infra 공통**
+-   :material-server-network:{ .lg .middle } **AI Infra**
 
     ---
 
@@ -36,7 +20,39 @@ AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하�
 
     [:octicons-arrow-right-24: 시작하기](ai-infra/index.md)
 
--   :material-update:{ .lg .middle } **업데이트**
+-   :material-chip:{ .lg .middle } **AWS Trainium**
+
+    ---
+
+    AWS의 자체 설계 AI 칩에서 추론·학습·커널 개발을 시작하세요. vLLM 서빙, PyTorch 분산 학습, NKI 커스텀 커널까지 모두 다룹니다.
+
+    [:octicons-arrow-right-24: 시작하기](aws-ai-chip/index.md)
+
+-   :material-expansion-card:{ .lg .middle } **NVIDIA GPU**
+
+    ---
+
+    P5, G6e, G7e 등 NVIDIA GPU 인스턴스에서 vLLM·SGLang 추론, 워크로드별 인스턴스 선택, 비용 최적화 가이드를 제공합니다.
+
+    [:octicons-arrow-right-24: 시작하기](nvidia-gpu/index.md)
+
+-   :material-flask:{ .lg .middle } **AI Infra 레시피**
+
+    ---
+
+    EKS, ParallelCluster, Trainium, NVIDIA GPU 등 다양한 플랫폼에서 AI 워크로드를 구축하는 시나리오별 핸즈온 레시피.
+
+    [:octicons-arrow-right-24: 시작하기](recipes/index.md)
+
+-   :material-school:{ .lg .middle } **교육 및 행사**
+
+    ---
+
+    Neuron Foundations, Neuron Deep Dive 등 AWS 주도 교육 프로그램과 행사 일정을 확인하세요.
+
+    [:octicons-arrow-right-24: 확인하기](events/index.md)
+
+-   :material-newspaper:{ .lg .middle } **최신소식**
 
     ---
 

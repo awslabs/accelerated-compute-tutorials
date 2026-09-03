@@ -1,4 +1,4 @@
-# Accelerated Compute Tutorials
+# AI Infra on AWS Guide
 
 [![Deploy to GitHub Pages](https://github.com/awslabs/accelerated-compute-tutorials/actions/workflows/deploy.yml/badge.svg)](https://github.com/awslabs/accelerated-compute-tutorials/actions/workflows/deploy.yml)
 [![License: MIT-0](https://img.shields.io/badge/License-MIT--0-yellow.svg)](https://opensource.org/licenses/MIT-0)
@@ -11,7 +11,7 @@
 
 ## 📖 Overview
 
-**Accelerated Compute Tutorials**는 AWS의 가속 컴퓨팅 인프라(Trainium, GPU)를 활용하여 대규모 AI/ML 워크로드를 효율적으로 실행하기 위한 실전 중심 튜토리얼을 제공합니다.
+**AI Infra on AWS Guide** 는 AWS의 가속 컴퓨팅 인프라(Trainium, GPU)를 활용하여 대규모 AI/ML 워크로드를 효율적으로 실행하기 위한 실전 중심 튜토리얼을 제공합니다.
 
 ### 주요 카테고리
 

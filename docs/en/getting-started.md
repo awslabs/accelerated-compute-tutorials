@@ -5,7 +5,7 @@ description: Set up your development environment and prepare for your first tuto
 
 # Getting Started
 
-This guide walks you through setting up the basic environment needed to follow the Accelerated Compute Tutorials.
+This guide walks you through setting up the basic environment needed to follow the AI Infra on AWS Guide.
 
 ---
 

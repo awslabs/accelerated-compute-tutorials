@@ -13,6 +13,22 @@
     document.addEventListener("DOMContentLoaded", function() {
       var topic = document.querySelector(".md-header__topic .md-ellipsis");
       if (topic) {
+        /* 타이틀 스타일링: "AI Infra" 부분을 accent 컬러로 */
+        var text = topic.textContent.trim();
+        if (text.indexOf("AI Infra") === 0) {
+          topic.innerHTML =
+            '<span class="site-title-accent">AI Infra</span>' +
+            text.slice(8);
+        }
+        /* 서브타이틀 추가 — 한글/영문 분기 */
+        var isEn = window.location.pathname.indexOf("/en/") !== -1;
+        var sub = document.createElement("div");
+        sub.className = "site-subtitle";
+        sub.textContent = isEn
+          ? "Practical guides for AI infrastructure on AWS"
+          : "AWS AI 인프라 실전 가이드";
+        topic.after(sub);
+
         topic.style.cursor = "pointer";
         topic.addEventListener("click", function() {
           window.location.href = document.querySelector(".md-header__button.md-logo").href || "/";

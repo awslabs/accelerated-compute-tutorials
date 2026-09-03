@@ -5,7 +5,7 @@ description: 개발 환경 설정 및 첫 번째 튜토리얼 실행 준비
 
 # 시작하기
 
-이 가이드에서는 Accelerated Compute Tutorials를 따라하기 위한 기본 환경을 구성합니다.
+이 가이드에서는 AI Infra on AWS Guide 를 따라하기 위한 기본 환경을 구성합니다.
 
 ---
 

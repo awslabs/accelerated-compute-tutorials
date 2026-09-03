@@ -1,13 +1,16 @@
 ---
-title: AI 인프라 의사결정 가이드
-description: 워크로드 특성에 따라 Bedrock, SageMaker, EKS, EC2, ParallelCluster 중 어디서 AI를 운영할지 결정하는 기술 검토 프레임워크
+
+title: AI 인프라 의사결정 가이드 
+description: 워크로드 특성에 따라 Bedrock, SageMaker, EKS, EC2, ParallelCluster 중 어디서 AI를 운영할지 결정하는 기술 검토 프레임워크 
 tags:
-  - AI 인프라
-  - FlexAI
-  - 의사결정
-  - Bedrock
-  - SageMaker
-  - EKS
+
+- AI 인프라
+- FlexAI
+- 의사결정
+- Bedrock
+- SageMaker
+- EKS
+
 ---
 
 # AI 인프라 의사결정 가이드
@@ -26,7 +29,6 @@ Flexible AI(FlexAI)는 **AWS 위에서 셀프 매니지드 AI 플랫폼을 구�
 
 !!! info "단일 정답은 없다" 
     대부분의 프로덕션 환경은 **하이브리드** 입니다. Bedrock으로 시작하되 일부 워크로드만 Self-Managed로 가는 것이 가장 흔한 패턴입니다. 이 가이드는 **각 워크로드별로** 의사결정을 돕습니다.
-
 
 ## 1. 빠른 판단 — 3분 의사결정 플로우
 
@@ -52,7 +54,6 @@ Q4. API Throttle이 문제인가?
     └── No → Managed (Bedrock or SageMaker)
 
 ```
-
 
 ## 2. 상세 검토 — 워크로드 특성별 매핑
 
@@ -118,8 +119,6 @@ Q4. API Throttle이 문제인가?
 | 멀티모델 라우팅 | ❌ | ⭐ (LiteLLM/AI Gateway) | 가능 |
 | 비용 제어 | 토큰 종량 | ⭐ 세밀 | ⭐ 세밀 |
 
-
-
 ## 3. 핵심 의사결정 포인트 — 가중치 점수제
 
 !!! tip "점수가 높을수록 Self-Managed 방향" 
@@ -145,8 +144,6 @@ Q4. API Throttle이 문제인가?
 | **0~3점** | **Bedrock** (또는 SageMaker) — Managed로 충분 |
 | **4~6점** | **하이브리드** — Bedrock 기본 + 특정 워크로드만 Self-Managed |
 | **7점 이상** | **Self-Managed** (EKS 기반 FlexAI) 권장 |
-
-
 
 ## 4. Self-Managed 선택 시 — 추론은 EKS, 학습은 상황별
 
@@ -211,12 +208,10 @@ Self-Managed(EKS/EC2) 선택 후, 다음은 **어떤 GPU/가속기를 쓸 것인
 | 추론 (< 7B) | G6 (L4) / Inf2 | 저비용 |
 | 비용 최적화 학습 | Trn2 (Trainium) | P5 대비 30~50% 저렴 |
 
-
-
 ## 6. 하이브리드 아키텍처 — 가장 흔한 패턴
 
-!!! success "대부분의 프로덕션은 하이브리드" "전부 Bedrock" 
-    또는 "전부 EKS"는 드뭅니다. 워크로드별로 최적 인프라가 다르기 때문입니다.
+!!! success "대부분의 프로덕션은 하이브리드" 
+    "전부 Bedrock" 또는 "전부 EKS"는 드뭅니다. 워크로드별로 최적 인프라가 다르기 때문입니다.
 
 ### 패턴 A: Bedrock 기본 + 특정 모델만 Self-Managed
 
@@ -254,8 +249,6 @@ Self-Managed(EKS/EC2) 선택 후, 다음은 **어떤 GPU/가속기를 쓸 것인
 
 **적합** : 데이터 주권 규제, 기존 온프레미스 GPU 자산 활용
 
-
-
 ## 7. 의사결정 요약표
 
 | 워크로드 | 가장 쉬운 시작점 | 스케일 업 경로 |
@@ -267,8 +260,6 @@ Self-Managed(EKS/EC2) 선택 후, 다음은 **어떤 GPU/가속기를 쓸 것인
 | 에이전트/RAG | **Bedrock Agents** | → 커스텀 시 EKS + LangGraph |
 | 이미지/비전 추론 | **EKS + vLLM** | → 경량 모델은 CPU Pod 분리 |
 | 임베딩 | **Bedrock (Titan)** | → 대량 시 EKS + 자체 모델 |
-
-
 
 ## 8. 체크리스트
 

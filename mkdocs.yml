@@ -1,4 +1,4 @@
-site_name: Accelerated Compute Tutorials
+site_name: AI Infra on AWS Guide
 site_url: https://awslabs.github.io/accelerated-compute-tutorials/
 site_author: AWS
 site_description: >-
@@ -72,10 +72,11 @@ plugins:
           nav_translations:
             개요: Overview
             시작하기: Getting Started
-            AWS AI Chip: AWS AI Chip
-            NVIDIA GPU on AWS: NVIDIA GPU on AWS
-            AI Infra 공통: AI Infra Common
-            업데이트: Updates
+            AWS Trainium: AWS Trainium
+            NVIDIA GPU: NVIDIA GPU
+            AI Infra: AI Infra
+            최신소식: What's New
+            AI Infra 레시피: AI Infra Recipes
             추론: Inference
             학습: Training
             NKI Kernel: NKI Kernel
@@ -85,14 +86,14 @@ plugins:
             교육: Education
             GPU 선택 가이드: GPU Selection Guide
             가속기 선택 가이드: Accelerator Selection Guide
-            AI 인프라 설계: AI Infrastructure Design
+            AI 인프라 설계: AI Infra Design
             가속기 구매 옵션: Accelerator Purchase Options
             최적화 가이드: Optimization Guide
             벤치마크 & PoC 방법론: Benchmark & PoC Methodology
             PoC 사례: PoC Case Studies
-            이벤트 및 교육: Events & Education
-            이벤트: Events
-            지난 이벤트: Past Events
+            교육 및 행사: Training & Events
+            행사: Events
+            지난 행사: Past Events
             사전 준비: Preparation
             교육: Education Programs
             모니터링 & 스케일링: Monitoring & Scaling
@@ -149,30 +150,7 @@ nav:
   - 개요:
       - index.md
       - 시작하기: getting-started.md
-  - AWS AI Chip:
-      - aws-ai-chip/index.md
-      - 학습하기:
-          - aws-ai-chip/education/index.md
-          - 학습경로: aws-ai-chip/education/learning-path.md
-          - NDD Day 1 Hands-on Lab: aws-ai-chip/education/ndd-day1-hands-on-lab.md
-          - NDD Day 2 Hands-on Lab: aws-ai-chip/education/ndd-day2-hands-on-lab.md
-      - 추론:
-          - aws-ai-chip/inference/index.md
-          - vLLM on Neuron:
-              - aws-ai-chip/inference/vllm/index.md
-              - 모델 온보딩: aws-ai-chip/inference/vllm/model-onboarding.md
-          - vLLM + NxDI (Classic):
-              - aws-ai-chip/inference/vllm-nxdi-classic/index.md
-              - Llama 3.1 70B: aws-ai-chip/inference/vllm-nxdi-classic/llama3.1-70b.md
-              - Qwen2.5 72B: aws-ai-chip/inference/vllm-nxdi-classic/qwen2.5-72b.md
-              - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
-              - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
-              - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
-      - 고객 사례: aws-ai-chip/case-studies/index.md
-  - NVIDIA GPU on AWS:
-      - nvidia-gpu/index.md
-      - NVIDIA GPU 인스턴스: nvidia-gpu/instance-guide.md
-  - AI Infra 공통:
+  - AI Infra:
       - ai-infra/index.md
       - AI 인프라 설계:
           - ai-infra/decisions/index.md
@@ -200,7 +178,32 @@ nav:
       - 구매 옵션:
           - ai-infra/purchase-options/index.md
           - Capacity Blocks: ai-infra/capacity-blocks-guide.md
-  - 이벤트 및 교육:
+  - AWS Trainium:
+      - aws-ai-chip/index.md
+      - 학습하기:
+          - aws-ai-chip/education/index.md
+          - 학습경로: aws-ai-chip/education/learning-path.md
+          - NDD Day 1 Hands-on Lab: aws-ai-chip/education/ndd-day1-hands-on-lab.md
+          - NDD Day 2 Hands-on Lab: aws-ai-chip/education/ndd-day2-hands-on-lab.md
+      - 추론:
+          - aws-ai-chip/inference/index.md
+          - vLLM on Neuron:
+              - aws-ai-chip/inference/vllm/index.md
+              - 모델 온보딩: aws-ai-chip/inference/vllm/model-onboarding.md
+          - vLLM + NxDI (Classic):
+              - aws-ai-chip/inference/vllm-nxdi-classic/index.md
+              - Llama 3.1 70B: aws-ai-chip/inference/vllm-nxdi-classic/llama3.1-70b.md
+              - Qwen2.5 72B: aws-ai-chip/inference/vllm-nxdi-classic/qwen2.5-72b.md
+              - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
+              - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
+              - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
+      - 고객 사례: aws-ai-chip/case-studies/index.md
+  - NVIDIA GPU:
+      - nvidia-gpu/index.md
+      - NVIDIA GPU 인스턴스: nvidia-gpu/instance-guide.md
+  - AI Infra 레시피:
+      - recipes/index.md
+  - 교육 및 행사:
       - events/index.md
       - 교육:
           - events/education/index.md
@@ -208,9 +211,9 @@ nav:
           - Neuron Deep Dive (NDD):
               - events/education/neuron-deep-dive/index.md
               - 사전 준비: events/education/neuron-deep-dive/preparation.md
-      - 이벤트: events/upcoming/index.md
-      - 지난 이벤트: events/past/index.md
-  - 업데이트:
+      - 행사: events/upcoming/index.md
+      - 지난 행사: events/past/index.md
+  - 최신소식:
       - updates/index.md
 
 # Extra
