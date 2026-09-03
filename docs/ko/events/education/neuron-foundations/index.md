@@ -1,4 +1,4 @@
-# Neuron Foundations (NFD)
+# Neuron Foundations Digest (NFD)
 
 !!! note 
     "수강 안내" 본 교육은 내부 검토 과정을 거쳐 진행 여부가 결정됩니다. 관심 있는 고객분들은 담당 AM(Account Manager) 또는 SA(Solutions Architect)에게 문의 부탁드립니다.
