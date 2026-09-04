@@ -30,6 +30,5 @@ title: AI 인프라 설계
 
     리전별 가속기 용량 확인 및 수요 기반 인프라 규모 산정.
 
-    [:octicons-arrow-right-24: 용량 계획](../capacity-planning.md)
 
 </div>

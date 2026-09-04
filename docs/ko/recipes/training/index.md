@@ -15,6 +15,6 @@ AWS 가속 컴퓨팅에서 분산 모델 학습을 위한 시나리오별 핸즈
 
     p5.48xlarge + Ray + EFA + EKS Auto Mode로 LLM 파인튜닝 및 서빙
 
-    [:octicons-arrow-right-24: 가이드 보기](ray-on-eks-efa/README.md)
+    [:octicons-arrow-right-24: 가이드 보기](ray-on-eks-efa/index.md)
 
 </div>

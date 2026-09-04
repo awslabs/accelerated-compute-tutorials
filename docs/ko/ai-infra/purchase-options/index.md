@@ -170,7 +170,6 @@ AWS는 다양한 워크로드에 맞춘 여러 구매 모델을 제공합니다.
 
 - [Capacity Blocks 실전 가이드](../capacity-blocks-guide.md) | 콘솔에서 오퍼링 조회·예약·인스턴스 실행까지 단계별 절차 |
 - [가속기 선택 가이드](../gpu-selection-guide.md) | 워크로드 분석부터 가속기 선택까지 기술 검토 프레임워크 |
-- [용량 계획](../capacity-planning.md) | 리전별 가속기 용량 확인 및 수요 기반 규모 산정 |
 
 ---
 
