@@ -81,5 +81,5 @@ graph LR
 
 Set up your environment with the Getting Started guide:
 
-[Getting Started :material-arrow-right:](getting-started.md){ .md-button .md-button--primary }
+[Explore Tutorials :material-arrow-right:](inference/index.md){ .md-button .md-button--primary }
 [GitHub :material-github:](https://github.com/awslabs/accelerated-compute-tutorials){ .md-button }

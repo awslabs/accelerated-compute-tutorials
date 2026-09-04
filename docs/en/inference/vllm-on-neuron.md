@@ -31,7 +31,7 @@ It integrates with the AWS Neuron SDK to run natively on Trainium.
 ## Prerequisites
 
 - AWS account with access to `trn1.32xlarge` or larger instances
-- Tools installed from the [Getting Started](../getting-started.md) guide
+- An AWS account with access to Trainium instances
 - Docker installed
 
 ---
