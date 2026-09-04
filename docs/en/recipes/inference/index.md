@@ -41,7 +41,6 @@ Hands-on tutorials for serving large language models (LLMs) with high performanc
 
     Install the NVIDIA GPU Operator on an air-gapped private EKS cluster by mirroring images to ECR
 
-    [:octicons-arrow-right-24: View Guide](private-eks-gpu-operator/index.md)
 
 </div>
 

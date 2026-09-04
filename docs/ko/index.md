@@ -78,7 +78,6 @@ AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하�
 
     vLLM, TGI 등으로 대규모 언어 모델을 서빙하고 싶다면
 
-    [:octicons-arrow-right-24: Neuron에서 vLLM](aws-ai-chip/inference/vllm/index.md) · [:octicons-arrow-right-24: GPU에서 vLLM](nvidia-gpu/inference/vllm-on-gpu.md)
 
 -   :material-school:{ .lg .middle } **분산 학습**
 
@@ -86,7 +85,6 @@ AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하�
 
     PyTorch Native, NxDT로 대규모 모델을 학습하고 싶다면
 
-    [:octicons-arrow-right-24: 학습 가이드](aws-ai-chip/training/index.md)
 
 -   :material-code-braces:{ .lg .middle } **NKI 커널 개발**
 
@@ -94,7 +92,6 @@ AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하�
 
     NeuronCore를 직접 프로그래밍하여 최적화 커널을 작성하고 싶다면
 
-    [:octicons-arrow-right-24: NKI 시작하기](aws-ai-chip/nki/index.md)
 
 -   :material-chart-line:{ .lg .middle } **성능 프로파일링**
 
@@ -102,7 +99,6 @@ AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하�
 
     Neuron Explorer로 병목을 분석하고 성능을 최적화하고 싶다면
 
-    [:octicons-arrow-right-24: 프로파일링](aws-ai-chip/profiling/index.md)
 
 </div>
 
