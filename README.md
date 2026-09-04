@@ -9,13 +9,13 @@
 
 ## Ownership & Contribution
 
-This site is owned by the **AWS AI Infra GTM Team**, managed by **Cheryl Abundo**.
+This site is owned by the **AWS AI Infra GTM Team** (Manager: **Cheryl Abundo**).
 
 | Role | Owner | Scope |
 | --- | --- | --- |
 | **Site Creator / Main Owner** | Suji Lee | Site architecture, layout, shared config (CSS, mkdocs.yml, overrides), nav structure |
 | **Content Co-reviewer** | Wayne | Content review and PR approval |
-| **Contributors** | Anyone | Contribute via Pull Request only — direct push to main is not allowed |
+| **Contributors** | AI Infra GTM Team members | Contribute via Pull Request only — direct push to main is not allowed |
 
 ### Branch Protection
 
