@@ -15,6 +15,6 @@ Hands-on guides for Amazon EKS infrastructure setup, GPU operator deployment, an
 
     Deploy NVIDIA GPU Operator to a private EKS cluster with no internet access
 
-    [:octicons-arrow-right-24: View Guide](private-eks-gpu-operator/README.md)
+    [:octicons-arrow-right-24: View Guide](private-eks-gpu-operator/index.md)
 
 </div>

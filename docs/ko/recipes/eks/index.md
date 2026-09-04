@@ -15,6 +15,6 @@ Amazon EKS 인프라 구성, GPU Operator 배포, 클러스터 설정 가이드�
 
     인터넷 접근이 없는 프라이빗 EKS 클러스터에 NVIDIA GPU Operator 배포
 
-    [:octicons-arrow-right-24: 가이드 보기](private-eks-gpu-operator/README.md)
+    [:octicons-arrow-right-24: 가이드 보기](private-eks-gpu-operator/index.md)
 
 </div>

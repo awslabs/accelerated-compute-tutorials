@@ -33,7 +33,7 @@ Hands-on tutorials for serving large language models (LLMs) with high performanc
 
     Deploy Qwen3-8B on EKS with disaggregated prefill/decode serving using NVIDIA Dynamo and vLLM, connecting phases across GPUs with NIXL over EFA
 
-    [:octicons-arrow-right-24: View Lab Guide](dynamo-disaggregated/README.md)
+    [:octicons-arrow-right-24: View Lab Guide](dynamo-disaggregated/index.md)
 
 -   :material-expansion-card:{ .lg .middle } **NVIDIA GPU Operator on Private EKS**
 
@@ -41,7 +41,7 @@ Hands-on tutorials for serving large language models (LLMs) with high performanc
 
     Install the NVIDIA GPU Operator on an air-gapped private EKS cluster by mirroring images to ECR
 
-    [:octicons-arrow-right-24: View Guide](private-eks-gpu-operator/README.md)
+    [:octicons-arrow-right-24: View Guide](private-eks-gpu-operator/index.md)
 
 </div>
 

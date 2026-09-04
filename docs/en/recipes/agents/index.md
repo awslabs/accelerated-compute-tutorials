@@ -17,7 +17,7 @@ Hands-on tutorials for running AI agents on Amazon EKS with strong workload isol
 
     Deploy OpenClaw AI agents on EKS Standard with Karpenter, the Sandbox CRD for lifecycle management, gVisor and Kata Containers for tiered isolation, Pod Identity for keyless Bedrock access, and network policies for egress control
 
-    [:octicons-arrow-right-24: View Lab Guide](openclaw-eks-lab-guide/README.md)
+    [:octicons-arrow-right-24: View Lab Guide](openclaw-eks-lab-guide/index.md)
 
 -   :material-chart-line:{ .lg .middle } **Crypto Trading Agent on EKS**
 
@@ -25,7 +25,7 @@ Hands-on tutorials for running AI agents on Amazon EKS with strong workload isol
 
     Build a production-grade crypto trading assistant with the Strands Agents SDK, running portfolio analysis and options pricing in air-gapped gVisor sandboxes, with agentgateway routing LLM and MCP tool calls and Cognito for per-user authorization
 
-    [:octicons-arrow-right-24: View Implementation Guide](crypto-trading-agent/README.md)
+    [:octicons-arrow-right-24: View Implementation Guide](crypto-trading-agent/index.md)
 
 </div>
 

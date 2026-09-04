@@ -317,7 +317,7 @@ Confirm in the EC2 console that no g6e instances remain running.
 
 ```
 dynamo-disaggregated/
-├── README.md                                   # this guide
+├── index.md                                   # this guide
 └── manifests/
     ├── auto-ebs-sc.yaml                        # StorageClass for NATS PVC
     ├── automode-np-gpu.yaml                    # EKS Auto Mode GPU NodePool (g6e, EFA)

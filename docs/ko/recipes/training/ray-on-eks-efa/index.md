@@ -604,7 +604,7 @@ Confirm in the EC2 console that no p5.48xlarge instances remain running, and can
 
 ```
 ray-on-eks-efa/
-├── README.md                        # this guide
+├── index.md                        # this guide
 ├── Dockerfile.efa                   # Single Ray 2.58.0 image: EFA + aws-ofi-nccl + vLLM 0.26.0
 │                                     #   -> tag: 2.58.0-efa-vllm (used by both training and inference)
 └── manifests/

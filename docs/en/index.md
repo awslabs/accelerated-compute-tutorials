@@ -23,7 +23,7 @@ Learn step-by-step how to optimize inference, training, and profiling workloads 
 
     Serve large language models with high performance on Neuron devices using vLLM, TGI, and more
 
-    [:octicons-arrow-right-24: Explore Inference](inference/index.md)
+    [:octicons-arrow-right-24: Explore Inference](recipes/inference/index.md)
 
 -   :material-school:{ .lg .middle } **Training Infrastructure**
 
@@ -31,7 +31,7 @@ Learn step-by-step how to optimize inference, training, and profiling workloads 
 
     Build distributed training pipelines with Trainium and PyTorch Native approaches
 
-    [:octicons-arrow-right-24: Explore Training](training/index.md)
+    [:octicons-arrow-right-24: Explore Training](recipes/training/index.md)
 
 -   :material-chart-line:{ .lg .middle } **Profiling & Optimization**
 
@@ -39,7 +39,7 @@ Learn step-by-step how to optimize inference, training, and profiling workloads 
 
     Analyze performance with Neuron Explorer and optimize compute with custom NKI kernels
 
-    [:octicons-arrow-right-24: Explore Profiling](profiling/index.md)
+    [:octicons-arrow-right-24: Explore Profiling](recipes/profiling/index.md)
 
 -   :material-robot:{ .lg .middle } **Agent Infrastructure**
 
@@ -47,7 +47,7 @@ Learn step-by-step how to optimize inference, training, and profiling workloads 
 
     Infrastructure for running AI agents efficiently on accelerated computing environments (Coming Soon)
 
-    [:octicons-arrow-right-24: Explore Agents](agents/index.md)
+    [:octicons-arrow-right-24: Explore Agents](recipes/agents/index.md)
 
 </div>
 
@@ -83,5 +83,5 @@ graph LR
 
 Set up your environment with the Getting Started guide:
 
-[Explore Tutorials :material-arrow-right:](inference/index.md){ .md-button .md-button--primary }
+[Explore Tutorials :material-arrow-right:](recipes/inference/index.md){ .md-button .md-button--primary }
 [GitHub :material-github:](https://github.com/awslabs/accelerated-compute-tutorials){ .md-button }

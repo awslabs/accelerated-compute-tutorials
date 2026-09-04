@@ -15,7 +15,7 @@ Amazon EKS에서 Agent Sandbox, gVisor, Kata Containers를 활용한 AI 에이�
 
     Karpenter + Agent Sandbox CRD + gVisor/Kata 격리 + Pod Identity 기반 OpenClaw 에이전트 배포
 
-    [:octicons-arrow-right-24: 가이드 보기](openclaw-eks-lab-guide/README.md)
+    [:octicons-arrow-right-24: 가이드 보기](openclaw-eks-lab-guide/index.md)
 
 -   :material-chart-line:{ .lg .middle } **Crypto Trading Agent**
 
@@ -23,6 +23,6 @@ Amazon EKS에서 Agent Sandbox, gVisor, Kata Containers를 활용한 AI 에이�
 
     Strands Agents SDK + gVisor 샌드박스 기반 프로덕션급 트레이딩 에이전트 구축
 
-    [:octicons-arrow-right-24: 가이드 보기](crypto-trading-agent/README.md)
+    [:octicons-arrow-right-24: 가이드 보기](crypto-trading-agent/index.md)
 
 </div>

@@ -15,6 +15,6 @@ description: LLM 추론 최적화 및 서빙 핸즈온 레시피
 
     NVIDIA Dynamo + vLLM으로 Qwen3-8B Prefill/Decode 분리 서빙을 EKS에서 배포
 
-    [:octicons-arrow-right-24: 가이드 보기](dynamo-disaggregated/README.md)
+    [:octicons-arrow-right-24: 가이드 보기](dynamo-disaggregated/index.md)
 
 </div>
