@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block announce %}
-  <a href="https://github.com/awslabs/accelerated-compute-tutorials">
+  <a href="https://github.com/awslabs/accelerated-compute-tutorials" id="announce-star">
     ⭐ 유용하셨다면 GitHub Star를 눌러주세요!
   </a>
 {% endblock %}
@@ -11,6 +11,12 @@
   <script>
     /* 사이트 타이틀 클릭 시 홈으로 이동 */
     document.addEventListener("DOMContentLoaded", function() {
+      /* announce 배너 한글/영문 분기 */
+      var star = document.getElementById("announce-star");
+      if (star && (window.location.pathname.indexOf("/en/") !== -1 || document.documentElement.lang === "en")) {
+        star.textContent = "⭐ If you find this useful, please give us a GitHub Star!";
+      }
+
       var topic = document.querySelector(".md-header__topic .md-ellipsis");
       if (topic) {
         /* 타이틀 스타일링: "AI Infra" 부분을 accent 컬러로 */
