@@ -1,8 +1,6 @@
 ---
 title: AI Infra on AWS Guide
 description: Hands-on tutorials for running large-scale AI/ML workloads on AWS accelerated computing infrastructure
-hide:
-  - navigation
 ---
 
 # AI Infra on AWS Guide
@@ -10,6 +8,10 @@ hide:
 **Hands-on tutorials for running large-scale AI/ML workloads on AWS accelerated computing infrastructure**
 
 Learn step-by-step how to optimize inference, training, and profiling workloads using AWS Trainium and GPU instances.
+
+!!! info "Language Notice"
+    Some pages are currently available in Korean only. If you'd like to see a page in English, please [open an issue](https://github.com/awslabs/accelerated-compute-tutorials/issues).
+
 
 ---
 

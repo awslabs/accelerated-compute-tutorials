@@ -6,6 +6,10 @@ title: AI Infra on AWS Guide
 
 AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하기 위한 **실전 튜토리얼** 모음입니다.
 
+!!! info "언어 안내"
+    일부 페이지는 영문으로만 제공됩니다. 한국어 번역이 필요하시면 [이슈를 생성](https://github.com/awslabs/accelerated-compute-tutorials/issues)해 주세요.
+
+
 ---
 
 ## 🚀 여기서 시작하세요

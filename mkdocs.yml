@@ -71,37 +71,65 @@ plugins:
           build: true
           nav_translations:
             개요: Overview
-            시작하기: Getting Started
             AWS Trainium: AWS Trainium
             NVIDIA GPU: NVIDIA GPU
             AI Infra: AI Infra
             최신소식: What's New
             AI Infra 레시피: AI Infra Recipes
             추론: Inference
-            학습: Training
-            NKI Kernel: NKI Kernel
-            프로파일링: Profiling
-            고급 설정: Advanced
-            영상 콘텐츠: Video Content
-            교육: Education
-            GPU 선택 가이드: GPU Selection Guide
+            AI Agents: AI Agents
+            Inference: Inference
+            Training: Training
+            Profiling: Profiling
+            EKS: EKS
+            OpenClaw on EKS: OpenClaw on EKS
+            Crypto Trading Agent: Crypto Trading Agent
+            Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
+            vLLM on Neuron: vLLM on Neuron
+            TGI on Neuron: TGI on Neuron
+            Ray + EFA on EKS: Ray + EFA on EKS
+            Distributed Training: Distributed Training
+            PyTorch Native: PyTorch Native
+            GPU Operator (Private EKS): GPU Operator (Private EKS)
+            Neuron Explorer: Neuron Explorer
+            NKI Kernels: NKI Kernels
             가속기 선택 가이드: Accelerator Selection Guide
             AI 인프라 설계: AI Infra Design
-            가속기 구매 옵션: Accelerator Purchase Options
+            AI 인프라 구축/환경구성: AI Infra Setup
+            AI 인프라 운영: AI Infra Operations
+            AI 인프라 Application: AI Infra Application
+            AI 인프라 Deep Dive: AI Infra Deep Dive
+            구매 옵션: Purchase Options
+            Capacity Blocks: Capacity Blocks
+            인프라 의사결정 가이드: Infra Decision Guide
+            리전 선택 고려사항: Region Selection Guide
+            네트워킹: Networking
+            스토리지: Storage
+            Docker/DLC: Docker/DLC
             최적화 가이드: Optimization Guide
             벤치마크 & PoC 방법론: Benchmark & PoC Methodology
-            PoC 사례: PoC Case Studies
             교육 및 행사: Training & Events
+            교육: Training Programs
             행사: Events
             지난 행사: Past Events
             사전 준비: Preparation
-            교육: Training
+            Neuron Foundations (NFD): Neuron Foundations (NFD)
+            Neuron Deep Dive (NDD): Neuron Deep Dive (NDD)
+            NDD Day 1 Hands-on Lab: NDD Day 1 Hands-on Lab
+            NDD Day 2 Hands-on Lab: NDD Day 2 Hands-on Lab
             모니터링 & 스케일링: Monitoring & Scaling
-            AI 인프라 운영: AI Infra Operations
             학습하기: Learning
             학습경로: Learning Path
             Capacity 모니터링: Capacity Monitoring
             NVIDIA GPU 인스턴스: NVIDIA GPU Instances
+            고객 사례: Case Studies
+            모델 온보딩: Model Onboarding
+            vLLM + NxDI (Classic): vLLM + NxDI (Classic)
+            Llama 3.1 70B: Llama 3.1 70B
+            Qwen2.5 72B: Qwen2.5 72B
+            Qwen3 32B: Qwen3 32B
+            Qwen3 8B: Qwen3 8B
+            Qwen3 Coder 480B: Qwen3 Coder 480B
   - tags
 
 # Extensions
@@ -156,7 +184,6 @@ nav:
           - 인프라 의사결정 가이드: ai-infra/infra-decision-guide.md
           - 가속기 선택 가이드: ai-infra/gpu-selection-guide.md
           - 리전 선택 고려사항: ai-infra/self-hosted-llm-considerations.md
-          - 용량: ai-infra/capacity-planning.md
       - AI 인프라 구축/환경구성:
           - ai-infra/environment/index.md
           - Docker/DLC: ai-infra/docker-dlc.md
@@ -202,6 +229,27 @@ nav:
       - NVIDIA GPU 인스턴스: nvidia-gpu/instance-guide.md
   - AI Infra 레시피:
       - recipes/index.md
+      - AI Agents:
+          - recipes/agents/index.md
+          - OpenClaw on EKS: recipes/agents/openclaw-eks-lab-guide/index.md
+          - Crypto Trading Agent: recipes/agents/crypto-trading-agent/index.md
+      - Inference:
+          - recipes/inference/index.md
+          - Disaggregated Inference (Dynamo): recipes/inference/dynamo-disaggregated/index.md
+          - vLLM on Neuron: recipes/inference/vllm-on-neuron.md
+          - TGI on Neuron: recipes/inference/tgi-on-neuron.md
+      - Training:
+          - recipes/training/index.md
+          - Ray + EFA on EKS: recipes/training/ray-on-eks-efa/index.md
+          - Distributed Training: recipes/training/distributed-training.md
+          - PyTorch Native: recipes/training/pytorch-native.md
+      - EKS:
+          - recipes/eks/index.md
+          - GPU Operator (Private EKS): recipes/eks/private-eks-gpu-operator/index.md
+      - Profiling:
+          - recipes/profiling/index.md
+          - Neuron Explorer: recipes/profiling/neuron-explorer.md
+          - NKI Kernels: recipes/profiling/nki-kernels.md
   - 교육 및 행사:
       - events/index.md
       - 교육:

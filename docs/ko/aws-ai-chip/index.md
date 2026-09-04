@@ -1,12 +1,12 @@
 ---
-title: AWS AI Chip
+title: AWS AI Chip Trainium
 ---
 
-# AWS AI Chip
+# AWS AI Chip Trainium
 
-AWS의 자체 설계 AI 칩인 **Trainium**에서 대규모 AI 워크로드를 실행하기 위한 실전 가이드입니다.
+AWS의 자체 설계 AI 칩인 **Trainium** 에서 대규모 AI 워크로드를 실행하기 위한 실전 가이드입니다.
 
----
+
 
 <div class="grid cards" markdown>
 
@@ -60,7 +60,7 @@ AWS의 자체 설계 AI 칩인 **Trainium**에서 대규모 AI 워크로드를 �
 
 </div>
 
----
+
 
 !!! tip "시작하기"
     AWS AI Chip을 처음 사용한다면 [:octicons-arrow-right-24: 시작하기](getting-started.md) 페이지를 먼저 확인하세요.
