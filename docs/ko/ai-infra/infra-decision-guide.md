@@ -1,8 +1,6 @@
 ---
 
-title: AI 인프라 의사결정 가이드 
-description: 워크로드 특성에 따라 Bedrock, SageMaker, EKS, EC2, ParallelCluster 중 어디서 AI를 운영할지 결정하는 기술 검토 프레임워크 
-tags:
+title: AI 인프라 의사결정 가이드 description: 워크로드 특성에 따라 Bedrock, SageMaker, EKS, EC2, ParallelCluster 중 어디서 AI를 운영할지 결정하는 기술 검토 프레임워크 tags:
 
 - AI 인프라
 - FlexAI
@@ -27,8 +25,7 @@ Flexible AI(FlexAI)는 **AWS 위에서 셀프 매니지드 AI 플랫폼을 구�
 
 이 가이드는 **모델이 이미 결정된 상태** 에서 시작합니다. "어떤 모델을 쓸까?"는 별도 검토 영역이며, 여기서는 **그 모델을 어디서, 어떻게 운영할 것인가** 에 집중합니다.
 
-!!! info "단일 정답은 없다" 
-    대부분의 프로덕션 환경은 **하이브리드** 입니다. Bedrock으로 시작하되 일부 워크로드만 Self-Managed로 가는 것이 가장 흔한 패턴입니다. 이 가이드는 **각 워크로드별로** 의사결정을 돕습니다.
+!!! info "단일 정답은 없다" 대부분의 프로덕션 환경은 **하이브리드** 입니다. Bedrock으로 시작하되 일부 워크로드만 Self-Managed로 가는 것이 가장 흔한 패턴입니다. 이 가이드는 **각 워크로드별로** 의사결정을 돕습니다.
 
 ## 1. 빠른 판단 — 3분 의사결정 플로우
 
@@ -74,8 +71,7 @@ Q4. API Throttle이 문제인가?
 
 ### 2-2. 학습 (Training) 워크로드
 
-!!!tip "학습은 대부분 EC2 또는 ParallelCluster로 시작" 
-    학습 워크로드에 EKS를 도입하는 것은 **"오케스트레이션이 필요한 시점"** 부터입니다. 단일 모델 실험이나 PoC에서는 EC2 단독이 가장 빠르고, 대규모 분산 학습에는 SLURM 기반 ParallelCluster가 성숙한 선택입니다. EKS는 **멀티 팀 GPU 공유, 학습-서빙 통합 파이프라인** 이 필요할 때 가치가 있습니다.
+!!!tip "학습은 대부분 EC2 또는 ParallelCluster로 시작" 학습 워크로드에 EKS를 도입하는 것은 **"오케스트레이션이 필요한 시점"** 부터입니다. 단일 모델 실험이나 PoC에서는 EC2 단독이 가장 빠르고, 대규모 분산 학습에는 SLURM 기반 ParallelCluster가 성숙한 선택입니다. EKS는 **멀티 팀 GPU 공유, 학습-서빙 통합 파이프라인** 이 필요할 때 가치가 있습니다.
 
 | 특성 | EC2 단독 | ParallelCluster (SLURM) | EKS + Kubeflow | SageMaker Training |
 | --- | --- | --- | --- | --- |
@@ -121,8 +117,7 @@ Q4. API Throttle이 문제인가?
 
 ## 3. 핵심 의사결정 포인트 — 가중치 점수제
 
-!!! tip "점수가 높을수록 Self-Managed 방향" 
-    7점 이상이면 Self-Managed를 강력 권장. 4~6점은 하이브리드 고려. 3점 이하면 Managed로 충분.
+!!! tip "점수가 높을수록 Self-Managed 방향" 7점 이상이면 Self-Managed를 강력 권장. 4~6점은 하이브리드 고려. 3점 이하면 Managed로 충분.
 
 | # | 조건 | 가중치 | 해당 여부 |
 | --- | --- | --- | --- |
@@ -136,8 +131,7 @@ Q4. API Throttle이 문제인가?
 | 8 | 기존 Kubernetes 인프라 보유 | +1 | ☐ |
 | 9 | 데이터 주권/보안 규제 (클라우드 API 호출 제한) | +1 | ☐ |
 
-!!! warning "+3 조건이 하나라도 해당되면" 
-    토큰이코노믹스 또는 API Throttle 조건에 해당하면 **Bedrock/SageMaker 서버리스로는 구조적으로 불가능** 합니다. Self-Managed가 필수입니다.
+!!! warning "+3 조건이 하나라도 해당되면" 토큰이코노믹스 또는 API Throttle 조건에 해당하면 **Bedrock/SageMaker 서버리스로는 구조적으로 불가능** 합니다. Self-Managed가 필수입니다.
 
 | 점수 구간 | 권장 |
 | --- | --- |
@@ -210,8 +204,7 @@ Self-Managed(EKS/EC2) 선택 후, 다음은 **어떤 GPU/가속기를 쓸 것인
 
 ## 6. 하이브리드 아키텍처 — 가장 흔한 패턴
 
-!!! success "대부분의 프로덕션은 하이브리드" 
-    "전부 Bedrock" 또는 "전부 EKS"는 드뭅니다. 워크로드별로 최적 인프라가 다르기 때문입니다.
+!!! success "대부분의 프로덕션은 하이브리드" "전부 Bedrock" 또는 "전부 EKS"는 드뭅니다. 워크로드별로 최적 인프라가 다르기 때문입니다.
 
 ### 패턴 A: Bedrock 기본 + 특정 모델만 Self-Managed
 
