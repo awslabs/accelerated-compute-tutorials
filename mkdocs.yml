@@ -95,7 +95,7 @@ plugins:
             행사: Events
             지난 행사: Past Events
             사전 준비: Preparation
-            교육: Education Programs
+            교육: Training
             모니터링 & 스케일링: Monitoring & Scaling
             AI 인프라 운영: AI Infra Operations
             학습하기: Learning
@@ -149,7 +149,6 @@ markdown_extensions:
 nav:
   - 개요:
       - index.md
-      - 시작하기: getting-started.md
   - AI Infra:
       - ai-infra/index.md
       - AI 인프라 설계:

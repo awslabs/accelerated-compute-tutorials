@@ -1,9 +1,9 @@
 # Neuron Deep Dive (NDD)
 
-!!! note 
-    "수강 안내" 본 교육은 내부 검토 과정을 거쳐 진행 여부가 결정됩니다. 관심 있는 고객분들은 담당 AM(Account Manager) 또는 SA(Solutions Architect)에게 문의 부탁드립니다.
+!!! note "수강 안내" 
+    본 교육은 내부 검토 과정을 거쳐 진행 여부가 결정됩니다. 관심 있는 고객분들은 담당 AM(Account Manager) 또는 SA(Solutions Architect)에게 문의 부탁드립니다.
 
-> **형태**: 3-Day 모듈형 (Day별 독립 수강 가능)<br>**시간**: 각 Day 4시간<br>**대상**: ML 엔지니어, 플랫폼 엔지니어, AI 인프라 담당자<br>**레벨**: 기초 → 심화 → 전문가<br>**사전 지식**: 머신러닝 및 가속기(GPU 등)에 대한 기본적인 이해
+> **형태** : 3-Day 모듈형 (Day별 독립 수강 가능)<br>**시간**: 각 Day 4시간<br>**대상**: ML 엔지니어, 플랫폼 엔지니어, AI 인프라 담당자<br>**레벨**: 기초 → 심화 → 전문가<br>**사전 지식**: 머신러닝 및 가속기(GPU 등)에 대한 기본적인 이해
 
 ## 🎯 코스 개요
 
@@ -56,5 +56,5 @@ Trainium 하드웨어를 이해하고, vLLM Neuron Plugin으로 LLM 추론 서�
 
 ## 🔗 연관 과정
 
-- [Neuron Foundations (NFD)](../neuron-foundations/index.md) — 이론 소개 (1~2시간)
+- [Neuron Foundations Digest (NFD)](../neuron-foundations/index.md) — 이론 소개 (1~2시간)
 

@@ -132,7 +132,7 @@ AWS 주도 교육 프로그램(NDD, NFD, Immersion Day) 및 행사 일정.
 
 | 2뎁스 | 들어갈 콘텐츠 | 한글 | 영문 |
 | --- | --- | --- | --- |
-| 교육 | Neuron Foundations (NFD), Neuron Deep Dive (NDD) | ✅ | fallback |
+| 교육 | Neuron Foundations Digest (NFD), Neuron Deep Dive (NDD) | ✅ | fallback |
 | 행사 | 예정 행사 일정 | ✅ | fallback |
 | 지난 행사 | 과거 행사 아카이브 | ✅ | fallback |
 

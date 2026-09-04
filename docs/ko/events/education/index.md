@@ -1,12 +1,10 @@
 # 교육
 
-AWS Accelerated Compute 교육 프로그램을 소개합니다.
-
----
+AWS AI Infra 교육 프로그램을 소개합니다.
 
 <div class="grid cards" markdown>
 
--   :material-school:{ .lg .middle } **Neuron Foundations (NFD)**
+-   :material-school:{ .lg .middle } **Neuron Foundations (NFD) Digest**
 
     ---
 
@@ -24,7 +22,5 @@ AWS Accelerated Compute 교육 프로그램을 소개합니다.
 
 </div>
 
----
-
 !!! info "교육 신청"
-    교육 참가를 원하시면 담당 어카운트팀(AM/SA)에게 문의해 주세요.
+    교육 참가를 원하시면 AWS 의 담당 어카운트팀(AM/SA)에게 문의해 주세요.

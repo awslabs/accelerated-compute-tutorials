@@ -432,7 +432,7 @@
 
 .md-footer__link {
   padding: 0.3rem 0;
-  font-size: 0.51rem;
+  font-size: 0.7rem;
 }
 
 .md-footer__inner {
@@ -440,11 +440,11 @@
 }
 
 .md-footer__title {
-  font-size: 0.6rem;
+  font-size: 0.8rem;
 }
 
 .md-footer__direction {
-  font-size: 0.47rem;
+  font-size: 0.62rem;
   opacity: 0.7;
 }
 
