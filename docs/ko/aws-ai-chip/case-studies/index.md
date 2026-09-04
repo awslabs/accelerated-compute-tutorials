@@ -82,7 +82,3 @@ AWS Trainium/Inferentia는 출시 이후 다양한 산업과 규모의 기업들
 </div>
 
 ---
-
-!!! tip "고객 사례 기여"
-    AWS AI Chips 기반 성공 사례를 공유하고 싶으신 분은 PR로 기여해 주세요.  
-    자세한 기여 방법은 [CONTRIBUTING.md](https://github.com/awslabs/accelerated-compute-tutorials/blob/main/CONTRIBUTING.md)를 참고하세요.

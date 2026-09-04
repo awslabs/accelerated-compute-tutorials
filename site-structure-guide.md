@@ -190,8 +190,57 @@ AWS 주도 교육 프로그램(NDD, NFD, Immersion Day) 및 행사 일정.
 - [ ] `mkdocs.yml`의 `nav_translations`에 영문 메뉴명 등록 (한글 메뉴 추가 시 필수)
 - [ ] 해당 언어 폴더(`ko/` 또는 `en/`)에 `.md` 파일 생성
 - [ ] 2뎁스 카테고리 신규 추가 시 → 양쪽 `index.md` 생성 + 팀 합의
-- [ ] 이미지는 `docs/images/`에 공통 저장
+- [ ] 이미지는 아래 **이미지 저장 규칙** 참고
 - [ ] PR로 제출 → 리뷰 후 merge
+
+### 이미지 저장 규칙
+
+일부 이미지에는 해당 언어의 텍스트가 포함되어 있으므로, 이미지는 언어별로 분리 저장합니다.
+
+```
+docs/
+├── ko/images/    ← 한국어 이미지 (한국어 텍스트 포함 이미지)
+├── en/images/    ← 영문 이미지 (영문 텍스트 포함 이미지)
+└── images/       ← 공통 이미지 (언어 무관한 다이어그램, 스크린샷 등)
+
+```
+
+각 `images/` 폴더 내부의 하위 폴더 구조는 자유롭게 구성하되, 어떤 콘텐츠에 속하는 이미지인지 구분하기 쉽게 정리해 주세요. (예: `ko/images/ndd/`, `en/images/recipes/dynamo/` 등)
+
+### 파일 네이밍 규칙
+
+MkDocs에서는 폴더의 랜딩 페이지를 `index.md`로 인식합니다. GitHub 스타일의 `README.md`를 사용하지 마세요.
+
+|  | 올바른 예 | 잘못된 예 |
+| --- | --- | --- |
+| 폴더 랜딩 페이지 | `recipes/agents/openclaw-eks-lab-guide/index.md` | `recipes/agents/openclaw-eks-lab-guide/README.md` |
+| URL 결과 | `.../openclaw-eks-lab-guide/` (깔끔) | `.../openclaw-eks-lab-guide/README/` (이상함) |
+
+**이유:**
+
+- `README.md`를 사용하면 URL에 `/README/`가 붙어 깔끔하지 않음
+- MkDocs의 `navigation.indexes` 기능이 `index.md`만 폴더와 자동 병합함
+- `README.md`는 nav에서 별도 페이지로 취급되어 메뉴 구조가 꼬일 수 있음
+
+### 페이지 유형별 파일 구성
+
+| 유형 | 파일명 | 설명 | 예시 |
+| --- | --- | --- | --- |
+| **상위 페이지** (폴더 랜딩) | `index.md` | 폴더를 대표하는 페이지. 보통 카드 그리드로 하위 페이지 안내 | `recipes/agents/index.md` |
+| **하위 페이지** (단독 콘텐츠) | `주제-이름.md` | 부속 파일 없는 단독 콘텐츠. 영문 소문자 + 하이픈(`-`) 조합 | `inference/vllm-on-neuron.md` |
+| **하위 페이지** (부속 파일 포함) | `폴더/index.md` | 매니페스트, 코드, Dockerfile 등 부속 파일이 있을 때 폴더로 구성 | `dynamo-disaggregated/index.md` + `manifests/` |
+
+```
+recipes/inference/
+├── index.md                          ← 상위 (Inference 랜딩)
+├── vllm-on-neuron.md                ← 하위 (단독 — 부속 파일 없음)
+├── tgi-on-neuron.md                 ← 하위 (단독)
+└── dynamo-disaggregated/            ← 하위 (부속 파일 있어서 폴더)
+    ├── index.md                      ← 콘텐츠 본문
+    ├── manifests/                    ← 부속 파일
+    └── dynamo-platform-1.4.0.tgz    ← 부속 파일
+
+```
 
 ---
 
