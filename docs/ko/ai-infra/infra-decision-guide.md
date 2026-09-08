@@ -1,14 +1,13 @@
 ---
-
-title: AI 인프라 의사결정 가이드 description: 워크로드 특성에 따라 Bedrock, SageMaker, EKS, EC2, ParallelCluster 중 어디서 AI를 운영할지 결정하는 기술 검토 프레임워크 tags:
-
-- AI 인프라
-- FlexAI
-- 의사결정
-- Bedrock
-- SageMaker
-- EKS
-
+title: AI 인프라 의사결정 가이드
+description: 워크로드 특성에 따라 Bedrock, SageMaker, EKS, EC2, ParallelCluster 중 어디서 AI를 운영할지 결정하는 기술 검토 프레임워크
+tags:
+  - AI 인프라
+  - FlexAI
+  - 의사결정
+  - Bedrock
+  - SageMaker
+  - EKS
 ---
 
 # AI 인프라 의사결정 가이드

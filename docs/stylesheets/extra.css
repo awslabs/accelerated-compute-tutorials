@@ -297,7 +297,7 @@
   padding-bottom: 0rem;
 }
 .md-tabs {
-  margin-top: 2rem;
+  margin-top: 0.7rem;
   background-color: #3a1f2b !important;
 }
 .md-tabs__link {
@@ -306,19 +306,67 @@
 }
 
 
+/* Material 은 헤더에 사이트 제목과 페이지 제목을 .md-header__topic 두 개로 겹쳐 놓고
+   스크롤에 따라 교차 페이드한다. 그래서 .md-header__title 이 height:2.4rem 로 고정이고
+   .md-header__topic 이 position:absolute 다.
+   우리는 아래에서 페이지 제목 토픽을 숨겨 교차 페이드를 쓰지 않으므로 겹칠 이유가 없다.
+   제목을 흐름 안으로 되돌려 제목+부제가 헤더 높이를 실제로 결정하게 한다.
+   이렇게 해두면 제목 크기를 바꿔도 헤더가 알아서 늘어나고, 탭 바를 침범하지 않는다. */
+.md-header__title {
+  height: auto;
+  line-height: inherit;
+}
+.md-header__title > .md-header__ellipsis {
+  height: auto;
+}
+
 .md-header__topic {
+  position: static;
   display: flex;
   flex-direction: column;
   justify-content: center;
   line-height: 1.3;
 }
+
+/* 교차 페이드를 쓰지 않으니, Material 이 --active 를 붙여도 사이트 제목은 계속 보여야
+   한다. 이 방어가 없으면 스크롤 시 제목 자리가 비어버린다. */
+.md-header__title--active .md-header__topic {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  z-index: auto;
+}
+
+/* 제목 크기는 폭에 따라 3단계. 제목은 줄바꿈하지 않으므로(아래 nowrap) 각 단계는
+   그 폭에서 가로로 들어가는 크기여야 한다.
+   실측: 제목 텍스트 폭 = font-size(px) x 11.18. 가용폭 = 뷰포트 - 약 179px
+   (햄버거/로고 자리 + 우측 컨트롤). Material 자체 브레이크포인트를 그대로 쓴다. */
 .md-header__topic .md-ellipsis {
-  font-size: 1.6rem;
+  /* 60em 미만: 390px 뷰포트에서 가용폭 약 211px → 0.9rem(18px)=약 201px 로 들어간다.
+     Material 기본 제목 크기와 같다. */
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   cursor: pointer;
   overflow: visible;
-  white-space: normal;
+  /* 사이트 제목은 줄바꿈하지 않는다. 줄바꿈을 허용하면 좁은 화면에서 2줄이 되어
+     부제가 탭 바 위로 밀려 내려간다. */
+  white-space: nowrap;
+}
+
+/* 60em~76.25em: 이 구간의 최소폭인 960px 이 가장 빡빡하다. 1.6rem 은 여유가 8px 뿐이라
+   폰트 대체나 소수점 차이로 넘칠 수 있어 1.4rem 을 쓴다(여유 약 52px). */
+@media screen and (min-width: 60em) {
+  .md-header__topic .md-ellipsis {
+    font-size: 1.4rem;
+  }
+}
+
+/* 76.25em 이상 = 탭과 GitHub 블록이 모두 보이는 본격 데스크톱. 여기서 1.3배. */
+@media screen and (min-width: 76.25em) {
+  .md-header__topic .md-ellipsis {
+    font-size: 2.08rem;
+  }
 }
 .md-header__topic .md-ellipsis .site-title-accent {
   color: var(--md-accent-fg-color);
@@ -348,6 +396,36 @@
 .md-header__topic {
   margin-left: 0;
   padding-left: 0.6rem;
+}
+
+/* ===== 헤더 우측 컨트롤(언어 전환 / 검색 / GitHub) 수직 위치 =====
+   제목을 흐름 안으로 되돌린 덕분에 flex 정렬로 밑단을 맞출 수 있다.
+   align-self:flex-end 가 세 요소의 박스 밑단을 부제 밑단에 정렬하고,
+   아래 변수는 박스와 아이콘 사이 여백 차이를 메우는 미세 조정용이다.
+   제목 크기를 바꿔도 이 값은 그대로 둬도 된다 — flex 가 따라간다.
+   .md-select / .md-search 는 Material 이 이미 position:relative 로 두므로
+   여기서 top 만 더해도 언어 드롭다운·검색 결과 위치는 영향받지 않는다. */
+:root {
+  --header-controls-offset: 0rem;
+}
+
+/* 검색창이 헤더에 인라인으로 붙는 폭부터 적용. 그보다 좁으면 헤더가
+   컴팩트 레이아웃(드로어 + 검색 오버레이)이라 내릴 이유가 없다. */
+@media screen and (min-width: 60em) {
+  .md-header__inner > .md-header__option,
+  .md-header__inner > .md-search,
+  .md-header__inner > .md-header__source {
+    align-self: flex-end;
+    position: relative;
+    top: var(--header-controls-offset);
+  }
+
+  /* Material 이 .md-search 에 세로 패딩을 넣어서, 박스 밑단을 정렬하면 정작 보이는
+     검색창은 그만큼 위로 뜬다. 패딩을 없애 박스가 검색창에 밀착하게 한다. */
+  .md-header__inner > .md-search {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 /* ===== 2. 좌측 nav Level 1 (AI INFRA 공통) 더 크게 + 강조 ===== */

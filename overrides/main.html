@@ -1,38 +1,116 @@
 {% extends "base.html" %}
 
+{#
+  Localization policy for this template:
+   - Branding copy (announce banner, site subtitle) is localized via Jinja on
+     `config.theme.language`, which mkdocs-static-i18n sets per locale build.
+     Build-time branching means no runtime swap and no flash of the wrong text.
+   - Chrome affordances (nav collapse, draft badge) stay English in every locale.
+   - Material's own strings (search, TOC, prev/next) are localized automatically,
+     so `<html lang>` stays correct per locale — do not override theme.language.
+#}
+
+{% block extrahead %}
+  {{ super() }}
+
+  {#- Tell crawlers which build to show when no language matches. Material emits the
+      per-locale hreflang pair but has no x-default option, so we add it and point it
+      at English — the same choice the routing script below makes for real visitors,
+      who unlike crawlers can run it.
+
+      `alternate[*].link` is the locale *root*, identical on every page, so it cannot
+      be used directly. Derive the page path by stripping the current locale's root
+      off `page.canonical_url`, then re-prefix with the English root. That yields the
+      same absolute URL from either locale, which is what a hreflang cluster requires. -#}
+  {%- set alts = config.extra.get("alternate", []) -%}
+  {%- set en_alt = alts | selectattr("lang", "equalto", "en") | first -%}
+  {%- set here = alts | selectattr("lang", "equalto", config.theme.language) | first -%}
+  {%- if en_alt and here and config.site_url and page.canonical_url -%}
+    {%- set prefix = (config.site_url.split("/")[:3] | join("/")) ~ here.link -%}
+    {%- if page.canonical_url.startswith(prefix) -%}
+      {%- set n = prefix | length -%}
+  <link rel="alternate" hreflang="x-default" href="{{ (config.site_url.split("/")[:3] | join("/")) ~ en_alt.link ~ page.canonical_url[n:] }}">
+    {%- endif -%}
+  {%- endif %}
+
+  <script>
+    /* Language entry routing.
+       Sends visitors to the build matching their browser language, once.
+       Runs in <head> so the wrong language never flashes on screen.
+       A manual pick via the language switcher is stored and always wins. */
+    (function () {
+      var KEY = "docs-preferred-lang";
+      var ALTERNATES = {{ config.extra.get("alternate", []) | tojson }};
+      var CURRENT = "{{ config.theme.language }}";
+
+      if (ALTERNATES.length < 2) return;
+
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch (e) { return; }
+      if (stored) return;  /* user already chose — never override */
+
+      var base = function (t) { return String(t || "").toLowerCase().split("-")[0]; };
+      var wanted = base((navigator.languages && navigator.languages[0]) || navigator.language);
+
+      var find = function (fn) {
+        for (var i = 0; i < ALTERNATES.length; i++) if (fn(ALTERNATES[i])) return ALTERNATES[i];
+        return null;
+      };
+
+      /* exact browser-language match, else fall back to English */
+      var target = find(function (a) { return base(a.lang) === wanted; })
+                || find(function (a) { return base(a.lang) === "en"; });
+      var here = find(function (a) { return a.lang === CURRENT; });
+
+      if (!target || !here || target.lang === here.lang) return;
+      if (location.pathname.indexOf(here.link) !== 0) return;
+
+      var rest = location.pathname.slice(here.link.length);
+      location.replace(target.link + rest + location.search + location.hash);
+    })();
+  </script>
+{% endblock %}
+
 {% block announce %}
   <a href="https://github.com/awslabs/accelerated-compute-tutorials" id="announce-star">
+    {%- if config.theme.language == "ko" %}
     ⭐ 유용하셨다면 GitHub Star를 눌러주세요!
+    {%- else %}
+    ⭐ If you find this useful, please give us a GitHub Star!
+    {%- endif %}
   </a>
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
   <script>
-    /* 사이트 타이틀 클릭 시 홈으로 이동 */
+    /* Remember a manual language pick so the routing above stops interfering. */
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".md-select__link[hreflang]").forEach(function (link) {
+        link.addEventListener("click", function () {
+          try {
+            localStorage.setItem("docs-preferred-lang", link.getAttribute("hreflang"));
+          } catch (e) { /* storage unavailable — routing simply stays automatic */ }
+        });
+      });
+    });
+  </script>
+  <script>
+    /* Site title styling + subtitle */
     document.addEventListener("DOMContentLoaded", function() {
-      /* announce 배너 한글/영문 분기 */
-      var star = document.getElementById("announce-star");
-      if (star && (window.location.pathname.indexOf("/en/") !== -1 || document.documentElement.lang === "en")) {
-        star.textContent = "⭐ If you find this useful, please give us a GitHub Star!";
-      }
-
       var topic = document.querySelector(".md-header__topic .md-ellipsis");
       if (topic) {
-        /* 타이틀 스타일링: "AI Infra" 부분을 accent 컬러로 */
+        /* accent the "AI Infra" part of the title */
         var text = topic.textContent.trim();
         if (text.indexOf("AI Infra") === 0) {
           topic.innerHTML =
             '<span class="site-title-accent">AI Infra</span>' +
             text.slice(8);
         }
-        /* 서브타이틀 추가 — 한글/영문 분기 */
-        var isEn = window.location.pathname.indexOf("/en/") !== -1;
         var sub = document.createElement("div");
         sub.className = "site-subtitle";
-        sub.textContent = isEn
-          ? "Practical guides for AI infrastructure on AWS"
-          : "AWS AI 인프라 실전 가이드";
+        sub.textContent = {{ ("AWS AI 인프라 실전 가이드" if config.theme.language == "ko"
+                              else "Practical guides for AI infrastructure on AWS") | tojson }};
         topic.after(sub);
 
         topic.style.cursor = "pointer";
@@ -43,7 +121,7 @@
     });
   </script>
   <script>
-    /* 이전/다음 footer를 본문 content 영역 안으로 이동 */
+    /* Move the prev/next footer inside the content area */
     document.addEventListener("DOMContentLoaded", function() {
       var footer = document.querySelector(".md-footer");
       var content = document.querySelector(".md-content__inner");
@@ -53,20 +131,18 @@
     });
   </script>
   <script>
-    /* 좌측 nav 토글 버튼 */
+    /* Left nav collapse toggle */
     document.addEventListener("DOMContentLoaded", function() {
       var sidebar = document.querySelector(".md-sidebar--primary");
       if (!sidebar) return;
 
-      /* sidebar 내부 최상단에 토글 버튼 삽입 */
       var btn = document.createElement("button");
       btn.className = "nav-toggle-btn";
-      btn.setAttribute("aria-label", "메뉴 토글");
-      btn.title = "메뉴 숨기기/보이기";
-      btn.innerHTML = "« 접기";
+      btn.setAttribute("aria-label", "Toggle navigation");
+      btn.title = "Show/hide navigation";
+      btn.innerHTML = "« Collapse";
       sidebar.insertBefore(btn, sidebar.firstChild);
 
-      /* 상태 로컬스토리지에서 복원 */
       var hidden = localStorage.getItem("nav-hidden") === "true";
       if (hidden) {
         document.body.classList.add("nav-hidden");
@@ -78,11 +154,11 @@
         localStorage.setItem("nav-hidden", isHidden);
       });
 
-      /* nav 숨김 상태에서 복원 버튼 (header 아래 작은 탭) */
+      /* restore tab shown while the nav is hidden */
       var restoreBtn = document.createElement("button");
       restoreBtn.className = "nav-restore-btn";
       restoreBtn.innerHTML = "»";
-      restoreBtn.title = "메뉴 열기";
+      restoreBtn.title = "Show navigation";
       document.body.appendChild(restoreBtn);
 
       restoreBtn.addEventListener("click", function() {
@@ -92,9 +168,8 @@
     });
   </script>
   <script>
-    /* 작성 중인(준비중) 페이지의 좌측 nav 항목에 배지 표시.
-       새 페이지가 준비중이면 아래 목록에 슬러그를 추가하고,
-       내용이 채워지면 목록에서 제거하면 된다. */
+    /* Badge pages that are still being written.
+       Add a slug here when a page is a stub; remove it once the page is filled in. */
     document.addEventListener("DOMContentLoaded", function() {
       var pending = [
         "self-hosted-llm-considerations",
@@ -107,7 +182,7 @@
       ];
 
       document.querySelectorAll(".md-nav--primary a.md-nav__link").forEach(function(link) {
-        /* href 마지막 경로 세그먼트로 판별 (trailing slash 제거) */
+        /* match on the last path segment (trailing slash removed) */
         var slug = link.getAttribute("href");
         if (!slug) return;
         slug = slug.replace(/\/$/, "").split("/").pop();
@@ -115,11 +190,11 @@
 
         if (link.querySelector(".nav-pending-badge")) return;
 
-        /* .md-ellipsis 바깥(링크 직속)에 붙여 말줄임 처리와 분리 */
+        /* attach outside .md-ellipsis so it is not truncated */
         var badge = document.createElement("span");
         badge.className = "nav-pending-badge";
-        badge.textContent = "준비중";
-        badge.title = "작성 중인 페이지입니다";
+        badge.textContent = "Draft";
+        badge.title = "This page is still being written";
         link.appendChild(badge);
         link.classList.add("nav-pending");
       });

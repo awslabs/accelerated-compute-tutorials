@@ -1,9 +1,7 @@
 site_name: AI Infra on AWS Guide
 site_url: https://awslabs.github.io/accelerated-compute-tutorials/
 site_author: AWS
-site_description: >-
-  AWS 가속 컴퓨팅 인프라에서 대규모 AI/ML 워크로드를 실행하기 위한
-  실전 튜토리얼 모음
+site_description: Practical tutorials for running large-scale AI/ML workloads on AWS accelerated computing
 
 # Repository
 repo_name: awslabs/accelerated-compute-tutorials
@@ -12,6 +10,15 @@ edit_uri: edit/main/docs/
 
 # Copyright
 copyright: Copyright &copy; 2024–2026 Amazon Web Services, Inc.
+
+# Files under docs/ that are source material, not pages. Excluding them keeps
+# them out of the build, the sitemap and search. Patterns are gitignore-style
+# and match at any depth, so they apply to every locale folder.
+exclude_docs: |
+  # internal notes and templates
+  _*.md
+  # lab container sources — only referenced from a Dockerfile COPY line
+  trading-agent/
 
 # Configuration
 theme:
@@ -39,14 +46,14 @@ theme:
       accent: deep orange
       toggle:
         icon: material/brightness-7
-        name: 다크 모드로 전환
+        name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: custom
       accent: deep orange
       toggle:
         icon: material/brightness-4
-        name: 라이트 모드로 전환
+        name: Switch to light mode
   font:
     text: Noto Sans KR
     code: JetBrains Mono
@@ -66,70 +73,39 @@ plugins:
           default: true
           name: 한국어
           build: true
+          nav_translations:
+            Overview: 개요
+            What's New: 최신소식
+            AI Infra Recipes: AI Infra 레시피
+            Inference: 추론
+            Accelerator Selection Guide: 가속기 선택 가이드
+            AI Infra Design: AI 인프라 설계
+            AI Infra Setup: AI 인프라 구축/환경구성
+            AI Infra Operations: AI 인프라 운영
+            AI Infra Application: AI 인프라 Application
+            AI Infra Deep Dive: AI 인프라 Deep Dive
+            Purchase Options: 구매 옵션
+            Infra Decision Guide: 인프라 의사결정 가이드
+            Region Selection Guide: 리전 선택 고려사항
+            Networking: 네트워킹
+            Storage: 스토리지
+            Optimization Guide: 최적화 가이드
+            Benchmark & PoC Methodology: 벤치마크 & PoC 방법론
+            Training & Events: 교육 및 행사
+            Training Programs: 교육
+            Events: 행사
+            Past Events: 지난 행사
+            Preparation: 사전 준비
+            Monitoring & Scaling: 모니터링 & 스케일링
+            Learning: 학습하기
+            Learning Path: 학습경로
+            Capacity Monitoring: Capacity 모니터링
+            NVIDIA GPU Instances: NVIDIA GPU 인스턴스
+            Case Studies: 고객 사례
+            Model Onboarding: 모델 온보딩
         - locale: en
           name: English
           build: true
-          nav_translations:
-            개요: Overview
-            AWS Trainium: AWS Trainium
-            NVIDIA GPU: NVIDIA GPU
-            AI Infra: AI Infra
-            최신소식: What's New
-            AI Infra 레시피: AI Infra Recipes
-            추론: Inference
-            AI Agents: AI Agents
-            Inference: Inference
-            Training: Training
-            Profiling: Profiling
-            EKS: EKS
-            OpenClaw on EKS: OpenClaw on EKS
-            Crypto Trading Agent: Crypto Trading Agent
-            Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
-            vLLM on Neuron: vLLM on Neuron
-            TGI on Neuron: TGI on Neuron
-            Ray + EFA on EKS: Ray + EFA on EKS
-            Distributed Training: Distributed Training
-            PyTorch Native: PyTorch Native
-            GPU Operator (Private EKS): GPU Operator (Private EKS)
-            Neuron Explorer: Neuron Explorer
-            NKI Kernels: NKI Kernels
-            가속기 선택 가이드: Accelerator Selection Guide
-            AI 인프라 설계: AI Infra Design
-            AI 인프라 구축/환경구성: AI Infra Setup
-            AI 인프라 운영: AI Infra Operations
-            AI 인프라 Application: AI Infra Application
-            AI 인프라 Deep Dive: AI Infra Deep Dive
-            구매 옵션: Purchase Options
-            Capacity Blocks: Capacity Blocks
-            인프라 의사결정 가이드: Infra Decision Guide
-            리전 선택 고려사항: Region Selection Guide
-            네트워킹: Networking
-            스토리지: Storage
-            Docker/DLC: Docker/DLC
-            최적화 가이드: Optimization Guide
-            벤치마크 & PoC 방법론: Benchmark & PoC Methodology
-            교육 및 행사: Training & Events
-            교육: Training Programs
-            행사: Events
-            지난 행사: Past Events
-            사전 준비: Preparation
-            Neuron Foundations (NFD): Neuron Foundations (NFD)
-            Neuron Deep Dive (NDD): Neuron Deep Dive (NDD)
-            NDD Day 1 Hands-on Lab: NDD Day 1 Hands-on Lab
-            NDD Day 2 Hands-on Lab: NDD Day 2 Hands-on Lab
-            모니터링 & 스케일링: Monitoring & Scaling
-            학습하기: Learning
-            학습경로: Learning Path
-            Capacity 모니터링: Capacity Monitoring
-            NVIDIA GPU 인스턴스: NVIDIA GPU Instances
-            고객 사례: Case Studies
-            모델 온보딩: Model Onboarding
-            vLLM + NxDI (Classic): vLLM + NxDI (Classic)
-            Llama 3.1 70B: Llama 3.1 70B
-            Qwen2.5 72B: Qwen2.5 72B
-            Qwen3 32B: Qwen3 32B
-            Qwen3 8B: Qwen3 8B
-            Qwen3 Coder 480B: Qwen3 Coder 480B
   - tags
 
 # Extensions
@@ -172,50 +148,52 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
-# Navigation — 콘텐츠 준비된 페이지만 노출
-# 새 페이지 추가 시 해당 섹션에 경로 추가
+# Navigation — single source of truth for BOTH locales.
+# Labels here are English; Korean labels live in languages[ko].nav_translations.
+# The structure is shared, so the two locales can never drift apart.
+# When adding a page: add it here, and add a Korean label if it needs translating.
 nav:
-  - 개요:
+  - Overview:
       - index.md
   - AI Infra:
       - ai-infra/index.md
-      - AI 인프라 설계:
+      - AI Infra Design:
           - ai-infra/decisions/index.md
-          - 인프라 의사결정 가이드: ai-infra/infra-decision-guide.md
-          - 가속기 선택 가이드: ai-infra/gpu-selection-guide.md
-          - 리전 선택 고려사항: ai-infra/self-hosted-llm-considerations.md
-      - AI 인프라 구축/환경구성:
+          - Infra Decision Guide: ai-infra/infra-decision-guide.md
+          - Accelerator Selection Guide: ai-infra/gpu-selection-guide.md
+          - Region Selection Guide: ai-infra/self-hosted-llm-considerations.md
+      - AI Infra Setup:
           - ai-infra/environment/index.md
           - Docker/DLC: ai-infra/docker-dlc.md
-          - 네트워킹: ai-infra/efa-networking.md
-          - 스토리지: ai-infra/storage.md
-      - AI 인프라 운영:
+          - Networking: ai-infra/efa-networking.md
+          - Storage: ai-infra/storage.md
+      - AI Infra Operations:
           - ai-infra/operations/index.md
-          - 모니터링 & 스케일링: ai-infra/operations/monitoring-scaling.md
-          - Capacity 모니터링: ai-infra/operations/cb-monitoring-system.md
-      - AI 인프라 Application:
+          - Monitoring & Scaling: ai-infra/operations/monitoring-scaling.md
+          - Capacity Monitoring: ai-infra/operations/cb-monitoring-system.md
+      - AI Infra Application:
           - ai-infra/application/index.md
-      - AI 인프라 Deep Dive:
+      - AI Infra Deep Dive:
           - ai-infra/deep-dive/index.md
-          - 스토리지: ai-infra/deep-dive/storage.md
-          - 네트워킹: ai-infra/deep-dive/networking.md
-          - 최적화 가이드: ai-infra/optimization-guide.md
-          - 벤치마크 & PoC 방법론: ai-infra/benchmark-poc.md
-      - 구매 옵션:
+          - Storage: ai-infra/deep-dive/storage.md
+          - Networking: ai-infra/deep-dive/networking.md
+          - Optimization Guide: ai-infra/optimization-guide.md
+          - Benchmark & PoC Methodology: ai-infra/benchmark-poc.md
+      - Purchase Options:
           - ai-infra/purchase-options/index.md
           - Capacity Blocks: ai-infra/capacity-blocks-guide.md
   - AWS Trainium:
       - aws-ai-chip/index.md
-      - 학습하기:
+      - Learning:
           - aws-ai-chip/education/index.md
-          - 학습경로: aws-ai-chip/education/learning-path.md
+          - Learning Path: aws-ai-chip/education/learning-path.md
           - NDD Day 1 Hands-on Lab: aws-ai-chip/education/ndd-day1-hands-on-lab.md
           - NDD Day 2 Hands-on Lab: aws-ai-chip/education/ndd-day2-hands-on-lab.md
-      - 추론:
+      - Inference:
           - aws-ai-chip/inference/index.md
           - vLLM on Neuron:
               - aws-ai-chip/inference/vllm/index.md
-              - 모델 온보딩: aws-ai-chip/inference/vllm/model-onboarding.md
+              - Model Onboarding: aws-ai-chip/inference/vllm/model-onboarding.md
           - vLLM + NxDI (Classic):
               - aws-ai-chip/inference/vllm-nxdi-classic/index.md
               - Llama 3.1 70B: aws-ai-chip/inference/vllm-nxdi-classic/llama3.1-70b.md
@@ -223,11 +201,11 @@ nav:
               - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
               - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
               - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
-      - 고객 사례: aws-ai-chip/case-studies/index.md
+      - Case Studies: aws-ai-chip/case-studies/index.md
   - NVIDIA GPU:
       - nvidia-gpu/index.md
-      - NVIDIA GPU 인스턴스: nvidia-gpu/instance-guide.md
-  - AI Infra 레시피:
+      - NVIDIA GPU Instances: nvidia-gpu/instance-guide.md
+  - AI Infra Recipes:
       - recipes/index.md
       - AI Agents:
           - recipes/agents/index.md
@@ -250,17 +228,17 @@ nav:
           - recipes/profiling/index.md
           - Neuron Explorer: recipes/profiling/neuron-explorer.md
           - NKI Kernels: recipes/profiling/nki-kernels.md
-  - 교육 및 행사:
+  - Training & Events:
       - events/index.md
-      - 교육:
+      - Training Programs:
           - events/education/index.md
           - Neuron Foundations (NFD): events/education/neuron-foundations/index.md
           - Neuron Deep Dive (NDD):
               - events/education/neuron-deep-dive/index.md
-              - 사전 준비: events/education/neuron-deep-dive/preparation.md
-      - 행사: events/upcoming/index.md
-      - 지난 행사: events/past/index.md
-  - 최신소식:
+              - Preparation: events/education/neuron-deep-dive/preparation.md
+      - Events: events/upcoming/index.md
+      - Past Events: events/past/index.md
+  - What's New:
       - updates/index.md
 
 # Extra
