@@ -76,6 +76,7 @@ plugins:
           nav_translations:
             Start Here: 시작하기
             What's New: 최신소식
+            P6-B300 Seoul Launch: P6-B300 서울 리전 출시
             Inference: 추론
             Accelerator Selection Guide: 가속기 선택 가이드
             AI Infra Design: AI 인프라 설계
@@ -236,6 +237,7 @@ nav:
       - Past Events: events/past/index.md
   - What's New:
       - updates/index.md
+      - P6-B300 Seoul Launch: updates/p6-b300-seoul-launch.md
 
 # Extra
 extra:

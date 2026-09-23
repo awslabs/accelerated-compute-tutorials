@@ -11,20 +11,19 @@ date: 2026-08-20
 
 # Amazon EC2 P6-B300 인스턴스 서울 리전 출시
 
- NVIDIA Blackwell Ultra (B300) GPU 8개를 탑재한 Amazon EC2 P6-B300 인스턴스가 서울 리전(ap-northeast-2)에 정식 출시되었습니다. P6-B300은 8개의 NVIDIA Blackwell Ultra (B300) GPU를 탑재한 차세대 GPU 인스턴스입니다. 이전 세대인 P5en(H200) 대비 GPU 메모리 1.9배(2.1TB), 메모리 대역폭 1.6배 (7.7TB/s), NVLink·EFA 대역폭 2배를 제공하고, FP4 정밀도를 새롭게 지원하여 AI 학습·추론 워크로드의 성능과 토큰 경제성을 크게 향상합니다.
- </br>AWS는 글로벌 주요 CSP 중 유일하게 B300 8-GPU 구성을 지원하며, 미국 리전 외에는 최초로 서울 리전에서 P6-B300을 제공합니다. 이제 한국 고객분들은 데이터 주권을 확보하면서도 최신 Blackwell GPU를 활용할 수 있습니다. 
+NVIDIA Blackwell Ultra (B300) GPU 8개를 탑재한 Amazon EC2 P6-B300 인스턴스가 서울 리전(ap-northeast-2)에 정식 출시되었습니다. 이전 세대인 P5en(H200) 대비 GPU 메모리 1.9배(2.1TB), 메모리 대역폭 1.6배(7.7TB/s), NVLink·EFA 대역폭 2배를 제공하고, FP4 정밀도를 새롭게 지원하여 AI 학습·추론 워크로드의 성능과 토큰 경제성을 크게 향상합니다.
+
+AWS는 글로벌 주요 CSP 중 유일하게 B300 8-GPU 구성을 지원하며, 미국 리전 외에는 최초로 서울 리전에서 P6-B300을 제공합니다. 이제 한국 고객분들은 데이터 주권을 확보하면서도 최신 Blackwell GPU를 활용할 수 있습니다.
 
 <figure markdown>
-  ![Amazon EC2 P6-B300 — 서울 리전 2026년 8월 20일 공식 출시. GPU 메모리 1.9×, 메모리 대역폭 1.6×, GPU 인터커넥트 2×, 노드간 네트워킹 2×, FP4 신규 정밀도](p6-b300-hero.png){ width="960" }
+![Amazon EC2 P6-B300 — 서울 리전 2026년 8월 20일 공식 출시. GPU 메모리 1.9×, 메모리 대역폭 1.6×, GPU 인터커넥트 2×, 노드간 네트워킹 2×, FP4 신규 정밀도](p6-b300-hero.png){ width="960" }
 </figure>
 
 ## 1. P6-B300 주요 특징
 
 <figure markdown>
-  ![P6-B300 주요 특징 4가지 — Blackwell Ultra 아키텍처, GPU 메모리 1.9배·대역폭 1.6배, 2세대 트랜스포머 엔진 + FP4, 인터커넥트 2배](p6-b300-features.png){ width="960" }
+![P6-B300 주요 특징 4가지 — Blackwell Ultra 아키텍처, GPU 메모리 1.9배·대역폭 1.6배, 2세대 트랜스포머 엔진 + FP4, 인터커넥트 2배](p6-b300-features.png){ width="960" }
 </figure>
-
----
 
 ## 2. 핵심 사양 — 이전 세대(P5en) 대비 향상
 
@@ -47,8 +46,6 @@ date: 2026-08-20
 | **Nitro System** | Nitro v5 | Nitro v6 | 최신 Nitro |
 
 </div>
-
----
 
 ## 3. 최적 사용 사례
 
@@ -74,8 +71,6 @@ date: 2026-08-20
 
 </div>
 
----
-
 ## 4. 학습(Training) 주요 강점
 
 P6-B300의 메모리·대역폭 향상으로 동일 모델에 필요한 GPU 수가 줄어, 샤딩 전략·분산 학습 오버헤드·디버깅 등 인프라 복잡도가 함께 감소합니다. FP8 네이티브 연산은 P5en 대비 처리량을 2~4배 높여 학습 완료 시간을 단축하고 time-to-market을 개선합니다.
@@ -92,17 +87,12 @@ P6-B300의 메모리·대역폭 향상으로 동일 모델에 필요한 GPU 수�
 - **FP8/FP4 양자화**: 하드웨어 네이티브 MXFP8이 BF16 동등 정확도를 유지하며 2배 처리량 제공. NVFP4는 4배 메모리 효율로 더 큰 마이크로 배치 → gradient accumulation 감소 → 처리량 증가
 - **데이터파이프라인 최적화(nvCOMP)**: CPU → GPU 전용 하드웨어 압축/해제 오프로드로 I/O 병목 20~30% 감소, 체크포인트 크기 20~30% 단축 → 실험 반복 가속, FSx 비용 절감
 
----
-
 ## 5. 추론(Inference) 주요 강점
 
 - **메모리 대역폭 1.6배** (4.8 → 7.7 TB/s): 디코드 성능은 메모리 대역폭에 비례 → 토큰당 생성 지연(TPOT) 감소로 실시간 응답성 향상
 - **메모리 용량 1.9배** (H200 141GB → B300 268GB/GPU): 모델당 필요 GPU 수 ~50% 절감, TP 차수 감소 → GPU 간 통신 오버헤드 제거. 더 큰 KV 캐시 확보 → 더 많은 동시 세션 또는 더 긴 컨텍스트
 - **NVFP4**: FP16 대비 ~4×, FP8 대비 ~1.8× 메모리 절약. 정확도는 FP8 동등 수준 유지, 대용량 prefill 구간 통신 시간 최대 50% 단축
 - **NVLink 5** (900 → 1,800 GB/s): MoE 추론 시 Expert Parallel(EP) all-to-all 통신 대역폭 2배 확보 → 대규모 MoE 추론 모델의 멀티 GPU 서빙 지연 감소. Dense 모델 TP AllReduce 병목 완화에도 기여
-
-
----
 
 ## 6. Why AWS
 
@@ -146,7 +136,5 @@ P6-B300의 메모리·대역폭 향상으로 동일 모델에 필요한 GPU 수�
     - 다양한 오픈소스 및 파트너 생태계
 
 </div>
-
----
 
 *솔루션 상담 및 도입 문의: smartbae@amazon.com, jaehyun@amazon.com, awsjlee@amazon.com*
