@@ -74,9 +74,8 @@ plugins:
           name: 한국어
           build: true
           nav_translations:
-            Overview: 개요
+            Start Here: 시작하기
             What's New: 최신소식
-            AI Infra Recipes: AI Infra 레시피
             Inference: 추론
             Accelerator Selection Guide: 가속기 선택 가이드
             AI Infra Design: AI 인프라 설계
@@ -103,6 +102,7 @@ plugins:
             NVIDIA GPU Instances: NVIDIA GPU 인스턴스
             Case Studies: 고객 사례
             Model Onboarding: 모델 온보딩
+            Profiling: 프로파일링
         - locale: en
           name: English
           build: true
@@ -153,7 +153,7 @@ markdown_extensions:
 # The structure is shared, so the two locales can never drift apart.
 # When adding a page: add it here, and add a Korean label if it needs translating.
 nav:
-  - Overview:
+  - Start Here:
       - index.md
   - AI Infra:
       - ai-infra/index.md
@@ -179,10 +179,13 @@ nav:
           - Networking: ai-infra/deep-dive/networking.md
           - Optimization Guide: ai-infra/optimization-guide.md
           - Benchmark & PoC Methodology: ai-infra/benchmark-poc.md
+      - NVIDIA GPU:
+          - nvidia-gpu/index.md
+          - NVIDIA GPU Instances: nvidia-gpu/instance-guide.md
       - Purchase Options:
           - ai-infra/purchase-options/index.md
           - Capacity Blocks: ai-infra/capacity-blocks-guide.md
-  - AWS Trainium:
+  - Trainium:
       - aws-ai-chip/index.md
       - Learning:
           - aws-ai-chip/education/index.md
@@ -201,33 +204,26 @@ nav:
               - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
               - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
               - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
+          - vLLM on Neuron (Standalone): aws-ai-chip/inference/vllm-on-neuron.md
+          - TGI on Neuron: aws-ai-chip/inference/tgi-on-neuron.md
       - Case Studies: aws-ai-chip/case-studies/index.md
-  - NVIDIA GPU:
-      - nvidia-gpu/index.md
-      - NVIDIA GPU Instances: nvidia-gpu/instance-guide.md
-  - AI Infra Recipes:
-      - recipes/index.md
-      - AI Agents:
-          - recipes/agents/index.md
-          - OpenClaw on EKS: recipes/agents/openclaw-eks-lab-guide/index.md
-          - Crypto Trading Agent: recipes/agents/crypto-trading-agent/index.md
-      - Inference:
-          - recipes/inference/index.md
-          - Disaggregated Inference (Dynamo): recipes/inference/dynamo-disaggregated/index.md
-          - vLLM on Neuron: recipes/inference/vllm-on-neuron.md
-          - TGI on Neuron: recipes/inference/tgi-on-neuron.md
-      - Training:
-          - recipes/training/index.md
-          - Ray + EFA on EKS: recipes/training/ray-on-eks-efa/index.md
-          - Distributed Training: recipes/training/distributed-training.md
-          - PyTorch Native: recipes/training/pytorch-native.md
-      - EKS:
-          - recipes/eks/index.md
-          - GPU Operator (Private EKS): recipes/eks/private-eks-gpu-operator/index.md
       - Profiling:
-          - recipes/profiling/index.md
-          - Neuron Explorer: recipes/profiling/neuron-explorer.md
-          - NKI Kernels: recipes/profiling/nki-kernels.md
+          - aws-ai-chip/profiling/index.md
+          - Neuron Explorer: aws-ai-chip/profiling/neuron-explorer.md
+          - NKI Kernels: aws-ai-chip/profiling/nki-kernels.md
+  - Frugal AI & Domain Intelligence:
+      - frugal-ai/index.md
+  - Hybrid & Sovereign AI:
+      - hybrid-sovereign-ai/index.md
+  - Self-Managed Agents:
+      - self-managed-agents/index.md
+      - OpenClaw on EKS: self-managed-agents/openclaw-eks-lab-guide/index.md
+      - Crypto Trading Agent: self-managed-agents/crypto-trading-agent/index.md
+      - Disaggregated Inference (Dynamo): self-managed-agents/dynamo-disaggregated/index.md
+      - Ray + EFA on EKS: self-managed-agents/ray-on-eks-efa/index.md
+      - Distributed Training: self-managed-agents/distributed-training.md
+      - PyTorch Native: self-managed-agents/pytorch-native.md
+      - GPU Operator (Private EKS): self-managed-agents/private-eks-gpu-operator/index.md
   - Training & Events:
       - events/index.md
       - Training Programs:
