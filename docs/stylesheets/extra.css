@@ -97,6 +97,17 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Card title emphasis — enlarge the card heading (first bold line) ~1.3x
+   so titles stand out from the description text. Targets the bold text in
+   the card's first paragraph only; does not affect card body copy. */
+.md-typeset .grid.cards > ul > li > p:first-child strong,
+.md-typeset .grid.cards > ul > li > p:first-child > strong {
+  font-size: 1.3em;
+  line-height: 1.35;
+  display: inline-block;
+  margin-bottom: 0.15em;
+}
+
 /* Hero section styling */
 .md-typeset h1 {
   font-weight: 700;
@@ -146,15 +157,27 @@
   border-color: #ec7211;
 }
 
+/* Secondary button (non-primary) — outline style so it is always visible,
+   not only on hover. Uses accent orange outline to pair with the primary button. */
+.md-typeset .md-button:not(.md-button--primary) {
+  border-color: var(--md-accent-fg-color);
+  color: var(--md-accent-fg-color);
+}
+
+.md-typeset .md-button:not(.md-button--primary):hover {
+  background-color: var(--md-accent-fg-color);
+  color: #232f3e;
+}
+
 /* ===== Navigation Hierarchy Enhancement ===== */
 
 /* Level 1 (탭 아래 섹션 타이틀) — 볼드 */
 .md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
 .md-nav--primary > .md-nav__list > .md-nav__item > label .md-nav__link {
   font-weight: 700;
-  font-size: 0.59rem;
+  font-size: 0.72rem;
   letter-spacing: 0.04em;
-  opacity: 0.88;
+  opacity: 1;
   margin-top: 0.35rem;
 }
 
@@ -545,22 +568,24 @@
 
 /* ===== Nav 토글 버튼 ===== */
 .nav-toggle-btn {
-  display: block;
-  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin: 0.2rem 0.8rem 0.4rem auto;
   border: none;
   background: transparent;
-  color: var(--md-default-fg-color--lighter);
-  font-size: 0.6rem;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.62rem;
+  font-weight: 500;
   cursor: pointer;
-  padding: 0.4rem 0.8rem;
-  text-align: right;
-  opacity: 0.6;
-  transition: opacity 0.2s;
+  padding: 0.2rem 0.3rem;
+  opacity: 0.85;
+  transition: color 0.2s, opacity 0.2s;
 }
 
 .nav-toggle-btn:hover {
-  opacity: 1;
   color: var(--md-accent-fg-color);
+  opacity: 1;
 }
 
 /* 복원 버튼 (sidebar 숨김 상태에서만 표시) */
@@ -572,18 +597,22 @@
   left: 0;
   z-index: 100;
   border: none;
-  border-radius: 0 4px 4px 0;
-  background: var(--md-primary-fg-color);
-  color: white;
-  font-size: 0.7rem;
+  border-radius: 0 0.4rem 0.4rem 0;
+  background: var(--md-accent-fg-color);
+  color: #232f3e;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
-  padding: 0.3rem 0.5rem;
-  opacity: 0.5;
-  transition: opacity 0.2s;
+  padding: 0.6rem 0.5rem;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: padding 0.2s, background-color 0.2s;
 }
 
 .nav-restore-btn:hover {
-  opacity: 1;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
 }
 
 /* 데스크톱 */

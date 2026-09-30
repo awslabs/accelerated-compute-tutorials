@@ -1,10 +1,17 @@
 ---
-title: Frugal AI & Domain Intelligence
+title: Frugal AI
 ---
 
-# Frugal AI & Domain Intelligence
+# Frugal AI
 
-Making the impossible possible under constrained supply — model compression, compute optimization, and smaller fine-tuned open-weight models. Domain Intelligence extends this into industry-specific models that outperform larger proprietary alternatives at a fraction of the cost.
+Making the impossible possible under constrained supply. Frugal AI is about getting more from the accelerators you can actually get — through model compression onto more available instances, compute optimization, and smaller fine-tuned open-weight models that meet your quality bar at a fraction of the cost.
 
-!!! info "Coming Soon"
-    Content is being prepared. Contributions welcome via PR.
+## What this section will cover
+
+- Model compression and quantization (FP8/FP4) to fit larger models on smaller or more available instances
+- Compute and serving optimization for open-weight models
+- Right-sizing accelerators to workload requirements
+- Cost-per-value framing: moving beyond cost-per-token
+
+!!! note "Work in progress"
+    We're building out this section with hands-on, field-validated guides. Contributions are welcome via [GitHub](https://github.com/awslabs/accelerated-compute-tutorials/issues).

@@ -104,6 +104,39 @@ plugins:
             Case Studies: 고객 사례
             Model Onboarding: 모델 온보딩
             Profiling: 프로파일링
+            # Kept in English on purpose (product, model, and solution-motion names).
+            # Listed explicitly so every nav entry has a Korean label on record.
+            AI Infra: AI Infra
+            AWS Trainium: AWS Trainium
+            NVIDIA GPU: NVIDIA GPU
+            Docker/DLC: Docker/DLC
+            Capacity Blocks: Capacity Blocks
+            NDD Day 1 Hands-on Lab: NDD Day 1 Hands-on Lab
+            NDD Day 2 Hands-on Lab: NDD Day 2 Hands-on Lab
+            vLLM on Neuron: vLLM on Neuron
+            vLLM + NxDI (Classic): vLLM + NxDI (Classic)
+            Llama 3.1 70B: Llama 3.1 70B
+            Qwen2.5 72B: Qwen2.5 72B
+            Qwen3 32B: Qwen3 32B
+            Qwen3 8B: Qwen3 8B
+            Qwen3 Coder 480B: Qwen3 Coder 480B
+            vLLM on Neuron (Standalone): vLLM on Neuron (Standalone)
+            TGI on Neuron: TGI on Neuron
+            Neuron Explorer: Neuron Explorer
+            NKI Kernels: NKI Kernels
+            Frugal AI: Frugal AI
+            Domain Intelligence: Domain Intelligence
+            Hybrid & Sovereign AI: Hybrid & Sovereign AI
+            Self-Managed Agents: Self-Managed Agents
+            OpenClaw on EKS: OpenClaw on EKS
+            Crypto Trading Agent: Crypto Trading Agent
+            Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
+            Ray + EFA on EKS: Ray + EFA on EKS
+            Distributed Training: Distributed Training
+            PyTorch Native: PyTorch Native
+            GPU Operator (Private EKS): GPU Operator (Private EKS)
+            Neuron Foundations (NFD): Neuron Foundations (NFD)
+            Neuron Deep Dive (NDD): Neuron Deep Dive (NDD)
         - locale: en
           name: English
           build: true
@@ -186,7 +219,7 @@ nav:
       - Purchase Options:
           - ai-infra/purchase-options/index.md
           - Capacity Blocks: ai-infra/capacity-blocks-guide.md
-  - Trainium:
+  - AWS Trainium:
       - aws-ai-chip/index.md
       - Learning:
           - aws-ai-chip/education/index.md
@@ -212,8 +245,10 @@ nav:
           - aws-ai-chip/profiling/index.md
           - Neuron Explorer: aws-ai-chip/profiling/neuron-explorer.md
           - NKI Kernels: aws-ai-chip/profiling/nki-kernels.md
-  - Frugal AI & Domain Intelligence:
+  - Frugal AI:
       - frugal-ai/index.md
+  - Domain Intelligence:
+      - domain-intelligence/index.md
   - Hybrid & Sovereign AI:
       - hybrid-sovereign-ai/index.md
   - Self-Managed Agents:

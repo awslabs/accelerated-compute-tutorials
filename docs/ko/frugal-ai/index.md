@@ -1,10 +1,17 @@
 ---
-title: Frugal AI & Domain Intelligence
+title: Frugal AI
 ---
 
-# Frugal AI & Domain Intelligence
+# Frugal AI
 
-제한된 공급 환경에서 불가능을 가능하게 — 모델 압축, 컴퓨트 최적화, 소형 파인튜닝 오픈웨이트 모델. Domain Intelligence는 이를 산업 특화 모델로 확장하여, 더 큰 독점 모델을 낮은 비용으로 능가하는 것을 목표로 합니다.
+제한된 공급 환경에서 불가능을 가능하게. Frugal AI는 실제로 확보할 수 있는 가속기에서 더 많은 것을 얻는 방법입니다 — 더 쉽게 확보할 수 있는 인스턴스로의 모델 압축, 컴퓨트 최적화, 그리고 원하는 품질 기준을 훨씬 낮은 비용으로 충족하는 소형 파인튜닝 오픈웨이트 모델을 통해서입니다.
 
-!!! info "준비중"
-    콘텐츠를 준비하고 있습니다. PR로 기여를 환영합니다.
+## 이 섹션에서 다룰 내용
+
+- 더 작거나 더 쉽게 확보할 수 있는 인스턴스에 더 큰 모델을 올리기 위한 모델 압축 및 양자화(FP8/FP4)
+- 오픈웨이트 모델을 위한 컴퓨트 및 서빙 최적화
+- 워크로드 요구사항에 맞춘 가속기 라이트사이징
+- 가치 대비 비용(cost-per-value) 관점: 토큰당 비용(cost-per-token)을 넘어서
+
+!!! note "작업 진행 중"
+    현장에서 검증한 핸즈온 가이드로 이 섹션을 채워가고 있습니다. 기여는 [GitHub](https://github.com/awslabs/accelerated-compute-tutorials/issues)에서 환영합니다.
