@@ -211,6 +211,7 @@ nav:
           - recipes/agents/index.md
           - OpenClaw on EKS: recipes/agents/openclaw-eks-lab-guide/index.md
           - Crypto Trading Agent: recipes/agents/crypto-trading-agent/index.md
+          - Agents on EKS with AgentCore Primitives: recipes/agents/eks-agentcore-primitives/index.md
       - Inference:
           - recipes/inference/index.md
           - Disaggregated Inference (Dynamo): recipes/inference/dynamo-disaggregated/index.md

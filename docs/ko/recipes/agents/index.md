@@ -25,4 +25,12 @@ Amazon EKS에서 Agent Sandbox, gVisor, Kata Containers를 활용한 AI 에이�
 
     [:octicons-arrow-right-24: 가이드 보기](crypto-trading-agent/index.md)
 
+-   :material-connection:{ .lg .middle } **Agents on EKS with AgentCore Primitives**
+
+    ---
+
+    Bedrock AgentCore 하니스(SDK 컨트랙트)로 감싼 Strands 에이전트를 EKS에서 호스팅하고 AgentCore Memory/Gateway/Identity/Observability 관리형 서비스 소비
+
+    [:octicons-arrow-right-24: 가이드 보기](eks-agentcore-primitives/index.md)
+
 </div>

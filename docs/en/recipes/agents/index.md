@@ -27,6 +27,14 @@ Hands-on tutorials for running AI agents on Amazon EKS with strong workload isol
 
     [:octicons-arrow-right-24: View Implementation Guide](crypto-trading-agent/index.md)
 
+-   :material-connection:{ .lg .middle } **Agents on EKS with AgentCore Primitives**
+
+    ---
+
+    Host a Strands agent on Amazon EKS using the Bedrock AgentCore container contract, and consume the AgentCore managed primitives — Memory, Gateway (a working Lambda tool), and Identity — over the SDK, with keyless access via EKS Pod Identity
+
+    [:octicons-arrow-right-24: View Guide](eks-agentcore-primitives/index.md)
+
 </div>
 
 ---
