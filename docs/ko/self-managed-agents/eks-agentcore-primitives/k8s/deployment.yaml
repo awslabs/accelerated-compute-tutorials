@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentcore-harness-agent
+  namespace: agents
+  labels:
+    app: agentcore-harness-agent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: agentcore-harness-agent
+  template:
+    metadata:
+      labels:
+        app: agentcore-harness-agent
+    spec:
+      serviceAccountName: agentcore-harness-agent-sa   # IAM via EKS Pod Identity association (Module 4)
+      nodeSelector:
+        kubernetes.io/arch: arm64                       # Graviton
+      containers:
+        - name: agent
+          # Replace ACCOUNT_ID (and region if different) with your ECR image URI
+          image: ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/agentcore-harness-agent:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: AWS_REGION
+              value: us-west-2
+            - name: MODEL_ID
+              value: us.anthropic.claude-sonnet-4-20250514-v1:0
+            - name: AGENTCORE_MEMORY_ID
+              value: ""      # set to your AgentCore Memory id
+            - name: AGENTCORE_GATEWAY_URL
+              value: ""      # set to your AgentCore Gateway MCP endpoint
+            - name: AGENTCORE_OAUTH_PROVIDER
+              value: ""      # AgentCore Identity credential provider name (outbound auth)
+            - name: AGENTCORE_OAUTH_SCOPES
+              value: ""      # space-delimited OAuth2 scopes for downstream calls
+            - name: AGENTCORE_BROWSER_ENABLED
+              value: "true"  # enable the AgentCore Browser tool
+            - name: AGENTCORE_BROWSER_ID
+              value: "aws.browser.v1"   # built-in browser; or your custom browser id
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"

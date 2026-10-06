@@ -24,6 +24,14 @@ Agentic and self-managed AI workloads on EKS/Graviton — custom agents, orchest
 
     [:octicons-arrow-right-24: View](crypto-trading-agent/index.md)
 
+-   :material-connection:{ .lg .middle } **Agents on EKS with AgentCore Primitives**
+
+    ---
+
+    Host a Strands agent on EKS using the Bedrock AgentCore container contract, consuming Memory, Gateway, and Identity primitives over the SDK with keyless Pod Identity access
+
+    [:octicons-arrow-right-24: View](eks-agentcore-primitives/index.md)
+
 -   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
 
     ---

@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    { "Sid": "Bedrock", "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+      "Resource": "*" },
+    { "Sid": "Memory", "Effect": "Allow",
+      "Action": ["bedrock-agentcore:CreateEvent",
+                 "bedrock-agentcore:RetrieveMemoryRecords",
+                 "bedrock-agentcore:ListMemoryRecords"],
+      "Resource": "*" }
+  ]
+}

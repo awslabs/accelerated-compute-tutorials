@@ -130,6 +130,7 @@ plugins:
             Self-Managed Agents: Self-Managed Agents
             OpenClaw on EKS: OpenClaw on EKS
             Crypto Trading Agent: Crypto Trading Agent
+            Agents on EKS with AgentCore Primitives: Agents on EKS with AgentCore Primitives
             Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
             Ray + EFA on EKS: Ray + EFA on EKS
             Distributed Training: Distributed Training
@@ -255,6 +256,7 @@ nav:
       - self-managed-agents/index.md
       - OpenClaw on EKS: self-managed-agents/openclaw-eks-lab-guide/index.md
       - Crypto Trading Agent: self-managed-agents/crypto-trading-agent/index.md
+      - Agents on EKS with AgentCore Primitives: self-managed-agents/eks-agentcore-primitives/index.md
       - Disaggregated Inference (Dynamo): self-managed-agents/dynamo-disaggregated/index.md
       - Ray + EFA on EKS: self-managed-agents/ray-on-eks-efa/index.md
       - Distributed Training: self-managed-agents/distributed-training.md

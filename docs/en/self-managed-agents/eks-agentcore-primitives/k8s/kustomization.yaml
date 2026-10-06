@@ -1,0 +1,16 @@
+# Apply everything with:  kubectl apply -k .
+#
+# NOTE: serviceaccount.yaml is commented out below because Module 4 creates the
+# ServiceAccount with `kubectl create serviceaccount` and binds IAM to it with an
+# EKS Pod Identity association (`aws eks create-pod-identity-association`).
+# If you instead manage the (plain, unannotated) ServiceAccount as YAML, uncomment
+# the line below — but the Pod Identity association is still a separate EKS API call.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  # - serviceaccount.yaml   # uncomment to manage the (unannotated) SA as YAML; Pod Identity association is separate
+  - deployment.yaml
+  - service.yaml
+  - hpa.yaml

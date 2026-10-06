@@ -24,6 +24,14 @@ EKS/Graviton 기반의 에이전트 및 셀프 매니지드 AI 워크로드 — 
 
     [:octicons-arrow-right-24: 보기](crypto-trading-agent/index.md)
 
+-   :material-connection:{ .lg .middle } **Agents on EKS with AgentCore Primitives**
+
+    ---
+
+    Bedrock AgentCore 컨테이너 계약 기반으로 EKS에서 Strands 에이전트를 호스팅하고, Memory·Gateway·Identity 프리미티브를 SDK로 소비 (Pod Identity 키리스 액세스)
+
+    [:octicons-arrow-right-24: 보기](eks-agentcore-primitives/index.md)
+
 -   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
 
     ---
