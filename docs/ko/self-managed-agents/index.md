@@ -32,6 +32,14 @@ EKS/Graviton 기반의 에이전트 및 셀프 매니지드 AI 워크로드 — 
 
     [:octicons-arrow-right-24: 보기](eks-agentcore-primitives/index.md)
 
+-   :material-shield-account-outline:{ .lg .middle } **Claude Managed Agents on EKS**
+
+    ---
+
+    Anthropic Managed Agents의 실행 계층을 EKS에서 셀프 호스팅 — dispatcher가 각 툴 호출을 사전 예열된 gVisor 격리 샌드박스 Pod에 바인딩하여 파일과 egress를 클러스터 안에 유지
+
+    [:octicons-arrow-right-24: 보기](claude-managed-agents-eks/index.md)
+
 -   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
 
     ---

@@ -1,0 +1,10 @@
+[project]
+name = "claude-agent-dispatcher"
+version = "0.1.0"
+description = "Dispatcher for Anthropic Managed Agents self-hosted sandboxes on EKS"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.40.0",
+    "kubernetes>=31.0.0",
+    "k8s-agent-sandbox>=0.1.0",
+]

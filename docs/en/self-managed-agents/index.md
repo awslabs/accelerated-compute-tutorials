@@ -32,6 +32,14 @@ Agentic and self-managed AI workloads on EKS/Graviton — custom agents, orchest
 
     [:octicons-arrow-right-24: View](eks-agentcore-primitives/index.md)
 
+-   :material-shield-account-outline:{ .lg .middle } **Claude Managed Agents on EKS**
+
+    ---
+
+    Self-host the execution layer of Anthropic Managed Agents on EKS — a dispatcher binds each tool call to a pre-warmed, gVisor-isolated sandbox pod, keeping files and egress in your cluster
+
+    [:octicons-arrow-right-24: View](claude-managed-agents-eks/index.md)
+
 -   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
 
     ---
