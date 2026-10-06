@@ -74,9 +74,9 @@ plugins:
           name: 한국어
           build: true
           nav_translations:
-            Overview: 개요
+            Start Here: 시작하기
             What's New: 최신소식
-            AI Infra Recipes: AI Infra 레시피
+            P6-B300 Seoul Launch: P6-B300 서울 리전 출시
             Inference: 추론
             Accelerator Selection Guide: 가속기 선택 가이드
             AI Infra Design: AI 인프라 설계
@@ -103,6 +103,41 @@ plugins:
             NVIDIA GPU Instances: NVIDIA GPU 인스턴스
             Case Studies: 고객 사례
             Model Onboarding: 모델 온보딩
+            Profiling: 프로파일링
+            # Kept in English on purpose (product, model, and solution-motion names).
+            # Listed explicitly so every nav entry has a Korean label on record.
+            AI Infra: AI Infra
+            AWS Trainium: AWS Trainium
+            NVIDIA GPU: NVIDIA GPU
+            Docker/DLC: Docker/DLC
+            Capacity Blocks: Capacity Blocks
+            NDD Day 1 Hands-on Lab: NDD Day 1 Hands-on Lab
+            NDD Day 2 Hands-on Lab: NDD Day 2 Hands-on Lab
+            vLLM on Neuron: vLLM on Neuron
+            vLLM + NxDI (Classic): vLLM + NxDI (Classic)
+            Llama 3.1 70B: Llama 3.1 70B
+            Qwen2.5 72B: Qwen2.5 72B
+            Qwen3 32B: Qwen3 32B
+            Qwen3 8B: Qwen3 8B
+            Qwen3 Coder 480B: Qwen3 Coder 480B
+            vLLM on Neuron (Standalone): vLLM on Neuron (Standalone)
+            TGI on Neuron: TGI on Neuron
+            Neuron Explorer: Neuron Explorer
+            NKI Kernels: NKI Kernels
+            Frugal AI: Frugal AI
+            Domain Intelligence: Domain Intelligence
+            Hybrid & Sovereign AI: Hybrid & Sovereign AI
+            Self-Managed Agents: Self-Managed Agents
+            OpenClaw on EKS: OpenClaw on EKS
+            Crypto Trading Agent: Crypto Trading Agent
+            Agents on EKS with AgentCore Primitives: Agents on EKS with AgentCore Primitives
+            Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
+            Ray + EFA on EKS: Ray + EFA on EKS
+            Distributed Training: Distributed Training
+            PyTorch Native: PyTorch Native
+            GPU Operator (Private EKS): GPU Operator (Private EKS)
+            Neuron Foundations (NFD): Neuron Foundations (NFD)
+            Neuron Deep Dive (NDD): Neuron Deep Dive (NDD)
         - locale: en
           name: English
           build: true
@@ -153,7 +188,7 @@ markdown_extensions:
 # The structure is shared, so the two locales can never drift apart.
 # When adding a page: add it here, and add a Korean label if it needs translating.
 nav:
-  - Overview:
+  - Start Here:
       - index.md
   - AI Infra:
       - ai-infra/index.md
@@ -179,6 +214,9 @@ nav:
           - Networking: ai-infra/deep-dive/networking.md
           - Optimization Guide: ai-infra/optimization-guide.md
           - Benchmark & PoC Methodology: ai-infra/benchmark-poc.md
+      - NVIDIA GPU:
+          - nvidia-gpu/index.md
+          - NVIDIA GPU Instances: nvidia-gpu/instance-guide.md
       - Purchase Options:
           - ai-infra/purchase-options/index.md
           - Capacity Blocks: ai-infra/capacity-blocks-guide.md
@@ -201,34 +239,29 @@ nav:
               - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
               - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
               - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
+          - vLLM on Neuron (Standalone): aws-ai-chip/inference/vllm-on-neuron.md
+          - TGI on Neuron: aws-ai-chip/inference/tgi-on-neuron.md
       - Case Studies: aws-ai-chip/case-studies/index.md
-  - NVIDIA GPU:
-      - nvidia-gpu/index.md
-      - NVIDIA GPU Instances: nvidia-gpu/instance-guide.md
-  - AI Infra Recipes:
-      - recipes/index.md
-      - AI Agents:
-          - recipes/agents/index.md
-          - OpenClaw on EKS: recipes/agents/openclaw-eks-lab-guide/index.md
-          - Crypto Trading Agent: recipes/agents/crypto-trading-agent/index.md
-          - Agents on EKS with AgentCore Primitives: recipes/agents/eks-agentcore-primitives/index.md
-      - Inference:
-          - recipes/inference/index.md
-          - Disaggregated Inference (Dynamo): recipes/inference/dynamo-disaggregated/index.md
-          - vLLM on Neuron: recipes/inference/vllm-on-neuron.md
-          - TGI on Neuron: recipes/inference/tgi-on-neuron.md
-      - Training:
-          - recipes/training/index.md
-          - Ray + EFA on EKS: recipes/training/ray-on-eks-efa/index.md
-          - Distributed Training: recipes/training/distributed-training.md
-          - PyTorch Native: recipes/training/pytorch-native.md
-      - EKS:
-          - recipes/eks/index.md
-          - GPU Operator (Private EKS): recipes/eks/private-eks-gpu-operator/index.md
       - Profiling:
-          - recipes/profiling/index.md
-          - Neuron Explorer: recipes/profiling/neuron-explorer.md
-          - NKI Kernels: recipes/profiling/nki-kernels.md
+          - aws-ai-chip/profiling/index.md
+          - Neuron Explorer: aws-ai-chip/profiling/neuron-explorer.md
+          - NKI Kernels: aws-ai-chip/profiling/nki-kernels.md
+  - Frugal AI:
+      - frugal-ai/index.md
+  - Domain Intelligence:
+      - domain-intelligence/index.md
+  - Hybrid & Sovereign AI:
+      - hybrid-sovereign-ai/index.md
+  - Self-Managed Agents:
+      - self-managed-agents/index.md
+      - OpenClaw on EKS: self-managed-agents/openclaw-eks-lab-guide/index.md
+      - Crypto Trading Agent: self-managed-agents/crypto-trading-agent/index.md
+      - Agents on EKS with AgentCore Primitives: self-managed-agents/eks-agentcore-primitives/index.md
+      - Disaggregated Inference (Dynamo): self-managed-agents/dynamo-disaggregated/index.md
+      - Ray + EFA on EKS: self-managed-agents/ray-on-eks-efa/index.md
+      - Distributed Training: self-managed-agents/distributed-training.md
+      - PyTorch Native: self-managed-agents/pytorch-native.md
+      - GPU Operator (Private EKS): self-managed-agents/private-eks-gpu-operator/index.md
   - Training & Events:
       - events/index.md
       - Training Programs:
@@ -241,6 +274,7 @@ nav:
       - Past Events: events/past/index.md
   - What's New:
       - updates/index.md
+      - P6-B300 Seoul Launch: updates/p6-b300-seoul-launch.md
 
 # Extra
 extra:
