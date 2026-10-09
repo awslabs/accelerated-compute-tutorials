@@ -97,19 +97,19 @@ Capacity Blocks을 지원하는 인스턴스 및 리전은 아래 표와 같습�
 
 콘솔의 **EC2 > Capacity Reservations > Purchase Capacity Blocks for ML** 메뉴로 진입합니다.
 
-![콘솔 메뉴 진입](1_CB_console_menu.png)
+![콘솔 메뉴 진입](../../images/ai-infra/capacity-blocks/1_CB_console_menu.png)
 
 ### Step 1: 인스턴스 및 기간 선택
 
 원하는 인스턴스 타입(`trn2.48xlarge`)과 기간, 시작 날짜를 선택합니다.
 
-![인스턴스 및 기간 선택](2_CB_console_search.png)
+![인스턴스 및 기간 선택](../../images/ai-infra/capacity-blocks/2_CB_console_search.png)
 
 ### Step 2: 가용 블록 확인 및 선택
 
 가용 날짜 및 가격을 확인합니다. CB는 특정 Availability Zone(AZ)에 고정되어 제공됩니다.
 
-![블록 선택 1](3_CB_console_availability.png)
+![블록 선택 1](../../images/ai-infra/capacity-blocks/3_CB_console_availability.png)
 
 !!! warning "중요"
     여기서 배정받은 AZ (예: `us-east-2b`)를 반드시 기억해야 합니다. 추후 이 AZ에 서브넷을 만들어야 인스턴스를 띄울 수 있습니다.
@@ -121,9 +121,9 @@ Capacity Blocks을 지원하는 인스턴스 및 리전은 아래 표와 같습�
 ### Step 3: 구매 확정 (Confirm)
 
 가격과 시간을 최종 확인하고, 텍스트 입력창에 `confirm`을 입력하여 구매를 확정합니다.
-![블록 선택 2](4_CB_console_addtag.png)
+![블록 선택 2](../../images/ai-infra/capacity-blocks/4_CB_console_addtag.png)
 
-![블록 선택 3](5_CB_console_confirm.png)
+![블록 선택 3](../../images/ai-infra/capacity-blocks/5_CB_console_confirm.png)
 
 ---
 
@@ -200,13 +200,13 @@ Capcity Blocks 예약 관련 상태값
 
 구매가 완료되면 상태가 `Payment-pending`에서 `Scheduled`로 변경됩니다.
 
-![예약 상태 1](6_CB_payment_pending.png)
+![예약 상태 1](../../images/ai-infra/capacity-blocks/6_CB_payment_pending.png)
 
 - **Scheduled (예정됨):** 구매는 성공했으나, 아직 시작 시간이 되지 않은 상태입니다.
-![예약 상태 2](7_CB_scheduled.png)
+![예약 상태 2](../../images/ai-infra/capacity-blocks/7_CB_scheduled.png)
 
 - **Active (활성):** 예약 시간이 되어 인스턴스를 실행할 수 있는 상태입니다.
-![Scheduled 상태 1](8_CB_active.png)
+![Scheduled 상태 1](../../images/ai-infra/capacity-blocks/8_CB_active.png)
 
 
 
