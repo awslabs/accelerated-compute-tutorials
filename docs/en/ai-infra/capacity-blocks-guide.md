@@ -101,19 +101,19 @@ Minimum required permissions:
 
 In the console, go to **EC2 > Capacity Reservations > Purchase Capacity Blocks for ML**.
 
-![Navigating to the console menu](1_CB_console_menu.png)
+![Navigating to the console menu](../../images/ai-infra/capacity-blocks/1_CB_console_menu.png)
 
 ### Step 1: Select an Instance Type and Duration
 
 Select the instance type you want (`trn2.48xlarge`), the duration, and the start date.
 
-![Selecting the instance type and duration](2_CB_console_search.png)
+![Selecting the instance type and duration](../../images/ai-infra/capacity-blocks/2_CB_console_search.png)
 
 ### Step 2: Review and Select an Available Block
 
 Review the available dates and prices. Each Capacity Block is tied to a specific Availability Zone (AZ).
 
-![Selecting a block 1](3_CB_console_availability.png)
+![Selecting a block 1](../../images/ai-infra/capacity-blocks/3_CB_console_availability.png)
 
 !!! warning "Important"
     Record the AZ assigned to you here (e.g., `us-east-2b`). You will need to create a subnet in this AZ to launch your instances.
@@ -125,9 +125,9 @@ Review the available dates and prices. Each Capacity Block is tied to a specific
 ### Step 3: Confirm the Purchase
 
 Review the final price and schedule, then type `confirm` in the text box to complete the purchase.
-![Selecting a block 2](4_CB_console_addtag.png)
+![Selecting a block 2](../../images/ai-infra/capacity-blocks/4_CB_console_addtag.png)
 
-![Selecting a block 3](5_CB_console_confirm.png)
+![Selecting a block 3](../../images/ai-infra/capacity-blocks/5_CB_console_confirm.png)
 
 ---
 
@@ -204,13 +204,13 @@ Capacity Block reservation states:
 
 Once the purchase completes, the state changes from `Payment-pending` to `Scheduled`.
 
-![Reservation state 1](6_CB_payment_pending.png)
+![Reservation state 1](../../images/ai-infra/capacity-blocks/6_CB_payment_pending.png)
 
 - **Scheduled:** The purchase succeeded, but the start time has not yet arrived.
-![Reservation state 2](7_CB_scheduled.png)
+![Reservation state 2](../../images/ai-infra/capacity-blocks/7_CB_scheduled.png)
 
 - **Active:** The reservation period has started, and you can launch instances.
-![Active state](8_CB_active.png)
+![Active state](../../images/ai-infra/capacity-blocks/8_CB_active.png)
 
 
 
