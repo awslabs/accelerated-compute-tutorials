@@ -24,7 +24,7 @@ exclude_docs: |
 theme:
   name: material
   custom_dir: overrides
-  language: ko
+  language: en
   features:
     - navigation.tabs
     - navigation.tabs.sticky
@@ -70,7 +70,6 @@ plugins:
       docs_structure: folder
       languages:
         - locale: ko
-          default: true
           name: 한국어
           build: true
           nav_translations:
@@ -139,6 +138,7 @@ plugins:
             Neuron Foundations (NFD): Neuron Foundations (NFD)
             Neuron Deep Dive (NDD): Neuron Deep Dive (NDD)
         - locale: en
+          default: true
           name: English
           build: true
   - tags
@@ -278,6 +278,13 @@ nav:
 
 # Extra
 extra:
+  alternate:
+    - name: English
+      link: /accelerated-compute-tutorials/
+      lang: en
+    - name: 한국어
+      link: /accelerated-compute-tutorials/ko/
+      lang: ko
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/awslabs/accelerated-compute-tutorials

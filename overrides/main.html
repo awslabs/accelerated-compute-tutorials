@@ -65,6 +65,11 @@
       if (!target || !here || target.lang === here.lang) return;
       if (location.pathname.indexOf(here.link) !== 0) return;
 
+      /* Only redirect from the site home (the locale root itself), never from
+         deep links — a shared link to a specific page should open as-is. */
+      var rest0 = location.pathname.slice(here.link.length).replace(/^\/+|\/+$/g, "");
+      if (rest0 !== "" && rest0 !== "index.html") return;
+
       var rest = location.pathname.slice(here.link.length);
       location.replace(target.link + rest + location.search + location.hash);
     })();
