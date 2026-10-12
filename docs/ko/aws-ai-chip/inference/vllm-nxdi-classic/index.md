@@ -18,6 +18,7 @@ NxD Inference 기반 vLLM 서빙 가이드 모음 (SDK 2.31 이하)
 | Qwen3 32B Dense (BF16) | 32B | trn2.48xlarge | 32 | [바로가기](qwen3-32b.md) |
 | Qwen3 8B | 8B | trn2.48xlarge | 32 | [바로가기](qwen3-8b.md) |
 | Qwen3 Coder 480B (A35B) | 480B (35B active) | trn2.48xlarge | 64 | [바로가기](qwen3-coder-480b.md) |
+| Llama 3.1 8B (trn1) | 8B | trn1.32xlarge | 2 | [바로가기](llama3.1-8b-trn1.md) |
 
 ---
 

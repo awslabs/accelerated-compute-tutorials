@@ -1,5 +1,5 @@
 ---
-title: vLLM on Neuron
+title: vLLM on Neuron — Llama 3.1 8B (trn1)
 description: Serve LLMs at high performance on AWS Trainium using vLLM
 tags:
   - inference
@@ -8,7 +8,7 @@ tags:
   - trainium
 ---
 
-# vLLM on Neuron
+# vLLM on Neuron — Llama 3.1 8B (trn1)
 
 This tutorial walks you through running the vLLM framework on AWS Trainium to serve large language models at high speed.
 

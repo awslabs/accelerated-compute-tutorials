@@ -173,19 +173,30 @@
     document.addEventListener("DOMContentLoaded", function() {
       var pending = [
         "self-hosted-llm-considerations",
-        "capacity-blocks",
         "efa-networking",
         "storage",
         "docker-dlc",
         "optimization-guide",
-        "benchmark-poc"
+        "benchmark-poc",
+        "application",
+        "networking",
+        "neuron-explorer",
+        "nki-kernels",
+        "distributed-training",
+        "pytorch-native"
       ];
 
       document.querySelectorAll(".md-nav--primary a.md-nav__link").forEach(function(link) {
-        /* match on the last path segment (trailing slash removed) */
-        var slug = link.getAttribute("href");
-        if (!slug) return;
-        slug = slug.replace(/\/$/, "").split("/").pop();
+        /* match on the last path segment (trailing slash removed).
+           The current page's own nav link renders as href="." or "", so fall
+           back to location.pathname to keep the Draft badge on the active page. */
+        var href = link.getAttribute("href");
+        if (href === null) return;
+        var basis = (href === "" || href === "." || href === "./")
+          ? window.location.pathname
+          : href;
+        var slug = basis.replace(/\/$/, "").split("/").pop();
+        if (slug.endsWith(".html")) slug = slug.slice(0, -5);
         if (pending.indexOf(slug) === -1) return;
 
         if (link.querySelector(".nav-pending-badge")) return;
@@ -193,8 +204,8 @@
         /* attach outside .md-ellipsis so it is not truncated */
         var badge = document.createElement("span");
         badge.className = "nav-pending-badge";
-        badge.textContent = "Draft";
-        badge.title = "This page is still being written";
+        badge.textContent = "WIP";
+        badge.title = "Work in progress — this page is still being written";
         link.appendChild(badge);
         link.classList.add("nav-pending");
       });

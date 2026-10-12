@@ -658,3 +658,9 @@
 .md-typeset a:not(.md-nav__link):not(.md-tabs__link):not(.md-footer__link) {
   text-decoration: underline;
 }
+
+
+/* Mermaid diagrams — center within content width */
+.md-typeset .mermaid {
+  text-align: center;
+}

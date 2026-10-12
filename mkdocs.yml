@@ -120,7 +120,7 @@ plugins:
             Qwen3 32B: Qwen3 32B
             Qwen3 8B: Qwen3 8B
             Qwen3 Coder 480B: Qwen3 Coder 480B
-            vLLM on Neuron (Standalone): vLLM on Neuron (Standalone)
+            Llama 3.1 8B (trn1): Llama 3.1 8B (trn1)
             TGI on Neuron: TGI on Neuron
             Neuron Explorer: Neuron Explorer
             NKI Kernels: NKI Kernels
@@ -239,7 +239,7 @@ nav:
               - Qwen3 32B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-32b.md
               - Qwen3 8B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-8b.md
               - Qwen3 Coder 480B: aws-ai-chip/inference/vllm-nxdi-classic/qwen3-coder-480b.md
-          - vLLM on Neuron (Standalone): aws-ai-chip/inference/vllm-on-neuron.md
+              - Llama 3.1 8B (trn1): aws-ai-chip/inference/vllm-nxdi-classic/llama3.1-8b-trn1.md
           - TGI on Neuron: aws-ai-chip/inference/tgi-on-neuron.md
       - Case Studies: aws-ai-chip/case-studies/index.md
       - Profiling:

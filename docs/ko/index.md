@@ -12,7 +12,7 @@ hide:
 오픈웨이트 모델 서빙, 도메인 특화 파인튜닝, 자율 에이전트 운영 등 어떤 워크로드든 — 이 가이드는 AWS Trainium과 NVIDIA GPU에서 적합한 가속기를 선택하고, 인프라를 구축하고, 합리적인 비용으로 운영할 수 있도록 돕습니다.
 
 [솔루션 모션 살펴보기 :material-arrow-down:](#solution-motions){ .md-button .md-button--primary }
-[기반 영역부터 시작하기 :material-arrow-right:](ai-infra/index.md){ .md-button }
+[공통 인프라부터 시작하기 :material-arrow-right:](ai-infra/index.md){ .md-button }
 
 !!! warning "작업 진행 중"
     이 가이드는 여러 언어로 운영되고 있어, 일부 페이지는 아직 해당 언어로 제공되지 않을 수 있습니다. 피드백, 그리고 해당 언어에 없는 페이지에 대한 번역 요청을 [GitHub Issues](https://github.com/awslabs/accelerated-compute-tutorials/issues)로 환영합니다.
@@ -71,7 +71,7 @@ AWS에서 셀프 호스팅 AI를 운영하는 다섯 가지 방법입니다. 목
 |---|---|---|---|
 | 스펙 시트 가정이 아닌, 실무자가 직접 구축하고 테스트 | 직접 제어하는 컴퓨트에서 자체 모델과 에이전트를 운영하기 위한 심층 가이드 | Spot, Capacity Blocks, 양자화, 라이트사이징을 전반에 반영 | 랜딩 페이지는 두 언어로 제공되며, 더 많은 페이지를 순차적으로 번역 |
 
-## 기반 영역 { #foundations }
+## 공통 인프라 { #foundations }
 
 모든 솔루션 모션의 바탕이 되는, 칩 종류와 무관한 구성 요소입니다.
 
