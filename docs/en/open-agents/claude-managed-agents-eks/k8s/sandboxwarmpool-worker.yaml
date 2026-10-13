@@ -1,0 +1,13 @@
+# Pre-created worker pods ready to accept a session, so the first tool call of a
+# new session returns in seconds instead of waiting on an image pull. The pool
+# refills behind each claim. For demand-based scaling, drive the /scale subresource
+# with an HPA or the stats-adapter pattern (see the guide's "Autoscaling" section).
+apiVersion: extensions.agents.x-k8s.io/v1beta1
+kind: SandboxWarmPool
+metadata:
+  name: claude-agent-worker
+  namespace: claude-agents
+spec:
+  sandboxTemplateRef:
+    name: claude-agent-worker
+  replicas: 2

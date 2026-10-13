@@ -1,0 +1,40 @@
+# RBAC for the dispatcher: it creates/deletes SandboxClaims and reads the bound
+# pod's IP. Scoped to the claude-agents namespace only.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: claude-agent-dispatcher
+  namespace: claude-agents
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: claude-agent-dispatcher
+  namespace: claude-agents
+rules:
+  # Create, bind, and reap SandboxClaims (and read warm pools).
+  - apiGroups: ["extensions.agents.x-k8s.io"]
+    resources: ["sandboxclaims", "sandboxwarmpools"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  # Read the bound Sandbox — this is the CORE group (agents.x-k8s.io), not extensions.
+  - apiGroups: ["agents.x-k8s.io"]
+    resources: ["sandboxes"]
+    verbs: ["get", "list", "watch"]
+  # Read the bound pod's IP to POST the session binding.
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: claude-agent-dispatcher
+  namespace: claude-agents
+subjects:
+  - kind: ServiceAccount
+    name: claude-agent-dispatcher
+    namespace: claude-agents
+roleRef:
+  kind: Role
+  name: claude-agent-dispatcher
+  apiGroup: rbac.authorization.k8s.io

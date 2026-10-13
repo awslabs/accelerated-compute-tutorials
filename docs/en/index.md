@@ -47,13 +47,13 @@ Five ways teams run self-hosted AI on AWS. Start with the one that matches your 
 
     [:octicons-arrow-right-24: Explore](hybrid-sovereign-ai/index.md)
 
--   :material-robot:{ .lg .middle } **Self-Managed Agents**
+-   :material-robot:{ .lg .middle } **Open Agents**
 
     ---
 
     Run agentic workloads on Amazon EKS and Graviton — custom agents, third-party agent platforms, and persistent autonomous agents such as OpenClaw, with NVIDIA Dynamo, Ray + EFA, and more.
 
-    [:octicons-arrow-right-24: Explore](self-managed-agents/index.md)
+    [:octicons-arrow-right-24: Explore](open-agents/index.md)
 
 -   :material-chip:{ .lg .middle } **AWS Trainium**
 
@@ -119,7 +119,7 @@ flowchart TD
     W["Your AI workload: inference, training, agents"] --> F["Frugal AI"]
     W --> D["Domain Intelligence"]
     W --> H["Hybrid & Sovereign AI"]
-    W --> S["Self-Managed Agents"]
+    W --> S["Open Agents"]
     F --> A{"Choose your accelerator"}
     D --> A
     H --> A

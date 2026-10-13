@@ -1,0 +1,93 @@
+# Karpenter NodePool for gVisor-isolated worker pods. The EC2NodeClass user-data
+# installs the runsc containerd shim at boot (EKS Auto Mode can't do this, so this
+# recipe uses Standard EKS + Karpenter). Replace ${CLUSTER_NAME} before applying.
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gvisor
+spec:
+  template:
+    metadata:
+      labels:
+        runtime: gvisor
+    spec:
+      taints:
+        - key: runtime
+          value: gvisor
+          effect: NoSchedule
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: gvisor
+      requirements:
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["arm64"]            # Graviton
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand", "spot"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: ["m", "c", "r"]
+  limits:
+    cpu: "64"
+    memory: 128Gi
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 30m
+---
+apiVersion: karpenter.k8s.aws/v1
+kind: EC2NodeClass
+metadata:
+  name: gvisor
+spec:
+  role: "eksctl-KarpenterNodeRole-${CLUSTER_NAME}"
+  amiSelectorTerms:
+    - alias: al2023@latest
+  subnetSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${CLUSTER_NAME}"
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "${CLUSTER_NAME}"
+  userData: |
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="//"
+
+    --//
+    Content-Type: text/x-shellscript; charset="us-ascii"
+
+    #!/bin/bash
+    set -euxo pipefail
+
+    # gVisor switched from individual-binary downloads to a tarball in 2026-07.
+    # The tarball unpacks runsc, containerd-shim-runsc-v1, and the gvisor-bin/
+    # sidecar dir — keep them together in /usr/local/bin. ARCH=$(uname -m) is
+    # aarch64 on Graviton / x86_64 on Intel, matching gVisor's URL path.
+    ARCH=$(uname -m)
+    URL="https://storage.googleapis.com/gvisor/releases/release/latest/${ARCH}"
+    mkdir -p /tmp/gvisor && cd /tmp/gvisor
+    curl -fsSL -o gvisor.tar.zstd "${URL}/gvisor.tar.zstd"
+    curl -fsSL -o gvisor.tar.zstd.sha512 "${URL}/gvisor.tar.zstd.sha512"
+    sha512sum -c gvisor.tar.zstd.sha512
+    tar --zstd -xf gvisor.tar.zstd -C /usr/local/bin
+    chmod +x /usr/local/bin/runsc /usr/local/bin/containerd-shim-runsc-v1
+
+    cat <<'EOT' >> /etc/containerd/config.toml
+
+    [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runsc]
+      runtime_type = "io.containerd.runsc.v1"
+
+    [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runsc.options]
+      TypeUrl = "io.containerd.runsc.v1.options"
+      ConfigPath = "/etc/containerd/runsc.toml"
+    EOT
+
+    cat <<'EOT' > /etc/containerd/runsc.toml
+    [runsc_config]
+      platform = "systrap"
+      network = "sandbox"
+    EOT
+
+    systemctl restart containerd
+    --//

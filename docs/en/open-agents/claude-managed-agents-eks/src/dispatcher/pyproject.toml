@@ -1,0 +1,13 @@
+[project]
+name = "claude-agent-dispatcher"
+version = "0.1.0"
+description = "Dispatcher for Anthropic Managed Agents self-hosted sandboxes on EKS"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.40.0",
+    "kubernetes>=31.0.0",
+    # Pin to the SDK release whose CRD version matches your Agent Sandbox
+    # controller. 1.0.x speaks v1beta1 (controller v1.0.x). For an older
+    # v1alpha1 controller (v0.4.x/v0.5.x), pin a matching 0.4.x/0.5.x SDK.
+    "k8s-agent-sandbox>=1.0.6,<1.1.0",
+]

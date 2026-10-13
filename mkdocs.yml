@@ -126,7 +126,7 @@ plugins:
             Frugal AI: Frugal AI
             Domain Intelligence: Domain Intelligence
             Hybrid & Sovereign AI: Hybrid & Sovereign AI
-            Self-Managed Agents: Self-Managed Agents
+            Open Agents: Open Agents
             OpenClaw on EKS: OpenClaw on EKS
             Crypto Trading Agent: Crypto Trading Agent
             Agents on EKS with AgentCore Primitives: Agents on EKS with AgentCore Primitives
@@ -253,17 +253,17 @@ nav:
       - domain-intelligence/index.md
   - Hybrid & Sovereign AI:
       - hybrid-sovereign-ai/index.md
-  - Self-Managed Agents:
-      - self-managed-agents/index.md
-      - OpenClaw on EKS: self-managed-agents/openclaw-eks-lab-guide/index.md
-      - Crypto Trading Agent: self-managed-agents/crypto-trading-agent/index.md
-      - Agents on EKS with AgentCore Primitives: self-managed-agents/eks-agentcore-primitives/index.md
-      - Claude Managed Agents on EKS: self-managed-agents/claude-managed-agents-eks/index.md
-      - Disaggregated Inference (Dynamo): self-managed-agents/dynamo-disaggregated/index.md
-      - Ray + EFA on EKS: self-managed-agents/ray-on-eks-efa/index.md
-      - Distributed Training: self-managed-agents/distributed-training.md
-      - PyTorch Native: self-managed-agents/pytorch-native.md
-      - GPU Operator (Private EKS): self-managed-agents/private-eks-gpu-operator/index.md
+  - Open Agents:
+      - open-agents/index.md
+      - OpenClaw on EKS: open-agents/openclaw-eks-lab-guide/index.md
+      - Crypto Trading Agent: open-agents/crypto-trading-agent/index.md
+      - Agents on EKS with AgentCore Primitives: open-agents/eks-agentcore-primitives/index.md
+      - Claude Managed Agents on EKS: open-agents/claude-managed-agents-eks/index.md
+      - Disaggregated Inference (Dynamo): open-agents/dynamo-disaggregated/index.md
+      - Ray + EFA on EKS: open-agents/ray-on-eks-efa/index.md
+      - Distributed Training: open-agents/distributed-training.md
+      - PyTorch Native: open-agents/pytorch-native.md
+      - GPU Operator (Private EKS): open-agents/private-eks-gpu-operator/index.md
   - Training & Events:
       - events/index.md
       - Training Programs:

@@ -47,13 +47,13 @@ AWS에서 셀프 호스팅 AI를 운영하는 다섯 가지 방법입니다. 목
 
     [:octicons-arrow-right-24: 살펴보기](hybrid-sovereign-ai/index.md)
 
--   :material-robot:{ .lg .middle } **Self-Managed Agents**
+-   :material-robot:{ .lg .middle } **Open Agents**
 
     ---
 
     Amazon EKS와 Graviton에서 에이전트 워크로드를 운영합니다 — 커스텀 에이전트, 서드파티 에이전트 플랫폼, OpenClaw 같은 상시 실행 자율 에이전트를 NVIDIA Dynamo, Ray + EFA 등과 함께.
 
-    [:octicons-arrow-right-24: 살펴보기](self-managed-agents/index.md)
+    [:octicons-arrow-right-24: 살펴보기](open-agents/index.md)
 
 -   :material-chip:{ .lg .middle } **AWS Trainium**
 
@@ -119,7 +119,7 @@ flowchart TD
     W["AI 워크로드: 추론, 학습, 에이전트"] --> F["Frugal AI"]
     W --> D["Domain Intelligence"]
     W --> H["Hybrid & Sovereign AI"]
-    W --> S["Self-Managed Agents"]
+    W --> S["Open Agents"]
     F --> A{"가속기 선택"}
     D --> A
     H --> A
