@@ -1,0 +1,63 @@
+# Lock down the worker pods, which run untrusted model-generated commands.
+# Default-deny all ingress and egress, then allow only:
+#   - ingress from the dispatcher (so only it can POST a session binding), and
+#   - egress to cluster DNS + HTTPS (to reach api.anthropic.com).
+#
+# NetworkPolicy selectors cannot match an external hostname, so the HTTPS rule
+# below is a broad 0.0.0.0/0:443 allow. To restrict egress to exactly
+# api.anthropic.com, layer a hostname-aware control on top — e.g. an AWS Network
+# Firewall FQDN rule, a Cilium CiliumNetworkPolicy with toFQDNs, or an egress
+# proxy. Keep this default-deny policy as the base layer underneath it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: claude-worker-default-deny
+  namespace: claude-agents
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-agent-worker
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: claude-worker-allow
+  namespace: claude-agents
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-agent-worker
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Only the dispatcher may POST the session binding to :8080.
+    - from:
+        - podSelector:
+            matchLabels:
+              app: claude-agent-dispatcher
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # DNS resolution (kube-dns / CoreDNS).
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # HTTPS egress — api.anthropic.com (and skill/memory downloads). Narrow this
+    # with a hostname-aware egress control (see the note above).
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443

@@ -1,0 +1,21 @@
+# Apply everything with:  kubectl apply -k .
+#
+# Before applying, replace the placeholders:
+#   - ACCOUNT_ID / region  in sandboxtemplate-worker.yaml and dispatcher.yaml (ECR image URIs)
+#   - ENV_ID               in dispatcher.yaml (your env_... value)
+#   - ${CLUSTER_NAME}      in nodepool-gvisor.yaml
+# And create the environment-key Secret (see secret.yaml for the kubectl command).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - namespace.yaml
+  - runtimeclass-gvisor.yaml
+  - nodepool-gvisor.yaml
+  - storageclass.yaml
+  # - secret.yaml                 # prefer `kubectl create secret` or Secrets Manager; uncomment to manage as YAML
+  - sandboxtemplate-worker.yaml
+  - sandboxwarmpool-worker.yaml
+  - dispatcher-rbac.yaml
+  - dispatcher.yaml
+  - networkpolicy-worker.yaml
