@@ -1,0 +1,167 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Megatron Bridge LoRA fine-tuning of Qwen3-8B as a KubeRay RayJob on one
+# g6e.12xlarge (4x NVIDIA L40S 48 GB).
+#
+# What happens when you apply this:
+#   1. KubeRay creates a RayCluster: 1 head pod (CPU only) + 1 GPU worker pod.
+#      Both pods select the gpu-g6e NodePool, so Auto Mode launches ONE
+#      g6e.12xlarge and both pods share it (and its copy of the 18 GiB image).
+#   2. submissionMode: SidecarMode runs `ray job submit` as a sidecar container
+#      inside the head pod. With the default K8sJobMode, the submitter would be
+#      a separate pod on a general-purpose node that pulls the head image (the
+#      KubeRay default), which is far too big for those nodes.
+#   3. launch_bridge_finetune.py (mounted from the ConfigMap) places one Ray
+#      actor on the GPU worker, downloads Qwen3-8B to /data/hf, runs
+#      `torchrun --nproc_per_node 4 run_recipe.py --model qwen3_8b --mode lora`,
+#      then exports the LoRA adapter to /data/adapters in HF PEFT format.
+#   4. ttlSecondsAfterFinished after the job ends, the RayCluster is deleted;
+#      the empty node is removed by the NodePool 10 minutes later. /data stays.
+#
+# Before applying:
+#   - Replace REPLACE_WITH_IMAGE (2 places) with the image built from Dockerfile.bridge.
+#   - Create the ConfigMap with the launcher:
+#       kubectl create configmap megatron-launcher \
+#         --from-file=launch_bridge_finetune.py=scripts/launch_bridge_finetune.py
+#   - Apply storage.yaml (PVC megatron-data).
+
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: qwen3-lora
+spec:
+  # Defaults: 100 steps, global batch 32 (micro 1 x DP 4 x 8 accumulation),
+  # seq 2048 packed SQuAD, LoRA rank 8 on linear_qkv/linear_proj (the
+  # qwen3_8b_peft_config recipe). Anything after the flags is passed to
+  # run_recipe.py, e.g. append `train.train_iters=200` or `--lr 2e-4`.
+  entrypoint: >
+    python /opt/launcher/launch_bridge_finetune.py
+    --model qwen3_8b --gpus 4 --cpus 32 --tp 1
+    --max-steps 100 --global-batch-size 32 --micro-batch-size 1
+    --save-dir /data/checkpoints/qwen3-8b-lora
+    --export-dir /data/adapters/qwen3-8b-lora
+
+  submissionMode: SidecarMode
+  shutdownAfterJobFinishes: true
+  ttlSecondsAfterFinished: 600   # keep the cluster 10 min so you can read the logs
+  activeDeadlineSeconds: 10800   # safety net (first run includes node launch + image pull)
+  backoffLimit: 0                # do not silently re-run a failed job
+
+  rayClusterSpec:
+    rayVersion: "2.56.1"         # must match the Ray version in the image
+
+    # ---- Head: Ray GCS + dashboard + job driver. No GPUs. -----------------
+    headGroupSpec:
+      rayStartParams:
+        num-gpus: "0"
+        dashboard-host: "0.0.0.0"
+      template:
+        spec:
+          nodeSelector:
+            karpenter.sh/nodepool: gpu-g6e
+          tolerations:
+            - key: nvidia.com/gpu
+              operator: Exists
+              effect: NoSchedule
+          containers:
+            - name: ray-head
+              image: REPLACE_WITH_IMAGE
+              env:
+                # The NeMo image sets NVIDIA_VISIBLE_DEVICES=all. The head
+                # requests no GPUs, so make sure it never sees any.
+                - name: NVIDIA_VISIBLE_DEVICES
+                  value: "void"
+              ports:
+                - containerPort: 6379
+                  name: gcs
+                - containerPort: 8265
+                  name: dashboard
+                - containerPort: 10001
+                  name: client
+              resources:
+                requests:
+                  cpu: "4"
+                  memory: 16Gi
+                limits:
+                  cpu: "4"
+                  memory: 16Gi
+              volumeMounts:
+                - name: launcher
+                  mountPath: /opt/launcher
+          volumes:
+            - name: launcher
+              configMap:
+                name: megatron-launcher
+
+    # ---- GPU worker: all 4 L40S of the g6e.12xlarge -----------------------
+    workerGroupSpecs:
+      - groupName: gpu
+        replicas: 1
+        minReplicas: 1
+        maxReplicas: 1
+        rayStartParams:
+          num-gpus: "4"
+          # Megatron does not use Ray's object store; keep it small so it does
+          # not reserve a large slice of /dev/shm.
+          object-store-memory: "2147483648"
+        template:
+          spec:
+            nodeSelector:
+              karpenter.sh/nodepool: gpu-g6e
+            tolerations:
+              - key: nvidia.com/gpu
+                operator: Exists
+                effect: NoSchedule
+            containers:
+              - name: ray-worker
+                image: REPLACE_WITH_IMAGE
+                env:
+                  - name: HF_HOME
+                    value: /data/hf
+                  - name: NEMO_HOME
+                    value: /data/nemo
+                  # The NeMo image sets NCCL_NET_PLUGIN=spcx (an InfiniBand
+                  # plugin). One node has no network fabric to use: all traffic
+                  # is GPU<->GPU over PCIe / shared memory, so load no plugin.
+                  - name: NCCL_NET_PLUGIN
+                    value: "none"
+                  # Prints the transport NCCL picks (P2P or SHM). Set to WARN
+                  # once you have seen it.
+                  - name: NCCL_DEBUG
+                    value: "INFO"
+                  - name: PYTHONUNBUFFERED
+                    value: "1"
+                  # Only needed for gated models; Qwen3-8B is public.
+                  - name: HF_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: hf-token
+                        key: HF_TOKEN
+                        optional: true
+                resources:
+                  # g6e.12xlarge: 48 vCPU, 384 GiB. Leaves room for the head
+                  # pod (4 CPU / 16 GiB) and Auto Mode's system reservation.
+                  requests:
+                    cpu: "40"
+                    memory: 320Gi
+                    nvidia.com/gpu: "4"
+                  limits:
+                    cpu: "40"
+                    memory: 320Gi
+                    nvidia.com/gpu: "4"
+                volumeMounts:
+                  - name: data
+                    mountPath: /data
+                  - name: dshm
+                    mountPath: /dev/shm
+            volumes:
+              - name: data
+                persistentVolumeClaim:
+                  claimName: megatron-data
+              # NCCL's shared-memory transport and the dataloaders need far
+              # more than the 64Mi container default. Counts toward the pod's
+              # memory limit.
+              - name: dshm
+                emptyDir:
+                  medium: Memory
+                  sizeLimit: 64Gi

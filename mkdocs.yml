@@ -95,6 +95,7 @@ plugins:
             Container Image (NGC + EFA): 컨테이너 이미지 (NGC + EFA)
             GDS (GPUDirect Storage): GDS (GPUDirect Storage)
             MoE / Hybrid-EP: MoE / Hybrid-EP 검증
+            Megatron Bridge on KubeRay: KubeRay 기반 Megatron Bridge 파인튜닝
             EFA (Elastic Fabric Adapter): EFA (Elastic Fabric Adapter)
             Reference Architectures: 실전 아키텍처
             Slurm-based GPU Training Cluster: Slurm 기반 GPU 학습 클러스터
@@ -214,6 +215,10 @@ nav:
           - GDS (GPUDirect Storage): ai-infra/environment/gds-gpudirect-storage.md
           - EFA (Elastic Fabric Adapter): ai-infra/efa-setup.md
           - MoE / Hybrid-EP: ai-infra/environment/moe-hybrid-ep.md
+          - GPU Operator (Private EKS): ai-infra/environment/private-eks-gpu-operator/index.md
+          - Ray + EFA on EKS: ai-infra/environment/ray-on-eks-efa/index.md
+          - Megatron Bridge on KubeRay: ai-infra/environment/megatron-kuberay/index.md
+          - Disaggregated Inference (Dynamo): ai-infra/environment/dynamo-disaggregated/index.md
       - Reference Architectures:
           - ai-infra/architectures/index.md
           - Slurm-based GPU Training Cluster: ai-infra/architectures/large-scale-gpu-training.md
@@ -272,11 +277,8 @@ nav:
       - Crypto Trading Agent: open-agents/crypto-trading-agent/index.md
       - Agents on EKS with AgentCore Primitives: open-agents/eks-agentcore-primitives/index.md
       - Claude Managed Agents on EKS: open-agents/claude-managed-agents-eks/index.md
-      - Disaggregated Inference (Dynamo): open-agents/dynamo-disaggregated/index.md
-      - Ray + EFA on EKS: open-agents/ray-on-eks-efa/index.md
       - Distributed Training: open-agents/distributed-training.md
       - PyTorch Native: open-agents/pytorch-native.md
-      - GPU Operator (Private EKS): open-agents/private-eks-gpu-operator/index.md
   - Training & Events:
       - events/index.md
       - Training Programs:

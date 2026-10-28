@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Megatron Bridge + Ray image for single-node fine-tuning on KubeRay.
+#
+# Base: the NVIDIA NeMo Framework container, which already ships Megatron Bridge
+# (source + scripts in /opt/Megatron-Bridge, installed into /opt/venv) together
+# with Megatron Core, Transformer Engine, PyTorch, NCCL and CUDA 13.
+# This file only adds what KubeRay needs on top:
+#   - ray[default]  : Ray head/worker processes + dashboard/job API
+#   - wget          : used by the KubeRay readiness/liveness probes
+#
+# No EFA layer: the lab runs on a single g6e.12xlarge, so every collective stays
+# inside the node (PCIe / shared memory) and never touches the network.
+#
+# Build (amd64, to match g6e.12xlarge) and push:
+#   docker buildx build --platform linux/amd64 -f Dockerfile.bridge \
+#     -t ${ECR}/megatron-bridge-ray:nemo26.08-ray2.56.1 --push .
+FROM nvcr.io/nvidia/nemo:26.08
+
+# Pinned to the Ray version in Megatron Bridge 0.6.x's own lockfile (pulled in
+# there via leptonai -> ray[default]), so this does not move Ray away from what
+# the NeMo venv was resolved against. Must match rayVersion in the RayJob.
+ARG RAY_VERSION=2.56.1
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends wget \
+ && rm -rf /var/lib/apt/lists/*
+
+# /opt/venv is a uv-managed venv (first on PATH), so install with uv into it.
+RUN uv pip install --python /opt/venv/bin/python "ray[default]==${RAY_VERSION}"
+
+# Fail the build early if the base image is not what this lab was written for:
+# the launcher uses the run_recipe.py CLI and the qwen3_8b_peft_config recipe
+# from Megatron Bridge 0.6.x.
+# (Reads package_info.py directly instead of importing megatron.bridge, which
+# would pull in Transformer Engine and needs a GPU driver the build host lacks.)
+RUN RAY_VERSION=${RAY_VERSION} python - <<'PY'
+import os, runpy
+import ray
+info = runpy.run_path("/opt/Megatron-Bridge/src/megatron/bridge/package_info.py")
+mb = info["__version__"]
+major, minor = (int(x) for x in mb.split(".")[:2])
+assert (major, minor) >= (0, 6), f"need Megatron Bridge >= 0.6, image has {mb}"
+assert ray.__version__ == os.environ["RAY_VERSION"], ray.__version__
+print(f"megatron-bridge {mb} | ray {ray.__version__}")
+PY
+RUN test -f /opt/Megatron-Bridge/scripts/training/run_recipe.py \
+ && test -f /opt/Megatron-Bridge/examples/conversion/adapter/export_adapter.py \
+ && grep -q '"qwen3_8b_peft_config"' /opt/Megatron-Bridge/src/megatron/bridge/recipes/qwen/qwen3.py
+
+WORKDIR /opt/Megatron-Bridge
