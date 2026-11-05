@@ -68,7 +68,7 @@ A full bf16 copy of Qwen3-8B is about **16 GB**, which fits on a 48 GB L40S with
 
 ```bash
 git clone https://github.com/awslabs/accelerated-compute-tutorials.git
-cd accelerated-compute-tutorials/docs/en/ai-infra/environment/megatron-kuberay
+cd accelerated-compute-tutorials/docs/en/ai-infra/orchestration/megatron-kuberay
 ```
 
 All commands below run from this directory.

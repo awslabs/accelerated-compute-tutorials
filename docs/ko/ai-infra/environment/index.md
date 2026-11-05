@@ -56,36 +56,4 @@ title: AI 인프라 구축/환경구성
 
     [:octicons-arrow-right-24: EFA 네트워크 심화](../efa-setup.md)
 
--   :material-kubernetes:{ .lg .middle } **GPU Operator (Private EKS)**
-
-    ---
-
-    프라이빗 EKS 클러스터에 NVIDIA GPU Operator 배포.
-
-    [:octicons-arrow-right-24: GPU Operator (Private EKS)](private-eks-gpu-operator/index.md)
-
--   :material-server-network:{ .lg .middle } **Ray + EFA on EKS**
-
-    ---
-
-    EKS에서 Ray + EFA 기반 분산 학습 및 서빙.
-
-    [:octicons-arrow-right-24: Ray + EFA on EKS](ray-on-eks-efa/index.md)
-
--   :material-tune-variant:{ .lg .middle } **KubeRay 기반 Megatron Bridge 파인튜닝**
-
-    ---
-
-    EKS Auto Mode의 g6e.12xlarge 단일 노드에서 KubeRay RayJob으로 Megatron Bridge를 실행해 Qwen3-8B를 LoRA 파인튜닝.
-
-    [:octicons-arrow-right-24: KubeRay 기반 Megatron Bridge 파인튜닝](megatron-kuberay/index.md)
-
--   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
-
-    ---
-
-    NVIDIA Dynamo + vLLM 기반 Prefill/Decode 분리 서빙 (EKS).
-
-    [:octicons-arrow-right-24: Disaggregated Inference (Dynamo)](dynamo-disaggregated/index.md)
-
 </div>

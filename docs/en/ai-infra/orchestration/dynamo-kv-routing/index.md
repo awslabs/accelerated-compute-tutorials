@@ -84,7 +84,7 @@ So the router removes **redundant prefill**: lower TTFT, fewer tensor-core cycle
 
 ```bash
 git clone https://github.com/awslabs/accelerated-compute-tutorials.git
-cd accelerated-compute-tutorials/docs/en/ai-infra/environment/dynamo-kv-routing
+cd accelerated-compute-tutorials/docs/en/ai-infra/orchestration/dynamo-kv-routing
 ```
 
 All commands below run from this directory.

@@ -24,6 +24,14 @@ title: AI Infra
 
     [:octicons-arrow-right-24: 구축](environment/index.md)
 
+-   :material-sitemap:{ .lg .middle } **AI 인프라 오케스트레이션**
+
+    ---
+
+    Kubernetes(EKS) 랩: GPU Operator, 학습용 Ray·KubeRay, 추론 서빙·라우팅용 NVIDIA Dynamo.
+
+    [:octicons-arrow-right-24: 오케스트레이션](orchestration/index.md)
+
 -   :material-cog:{ .lg .middle } **AI 인프라 운영**
 
     ---

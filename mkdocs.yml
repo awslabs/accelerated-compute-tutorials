@@ -80,6 +80,7 @@ plugins:
             Accelerator Selection Guide: 가속기 선택 가이드
             AI Infra Design: AI 인프라 설계
             AI Infra Setup: AI 인프라 구축/환경구성
+            AI Infra Orchestration: AI 인프라 오케스트레이션
             AI Infra Operations: AI 인프라 운영
             AI Infra Application: AI 인프라 Application
             AI Infra Deep Dive: AI 인프라 Deep Dive
@@ -216,11 +217,13 @@ nav:
           - GDS (GPUDirect Storage): ai-infra/environment/gds-gpudirect-storage.md
           - EFA (Elastic Fabric Adapter): ai-infra/efa-setup.md
           - MoE / Hybrid-EP: ai-infra/environment/moe-hybrid-ep.md
-          - GPU Operator (Private EKS): ai-infra/environment/private-eks-gpu-operator/index.md
-          - Ray + EFA on EKS: ai-infra/environment/ray-on-eks-efa/index.md
-          - Megatron Bridge on KubeRay: ai-infra/environment/megatron-kuberay/index.md
-          - Disaggregated Inference (Dynamo): ai-infra/environment/dynamo-disaggregated/index.md
-          - KV-Aware Routing (Dynamo): ai-infra/environment/dynamo-kv-routing/index.md
+      - AI Infra Orchestration:
+          - ai-infra/orchestration/index.md
+          - GPU Operator (Private EKS): ai-infra/orchestration/private-eks-gpu-operator/index.md
+          - Ray + EFA on EKS: ai-infra/orchestration/ray-on-eks-efa/index.md
+          - Megatron Bridge on KubeRay: ai-infra/orchestration/megatron-kuberay/index.md
+          - Disaggregated Inference (Dynamo): ai-infra/orchestration/dynamo-disaggregated/index.md
+          - KV-Aware Routing (Dynamo): ai-infra/orchestration/dynamo-kv-routing/index.md
       - Reference Architectures:
           - ai-infra/architectures/index.md
           - Slurm-based GPU Training Cluster: ai-infra/architectures/large-scale-gpu-training.md
