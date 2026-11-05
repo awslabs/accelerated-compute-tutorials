@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT-0
+#
+# OPTIONAL: bake Dynamo into the AWS vLLM DLC instead of installing it at pod
+# start-up (what dlc-dynamo-entrypoint.sh does in the lab).
+#
+# Same result as the lab's runtime install, minus ~15 s per pod start and
+# the dependency on PyPI at runtime. The pushed image is ~9 GB because ECR
+# cannot mount layers from ECR Public, so build on an amd64 EC2 instance in
+# the target region.
+#
+#   docker buildx build --platform linux/amd64 -f Dockerfile.dlc-dynamo \
+#     -t ${ECR}/vllm-dlc-dynamo:0.26.0-dynamo1.4.0 --push .
+#
+# Then in manifests/qwen3-8b-kv-router.yaml use that image and keep the same
+# command; the entrypoint sees ai-dynamo already installed and skips the install.
+
+ARG DLC_IMAGE=public.ecr.aws/deep-learning-containers/vllm:0.26.0-gpu-py312-cu130-ubuntu22.04-ec2-v1.4-2026-08-11-20-22-30
+FROM ${DLC_IMAGE}
+
+ARG DYNAMO_VERSION=1.4.0
+# No [vllm] extra: keep the DLC's vLLM 0.26.0 / torch / CUDA stack as is.
+RUN uv pip install --python "$(command -v python3)" --break-system-packages \
+      "ai-dynamo==${DYNAMO_VERSION}" \
+ && python3 -c "import importlib.metadata as m; \
+      v = {p: m.version(p) for p in ('ai-dynamo', 'vllm', 'runai-model-streamer')}; \
+      print(v); assert v['vllm'] == '0.26.0', v"
+
+COPY scripts/dlc-dynamo-entrypoint.sh /opt/lab/
+RUN chmod 0755 /opt/lab/dlc-dynamo-entrypoint.sh
+
+ENTRYPOINT []

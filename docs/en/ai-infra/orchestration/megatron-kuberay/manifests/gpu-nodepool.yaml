@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode NodePool: one on-demand g6e.12xlarge (4x NVIDIA L40S 48 GB,
+# 48 vCPU, 384 GiB), created only while the RayJob needs it.
+#
+# Unlike the EFA lab, this is a normal dynamic pool: Auto Mode launches the node
+# when the Ray pods are pending and removes it once they are gone, so you pay
+# for the GPU node only while a fine-tuning job is running.
+#
+# limits.nvidia.com/gpu: "4" caps the pool at one g6e.12xlarge. If something
+# asks for more GPUs, it stays Pending instead of launching a second node.
+
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-g6e
+spec:
+  template:
+    metadata:
+      labels:
+        node-role: gpu-finetune
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: gpu-g6e
+      requirements:
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values: ["g6e.12xlarge"]
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand"]
+      # Keeps everything except the Ray pods (which tolerate it) off the node.
+      taints:
+        - key: nvidia.com/gpu
+          effect: NoSchedule
+  limits:
+    nvidia.com/gpu: "4"
+  disruption:
+    # Never consolidate a node that still has Ray pods on it; remove it 10 min
+    # after the RayCluster is deleted.
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 10m

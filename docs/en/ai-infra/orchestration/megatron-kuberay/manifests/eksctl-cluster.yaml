@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode cluster for the Megatron Bridge + KubeRay fine-tuning lab.
+#
+# Auto Mode manages compute with Karpenter and ships the NVIDIA driver and
+# device plugin, so `nvidia.com/gpu` works with no extra install. The built-in
+# general-purpose and system NodePools run the KubeRay operator; the
+# g6e.12xlarge GPU node comes from the custom NodeClass/NodePool applied after
+# the cluster is up (gpu-nodeclass.yaml, gpu-nodepool.yaml).
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: megatron-ray-lab
+  region: us-east-2
+  version: "1.37"
+
+iam:
+  withOIDC: true
+
+autoModeConfig:
+  enabled: true

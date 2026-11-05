@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Persistent storage for the fine-tuning job, mounted at /data in the Ray worker:
+#   /data/hf           Hugging Face cache (HF_HOME): Qwen3-8B weights, ~16 GB
+#   /data/nemo         Megatron Bridge dataset cache (NEMO_HOME): SQuAD, packed
+#   /data/checkpoints  Megatron LoRA checkpoints
+#   /data/adapters     exported Hugging Face PEFT adapters
+#
+# The RayCluster is deleted after each job, but this volume is not. So the
+# second run skips the model download, and checkpoints and adapters survive.
+#
+# EBS volumes are single-AZ. The volume is created in the AZ of the first node
+# that mounts it (WaitForFirstConsumer), and Auto Mode then launches later GPU
+# nodes in that same AZ.
+
+# Auto Mode ships the EBS CSI driver but no StorageClass.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: auto-ebs-gp3
+allowedTopologies:
+  - matchLabelExpressions:
+      - key: eks.amazonaws.com/compute-type
+        values: ["auto"]
+provisioner: ebs.csi.eks.amazonaws.com
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+parameters:
+  type: gp3
+  encrypted: "true"
+  iops: "6000"
+  throughput: "500"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: megatron-data
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: auto-ebs-gp3
+  resources:
+    requests:
+      storage: 200Gi

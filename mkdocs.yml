@@ -95,6 +95,7 @@ plugins:
             Container Image (NGC + EFA): 컨테이너 이미지 (NGC + EFA)
             GDS (GPUDirect Storage): GDS (GPUDirect Storage)
             MoE / Hybrid-EP: MoE / Hybrid-EP 검증
+            Megatron Bridge on KubeRay: KubeRay 기반 Megatron Bridge 파인튜닝
             EFA (Elastic Fabric Adapter): EFA (Elastic Fabric Adapter)
             Reference Architectures: 실전 아키텍처
             Slurm-based GPU Training Cluster: Slurm 기반 GPU 학습 클러스터
@@ -140,6 +141,7 @@ plugins:
             Agents on EKS with AgentCore Primitives: Agents on EKS with AgentCore Primitives
             Claude Managed Agents on EKS: Claude Managed Agents on EKS
             Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
+            KV-Aware Routing (Dynamo): KV-Aware Routing (Dynamo)
             Ray + EFA on EKS: Ray + EFA on EKS
             Distributed Training: Distributed Training
             PyTorch Native: PyTorch Native
@@ -214,6 +216,13 @@ nav:
           - GDS (GPUDirect Storage): ai-infra/environment/gds-gpudirect-storage.md
           - EFA (Elastic Fabric Adapter): ai-infra/efa-setup.md
           - MoE / Hybrid-EP: ai-infra/environment/moe-hybrid-ep.md
+      - AI Infra Orchestration:
+          - ai-infra/orchestration/index.md
+          - GPU Operator (Private EKS): ai-infra/orchestration/private-eks-gpu-operator/index.md
+          - Ray + EFA on EKS: ai-infra/orchestration/ray-on-eks-efa/index.md
+          - Megatron Bridge on KubeRay: ai-infra/orchestration/megatron-kuberay/index.md
+          - Disaggregated Inference (Dynamo): ai-infra/orchestration/dynamo-disaggregated/index.md
+          - KV-Aware Routing (Dynamo): ai-infra/orchestration/dynamo-kv-routing/index.md
       - Reference Architectures:
           - ai-infra/architectures/index.md
           - Slurm-based GPU Training Cluster: ai-infra/architectures/large-scale-gpu-training.md
@@ -272,11 +281,8 @@ nav:
       - Crypto Trading Agent: open-agents/crypto-trading-agent/index.md
       - Agents on EKS with AgentCore Primitives: open-agents/eks-agentcore-primitives/index.md
       - Claude Managed Agents on EKS: open-agents/claude-managed-agents-eks/index.md
-      - Disaggregated Inference (Dynamo): open-agents/dynamo-disaggregated/index.md
-      - Ray + EFA on EKS: open-agents/ray-on-eks-efa/index.md
       - Distributed Training: open-agents/distributed-training.md
       - PyTorch Native: open-agents/pytorch-native.md
-      - GPU Operator (Private EKS): open-agents/private-eks-gpu-operator/index.md
   - Training & Events:
       - events/index.md
       - Training Programs:

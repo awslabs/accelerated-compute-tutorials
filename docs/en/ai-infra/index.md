@@ -24,6 +24,14 @@ Chip-agnostic foundations for building large-scale AI infrastructure on AWS — 
 
     [:octicons-arrow-right-24: Setup](environment/index.md)
 
+-   :material-sitemap:{ .lg .middle } **AI Infra Orchestration**
+
+    ---
+
+    Kubernetes (EKS) labs: GPU Operator, Ray and KubeRay for training, NVIDIA Dynamo for inference serving and routing.
+
+    [:octicons-arrow-right-24: Orchestration](orchestration/index.md)
+
 -   :material-cog:{ .lg .middle } **AI Infra Operations**
 
     ---

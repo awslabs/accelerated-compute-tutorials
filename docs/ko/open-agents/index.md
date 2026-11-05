@@ -40,22 +40,6 @@ EKS/Graviton 기반의 에이전트 및 오픈소스 AI 워크로드 — 커스�
 
     [:octicons-arrow-right-24: 보기](claude-managed-agents-eks/index.md)
 
--   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
-
-    ---
-
-    NVIDIA Dynamo + vLLM 기반 Prefill/Decode 분리 서빙 (EKS)
-
-    [:octicons-arrow-right-24: 보기](dynamo-disaggregated/index.md)
-
--   :material-server-network:{ .lg .middle } **Ray + EFA on EKS**
-
-    ---
-
-    EKS에서 Ray + EFA 기반 분산 학습 및 서빙
-
-    [:octicons-arrow-right-24: 보기](ray-on-eks-efa/index.md)
-
 -   :material-school:{ .lg .middle } **Distributed Training**
 
     ---
@@ -71,13 +55,5 @@ EKS/Graviton 기반의 에이전트 및 오픈소스 AI 워크로드 — 커스�
     EKS에서 PyTorch 네이티브 분산 학습
 
     [:octicons-arrow-right-24: 보기](pytorch-native.md)
-
--   :material-kubernetes:{ .lg .middle } **GPU Operator (Private EKS)**
-
-    ---
-
-    프라이빗 EKS 클러스터에 NVIDIA GPU Operator 배포
-
-    [:octicons-arrow-right-24: 보기](private-eks-gpu-operator/index.md)
 
 </div>

@@ -40,22 +40,6 @@ Agentic and open-source AI workloads on EKS/Graviton — custom agents, orchestr
 
     [:octicons-arrow-right-24: View](claude-managed-agents-eks/index.md)
 
--   :material-call-split:{ .lg .middle } **Disaggregated Inference (Dynamo)**
-
-    ---
-
-    Prefill/decode disaggregated serving on EKS with NVIDIA Dynamo and vLLM
-
-    [:octicons-arrow-right-24: View](dynamo-disaggregated/index.md)
-
--   :material-server-network:{ .lg .middle } **Ray + EFA on EKS**
-
-    ---
-
-    Distributed training and serving on EKS with Ray and EFA
-
-    [:octicons-arrow-right-24: View](ray-on-eks-efa/index.md)
-
 -   :material-school:{ .lg .middle } **Distributed Training**
 
     ---
@@ -71,13 +55,5 @@ Agentic and open-source AI workloads on EKS/Graviton — custom agents, orchestr
     PyTorch-native distributed training on EKS
 
     [:octicons-arrow-right-24: View](pytorch-native.md)
-
--   :material-kubernetes:{ .lg .middle } **GPU Operator (Private EKS)**
-
-    ---
-
-    Deploy the NVIDIA GPU Operator to a private EKS cluster
-
-    [:octicons-arrow-right-24: View](private-eks-gpu-operator/index.md)
 
 </div>

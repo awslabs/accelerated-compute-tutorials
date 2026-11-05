@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode cluster for the Dynamo KV-aware routing lab.
+#
+# Auto Mode ships the NVIDIA driver and device plugin on its Bottlerocket GPU
+# AMI, the EKS Pod Identity agent, the EBS CSI driver, and SOCI lazy image
+# pulls (the vLLM DLC tag in this lab is a -soci tag). It does NOT ship the EFS
+# CSI driver: the guide adds the aws-efs-csi-driver add-on (credentials via Pod
+# Identity) for the shared model volume. The
+# built-in general-purpose NodePool runs the Dynamo operator, NATS, the two
+# Dynamo frontends, and the monitoring stack; the two g6e.xlarge GPU nodes come
+# from gpu-nodepool.yaml.
+#
+# If you change the name or region, also change CLUSTER_NAME / AWS_REGION in
+# the guide.
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: dynamo-kv-lab
+  region: us-east-2
+  version: "1.37"
+
+autoModeConfig:
+  enabled: true

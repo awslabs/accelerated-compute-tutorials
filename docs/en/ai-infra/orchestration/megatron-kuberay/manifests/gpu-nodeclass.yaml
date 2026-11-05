@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode NodeClass for the g6e.12xlarge fine-tuning node.
+#
+# Identical to the built-in `default` NodeClass except for a much larger root
+# volume. The NeMo Framework image is ~18 GiB compressed and roughly two to
+# three times that once unpacked, and containerd holds both copies while it
+# pulls. Auto Mode's default 80Gi ephemeral volume is not enough.
+#
+# No EFA, no Capacity Block: everything runs inside one node, so this NodeClass
+# needs no advancedNetworking or capacityReservationSelectorTerms.
+#
+# Before applying, replace the two placeholders (README Step 2 does this with sed):
+#   REPLACE_WITH_NODE_ROLE     role of the built-in NodeClass:
+#                                kubectl get nodeclass default -o jsonpath='{.spec.role}'
+#   REPLACE_WITH_CLUSTER_NAME  your cluster name (selects the EKS cluster SG)
+#
+# Reusing the built-in node role means its EKS access entry already exists, so
+# nodes from this NodeClass can join without creating a new access entry.
+
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: gpu-g6e
+spec:
+  role: REPLACE_WITH_NODE_ROLE
+
+  # Private subnets created by eksctl carry this tag.
+  subnetSelectorTerms:
+    - tags:
+        kubernetes.io/role/internal-elb: "1"
+
+  # The EKS cluster security group (kubelet <-> API server, pod <-> pod).
+  securityGroupSelectorTerms:
+    - tags:
+        kubernetes.io/cluster/REPLACE_WITH_CLUSTER_NAME: owned
+
+  # Room for the NeMo image plus headroom. Faster than the gp3 baseline
+  # (3000 IOPS / 125 MiB/s) so the first image pull takes minutes, not tens
+  # of minutes.
+  ephemeralStorage:
+    size: "300Gi"
+    iops: 6000
+    throughput: 500

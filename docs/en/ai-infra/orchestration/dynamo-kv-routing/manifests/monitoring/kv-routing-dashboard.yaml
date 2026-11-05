@@ -1,0 +1,659 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Grafana dashboard for the KV-routing lab, auto-loaded by the Grafana sidecar
+# (label grafana_dashboard=1). Panels: prefix-cache hit rate and computed
+# prefill tokens per worker (vLLM metrics re-exported by Dynamo), TTFT per
+# frontend (KV router vs round-robin), and DCGM GPU metrics.
+#
+# Dynamo metrics come from the PodMonitors the dynamo-platform chart installs
+# (jobs dynamo-system/dynamo-frontend and dynamo-system/dynamo-worker); the
+# queries select this graph's pods by name, and label_replace turns the
+# frontend pod name into a `router` label (kv-router / round-robin).
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-dynamo-kv-routing
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  dynamo-kv-routing.json: |
+    {
+      "title": "Dynamo KV-Aware Routing (lab)",
+      "uid": "dynamo-kv-routing-lab",
+      "schemaVersion": 39,
+      "version": 1,
+      "editable": true,
+      "refresh": "10s",
+      "time": {
+        "from": "now-30m",
+        "to": "now"
+      },
+      "tags": [
+        "dynamo",
+        "vllm",
+        "dcgm"
+      ],
+      "templating": {
+        "list": [
+          {
+            "name": "datasource",
+            "label": "Prometheus",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": {}
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "type": "row",
+          "title": "Routing: did requests land where their KV cache is?",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 2,
+          "type": "timeseries",
+          "title": "Prefix-cache hit rate per worker",
+          "description": "Share of prompt tokens served from the GPU prefix cache instead of recomputed. Higher during KV-router runs: about 73% vs 60% for round-robin in the lab's measured run (the ceiling is about 90%, because each tenant's first request must miss).",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 1,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              },
+              "max": 1,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (pod) (rate(vllm:prefix_cache_hits_total{job=\"dynamo-system/dynamo-worker\", pod=~\"qwen3-8b-kv-vllmworker-.*\"}[1m])) / sum by (pod) (rate(vllm:prefix_cache_queries_total{job=\"dynamo-system/dynamo-worker\", pod=~\"qwen3-8b-kv-vllmworker-.*\"}[1m]))",
+              "legendFormat": "{{pod}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "type": "timeseries",
+          "title": "Prompt tokens actually computed (prefill) per worker",
+          "description": "Prompt tokens/s minus cache-hit tokens/s = tokens the GPU had to prefill. This is the work KV-aware routing removes.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 1,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (pod) (rate(vllm:prompt_tokens_total{job=\"dynamo-system/dynamo-worker\", pod=~\"qwen3-8b-kv-vllmworker-.*\"}[1m])) - sum by (pod) (rate(vllm:prefix_cache_hits_total{job=\"dynamo-system/dynamo-worker\", pod=~\"qwen3-8b-kv-vllmworker-.*\"}[1m]))",
+              "legendFormat": "{{pod}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "type": "timeseries",
+          "title": "Requests/s per worker",
+          "description": "Load balance across the two workers. KV routing trades a little balance for cache hits.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 9,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (pod) (rate(vllm:request_success_total{job=\"dynamo-system/dynamo-worker\", pod=~\"qwen3-8b-kv-vllmworker-.*\"}[1m]))",
+              "legendFormat": "{{pod}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "KV cache usage per worker",
+          "description": "Fraction of the (lab-capped) KV cache held by running requests. Cached prefixes that no request is using do not count, so this stays low (about 20% in the lab) even while prefixes are being evicted.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 9,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              },
+              "max": 1,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max by (pod) (vllm:kv_cache_usage_perc{job=\"dynamo-system/dynamo-worker\", pod=~\"qwen3-8b-kv-vllmworker-.*\"})",
+              "legendFormat": "{{pod}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "type": "row",
+          "title": "Latency seen by clients (per frontend)",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 17,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 7,
+          "type": "timeseries",
+          "title": "TTFT p50 / p90 by frontend",
+          "description": "Server-side TTFT. kv-router = Frontend (KV-aware router), round-robin = FrontendRR (baseline). Both serve the same two workers.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 18,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "histogram_quantile(0.5, sum by (le, router) (label_replace(label_replace(rate(dynamo_frontend_time_to_first_token_seconds_bucket{job=\"dynamo-system/dynamo-frontend\", pod=~\"qwen3-8b-kv-frontend.*\"}[1m]), \"router\", \"kv-router\", \"pod\", \"qwen3-8b-kv-frontend-.*\"), \"router\", \"round-robin\", \"pod\", \"qwen3-8b-kv-frontendrr-.*\")))",
+              "legendFormat": "p50 {{router}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.9, sum by (le, router) (label_replace(label_replace(rate(dynamo_frontend_time_to_first_token_seconds_bucket{job=\"dynamo-system/dynamo-frontend\", pod=~\"qwen3-8b-kv-frontend.*\"}[1m]), \"router\", \"kv-router\", \"pod\", \"qwen3-8b-kv-frontend-.*\"), \"router\", \"round-robin\", \"pod\", \"qwen3-8b-kv-frontendrr-.*\")))",
+              "legendFormat": "p90 {{router}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "type": "timeseries",
+          "title": "Requests/s by frontend",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 18,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (router) (label_replace(label_replace(rate(dynamo_frontend_requests_total{job=\"dynamo-system/dynamo-frontend\", pod=~\"qwen3-8b-kv-frontend.*\"}[1m]), \"router\", \"kv-router\", \"pod\", \"qwen3-8b-kv-frontend-.*\"), \"router\", \"round-robin\", \"pod\", \"qwen3-8b-kv-frontendrr-.*\"))",
+              "legendFormat": "{{router}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "type": "row",
+          "title": "GPU (DCGM)",
+          "collapsed": false,
+          "gridPos": {
+            "x": 0,
+            "y": 26,
+            "w": 24,
+            "h": 1
+          },
+          "panels": []
+        },
+        {
+          "id": 10,
+          "type": "timeseries",
+          "title": "GPU utilization",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 27,
+            "w": 8,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              },
+              "max": 100,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max by (hostname, exported_pod) (DCGM_FI_DEV_GPU_UTIL{job=\"dcgm-exporter\"})",
+              "legendFormat": "{{exported_pod}} ({{hostname}})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "type": "timeseries",
+          "title": "Tensor pipe active (prefill work)",
+          "description": "Prefill is tensor-core bound. Fewer recomputed prefixes -> lower tensor activity for the same request rate.",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 8,
+            "y": 27,
+            "w": 8,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              },
+              "max": 1,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max by (hostname, exported_pod) (DCGM_FI_PROF_PIPE_TENSOR_ACTIVE{job=\"dcgm-exporter\"})",
+              "legendFormat": "{{exported_pod}} ({{hostname}})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "type": "timeseries",
+          "title": "GPU memory used",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 16,
+            "y": 27,
+            "w": 8,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "decmbytes",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max by (hostname, exported_pod) (DCGM_FI_DEV_FB_USED{job=\"dcgm-exporter\"})",
+              "legendFormat": "{{exported_pod}} ({{hostname}})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "type": "timeseries",
+          "title": "Power draw",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 35,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "watt",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max by (hostname, exported_pod) (DCGM_FI_DEV_POWER_USAGE{job=\"dcgm-exporter\"})",
+              "legendFormat": "{{exported_pod}} ({{hostname}})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "type": "timeseries",
+          "title": "DRAM active (decode work)",
+          "description": "",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 35,
+            "w": 12,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 10
+              },
+              "max": 1,
+              "min": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "mean",
+                "lastNotNull"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max by (hostname, exported_pod) (DCGM_FI_PROF_DRAM_ACTIVE{job=\"dcgm-exporter\"})",
+              "legendFormat": "{{exported_pod}} ({{hostname}})",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        }
+      ]
+    }

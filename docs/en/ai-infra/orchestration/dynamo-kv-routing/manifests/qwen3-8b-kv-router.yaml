@@ -1,0 +1,185 @@
+# SPDX-License-Identifier: MIT-0
+#
+# NVIDIA Dynamo v1.4.0: KV-aware routing for Qwen3-8B across 2x g6e.xlarge.
+#
+#                        ┌──────────────────────┐
+#   client ──▶ Frontend  │ DYN_ROUTER_MODE=kv   │──┐  picks the worker that
+#              (CPU)     └──────────────────────┘  │  already holds the
+#                        ┌──────────────────────┐  │  prompt's KV blocks
+#   client ──▶ FrontendRR│ round-robin          │──┤
+#              (CPU)     └──────────────────────┘  │
+#                                                  ├──▶ VllmWorker #1 (g6e.xlarge, 1x L40S)
+#                         KV events (ZMQ → Dynamo) ◀┤
+#                                                  └──▶ VllmWorker #2 (g6e.xlarge, 1x L40S)
+#
+# Both frontends serve the SAME two aggregated workers, so the lab can A/B
+# round-robin vs KV-aware routing without redeploying anything.
+#
+# Images: every pod runs the AWS vLLM Deep Learning Container (vLLM 0.26.0,
+# the version Dynamo 1.4.0 is built against). dlc-dynamo-entrypoint.sh (from
+# the `dynamo-dlc-launcher` ConfigMap) adds the ai-dynamo wheel at start-up.
+#
+# Weights: on a shared EFS volume (PVC `model-cache`, efs-model-storage.yaml),
+# filled once by model-download-job.yaml. Every pod mounts it read-only at
+# /models. Workers read the safetensors with Run:ai Model Streamer
+# (--load-format runai_streamer: concurrent large-block reads); frontends read
+# only the tokenizer and config files from the same directory.
+
+apiVersion: nvidia.com/v1alpha1
+kind: DynamoGraphDeployment
+metadata:
+  name: qwen3-8b-kv
+  namespace: dynamo-system
+spec:
+  backendFramework: vllm
+  services:
+    # ------------------------------------------------------------------
+    # Frontend with the KV-aware router (the thing this lab is about).
+    # OpenAI-compatible API on :8000, service qwen3-8b-kv-frontend.
+    # ------------------------------------------------------------------
+    Frontend:
+      componentType: frontend
+      replicas: 1
+      envs:
+        - { name: DYN_ROUTER_MODE, value: kv }
+        # Cost-model knobs (see the guide, Step 8):
+        #   overlap credit 1.0 (Dynamo default) = cached blocks offset prefill
+        #     cost 1:1, so a worker that is busy prefilling loses requests for
+        #     tenants it already caches, and the other worker recomputes them.
+        #     With ~5.5K-token prefixes at concurrency 4 that measured barely
+        #     better than round-robin (66% vs 62% hit rate).
+        #   4.0 (this lab) = strong cache affinity: 90% hit rate, near the 95%
+        #     ceiling, still with an even request split across the workers.
+        #   0.0 = ignore the cache (pure load balancing)
+        - { name: DYN_ROUTER_KV_OVERLAP_SCORE_CREDIT, value: "4.0" }
+        - { name: DYN_ROUTER_PREFILL_LOAD_SCALE, value: "1.0" }
+        - { name: DYNAMO_VERSION, value: "1.4.0" }
+      resources:
+        requests: { cpu: "1", memory: 4Gi }
+        limits: { memory: 8Gi }
+      extraPodSpec:
+        # The frontend tokenizes requests and hashes them into KV blocks, so it
+        # needs the tokenizer locally. It mounts the same EFS volume as the
+        # workers, and --model-path points at the same directory they load.
+        volumes:
+          - name: models
+            persistentVolumeClaim: { claimName: model-cache, readOnly: true }
+          - name: lab
+            configMap: { name: dynamo-dlc-launcher, defaultMode: 0755 }
+        mainContainer:
+          image: public.ecr.aws/deep-learning-containers/vllm:0.26.0-gpu-py312-cu130-ubuntu22.04-ec2-v1.4-2026-08-11-20-22-30-soci
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "/opt/lab/dlc-dynamo-entrypoint.sh", "frontend"]
+          args: ["--model-path", "/models/Qwen3-8B"]
+          # The operator's default liveness probe starts after 15s; the
+          # first-start ai-dynamo install takes longer, so gate it.
+          startupProbe:
+            httpGet: { path: /live, port: http }
+            periodSeconds: 10
+            failureThreshold: 60
+          volumeMounts:
+            - { name: models, mountPath: /models, readOnly: true }
+            - { name: lab, mountPath: /opt/lab }
+
+    # ------------------------------------------------------------------
+    # Baseline frontend: round-robin, cache-unaware. Same workers.
+    # Service qwen3-8b-kv-frontendrr.
+    # ------------------------------------------------------------------
+    FrontendRR:
+      componentType: frontend
+      replicas: 1
+      envs:
+        - { name: DYN_ROUTER_MODE, value: round-robin }
+        - { name: DYNAMO_VERSION, value: "1.4.0" }
+      resources:
+        requests: { cpu: "1", memory: 4Gi }
+        limits: { memory: 8Gi }
+      extraPodSpec:
+        volumes:
+          - name: models
+            persistentVolumeClaim: { claimName: model-cache, readOnly: true }
+          - name: lab
+            configMap: { name: dynamo-dlc-launcher, defaultMode: 0755 }
+        mainContainer:
+          image: public.ecr.aws/deep-learning-containers/vllm:0.26.0-gpu-py312-cu130-ubuntu22.04-ec2-v1.4-2026-08-11-20-22-30-soci
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "/opt/lab/dlc-dynamo-entrypoint.sh", "frontend"]
+          args: ["--model-path", "/models/Qwen3-8B"]
+          startupProbe:
+            httpGet: { path: /live, port: http }
+            periodSeconds: 10
+            failureThreshold: 60
+          volumeMounts:
+            - { name: models, mountPath: /models, readOnly: true }
+            - { name: lab, mountPath: /opt/lab }
+
+    # ------------------------------------------------------------------
+    # Two aggregated vLLM workers (prefill + decode on the same GPU), one per
+    # g6e.xlarge. Each publishes KV cache events (block stored / removed) so
+    # the KV router knows exactly which prefixes each GPU holds.
+    # ------------------------------------------------------------------
+    VllmWorker:
+      componentType: worker
+      replicas: 2
+      envs:
+        - { name: DYNAMO_VERSION, value: "1.4.0" }
+        - { name: PYTHONHASHSEED, value: "0" }
+        # Optional (only used if you switch --model to a Hugging Face id).
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef: { name: hf-token-secret, key: HF_TOKEN, optional: true }
+      resources:
+        # g6e.xlarge allocatable is ~3.9 vCPU / ~28 GiB after system reserves.
+        requests: { cpu: "3", memory: 20Gi, gpu: "1" }
+        limits: { memory: 27Gi, gpu: "1" }
+      sharedMemory:
+        size: 8Gi
+      extraPodSpec:
+        nodeSelector:
+          karpenter.sh/nodepool: gpu-g6e-xl
+        tolerations:
+          - { key: nvidia.com/gpu, operator: Exists, effect: NoSchedule }
+        volumes:
+          - name: models
+            persistentVolumeClaim: { claimName: model-cache, readOnly: true }
+          - name: lab
+            configMap: { name: dynamo-dlc-launcher, defaultMode: 0755 }
+        mainContainer:
+          image: public.ecr.aws/deep-learning-containers/vllm:0.26.0-gpu-py312-cu130-ubuntu22.04-ec2-v1.4-2026-08-11-20-22-30-soci
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "/opt/lab/dlc-dynamo-entrypoint.sh", "worker"]
+          args:
+            # --- weights: EFS -> GPU with Run:ai Model Streamer ------------
+            # A local directory, so dynamo.vllm skips its Hugging Face
+            # pre-fetch and hands the path straight to vLLM.
+            - --model
+            - /models/Qwen3-8B
+            - --served-model-name
+            - Qwen/Qwen3-8B
+            - --load-format
+            - runai_streamer
+            # 16 concurrent reads from EFS; 8 GiB CPU staging buffer, so the
+            # stream fits in a g6e.xlarge's 32 GiB next to the vLLM process.
+            - --model-loader-extra-config
+            - '{"concurrency":16,"memory_limit":8589934592}'
+            # --- serving ---------------------------------------------------
+            - --max-model-len
+            - "16384"
+            - --max-num-seqs
+            - "32"
+            - --gpu-memory-utilization
+            - "0.90"
+            - --enable-prefix-caching
+            # LAB KNOB: cap each GPU's KV cache at 2048 blocks x 16 tokens =
+            # 32,768 tokens. An L40S would otherwise hold ~170K tokens of
+            # Qwen3-8B KV, and the benchmark would need hours of distinct
+            # traffic before cache placement matters. Remove this line to
+            # serve with the full cache.
+            - --num-gpu-blocks-override
+            - "2048"
+            # --- KV events for the router ---------------------------------
+            - --kv-events-config
+            - '{"publisher":"zmq","topic":"kv-events","endpoint":"tcp://*:20080","enable_kv_cache_events":true}'
+          volumeMounts:
+            - { name: models, mountPath: /models, readOnly: true }
+            - { name: lab, mountPath: /opt/lab }
