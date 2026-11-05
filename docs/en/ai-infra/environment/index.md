@@ -88,4 +88,12 @@ Component-by-component guides for building a large-scale GPU training environmen
 
     [:octicons-arrow-right-24: Disaggregated Inference (Dynamo)](dynamo-disaggregated/index.md)
 
+-   :material-routes:{ .lg .middle } **KV-Aware Routing (Dynamo)**
+
+    ---
+
+    NVIDIA Dynamo's KV-aware router vs round-robin across 2x g6e.xlarge, with the AWS vLLM DLC, Run:ai Model Streamer from a shared EFS volume, and DCGM dashboards.
+
+    [:octicons-arrow-right-24: KV-Aware Routing (Dynamo)](dynamo-kv-routing/index.md)
+
 </div>

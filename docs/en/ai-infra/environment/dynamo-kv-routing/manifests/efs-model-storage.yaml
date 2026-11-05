@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: MIT-0
+#
+# Shared model storage on Amazon EFS (ReadWriteMany).
+#
+# The download Job writes Qwen3-8B here once; both vLLM workers and both
+# Dynamo frontends mount the same volume read-only at /models. Requires the
+# aws-efs-csi-driver EKS add-on (Auto Mode does not include it) and an EFS
+# file system with a mount target in every AZ the nodes use. The guide sets
+# both up in Step 2.
+#
+# Static provisioning: one PV that points at the file system root, bound to
+# one PVC by name. No access points, so every pod sees the same files with the
+# ownership the download Job wrote.
+#
+# Replace before applying (the guide does this with sed):
+#   REPLACE_WITH_EFS_ID   EFS file system ID (fs-...)
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dynamo-kv-models
+spec:
+  capacity:
+    storage: 50Gi          # informational; EFS is elastic
+  volumeMode: Filesystem
+  accessModes: [ReadWriteMany]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: REPLACE_WITH_EFS_ID
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-cache
+  namespace: dynamo-system
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: efs-sc
+  volumeName: dynamo-kv-models
+  resources:
+    requests:
+      storage: 50Gi

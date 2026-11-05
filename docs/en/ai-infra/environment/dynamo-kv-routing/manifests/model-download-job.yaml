@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: MIT-0
+#
+# One-off Job: download Qwen/Qwen3-8B from Hugging Face onto the shared EFS
+# volume (PVC `model-cache`, see efs-model-storage.yaml) at /models/Qwen3-8B.
+# The vLLM workers and Dynamo frontends then mount the same volume read-only.
+#
+# Runs on a general-purpose (CPU) node. No AWS credentials are needed: the
+# EFS CSI driver does the mount, and the pod only talks to Hugging Face.
+# Re-running it is safe; huggingface_hub skips files that are already complete.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: qwen3-8b-to-efs
+  namespace: dynamo-system
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: downloader
+          image: public.ecr.aws/docker/library/python:3.12-slim
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              pip install -q "huggingface_hub==0.36.0"
+              python3 - <<'PY'
+              import os
+              from pathlib import Path
+
+              from huggingface_hub import snapshot_download
+
+              repo, target = os.environ["HF_MODEL"], os.environ["MODEL_DIR"]
+              local = Path(snapshot_download(
+                  repo, local_dir=target,
+                  # Weights, config, tokenizer, generation config. No .bin / .pth duplicates.
+                  allow_patterns=["*.safetensors", "*.json", "*.txt", "*.model", "*.jinja"],
+              ))
+              for f in sorted(p for p in local.rglob("*") if p.is_file() and ".cache" not in p.parts):
+                  print(f"{f.relative_to(local)}  {f.stat().st_size / 1e9:.2f} GB", flush=True)
+              print("DOWNLOAD_COMPLETE", flush=True)
+              PY
+          env:
+            - { name: HF_MODEL, value: "Qwen/Qwen3-8B" }
+            - { name: MODEL_DIR, value: "/models/Qwen3-8B" }
+            - { name: HF_HUB_ENABLE_HF_TRANSFER, value: "0" }
+            # Optional: avoid anonymous Hub rate limits.
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef: { name: hf-token-secret, key: HF_TOKEN, optional: true }
+          resources:
+            requests: { cpu: "2", memory: 2Gi }
+            limits: { memory: 4Gi }
+          volumeMounts:
+            - { name: models, mountPath: /models }
+      volumes:
+        - name: models
+          persistentVolumeClaim: { claimName: model-cache }

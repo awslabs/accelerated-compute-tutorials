@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: MIT-0
+#
+# EKS Auto Mode NodePool: up to two on-demand g6e.xlarge
+# (1x NVIDIA L40S 48 GB, 4 vCPU, 32 GiB memory each).
+#
+# Each Dynamo vLLM worker asks for one GPU, and a g6e.xlarge has exactly one,
+# so the two worker replicas always land on two separate nodes. KV-aware
+# routing needs no fast interconnect between them: the router only has to
+# pick the right worker, and each worker serves its requests from its own GPU.
+#
+# limits.nvidia.com/gpu: "2" caps the pool at two nodes.
+# Uses Auto Mode's built-in `default` NodeClass (80Gi root volume, enough for
+# the ~9 GB compressed vLLM DLC).
+
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: gpu-g6e-xl
+spec:
+  template:
+    metadata:
+      labels:
+        node-role: dynamo-worker
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: default
+      requirements:
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values: ["g6e.xlarge"]
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["on-demand"]
+      # Only the vLLM workers (and the GPU DaemonSets) tolerate this.
+      taints:
+        - key: nvidia.com/gpu
+          effect: NoSchedule
+  limits:
+    nvidia.com/gpu: "2"
+  disruption:
+    consolidationPolicy: WhenEmpty
+    consolidateAfter: 5m

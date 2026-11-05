@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: MIT-0
+#
+# kube-prometheus-stack for the Dynamo KV-routing lab.
+#
+# - Prometheus picks up EVERY ServiceMonitor/PodMonitor in the cluster
+#   (dcgm-exporter's ServiceMonitor, the Dynamo chart's PodMonitors), not only the ones
+#   labeled for this Helm release.
+# - Grafana pre-loads the official NVIDIA DCGM Exporter dashboard (12239) and
+#   discovers the lab's own dashboard from ConfigMaps labeled grafana_dashboard=1.
+# - Everything lands on Auto Mode's general-purpose nodes; node-exporter
+#   tolerates the GPU taint so host metrics include the g6e nodes.
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
+    podMonitorNamespaceSelector: {}
+    scrapeInterval: 15s
+    retention: 3d
+    resources:
+      requests: { cpu: 500m, memory: 2Gi }
+
+alertmanager:
+  enabled: false
+
+grafana:
+  # Lab only: change this, or use the generated secret in production.
+  adminPassword: "dynamo-lab"
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      searchNamespace: ALL
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: gpu
+          orgId: 1
+          folder: "GPU"
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/gpu
+  dashboards:
+    gpu:
+      nvidia-dcgm-exporter:
+        gnetId: 12239          # NVIDIA DCGM Exporter Dashboard
+        revision: 2
+        datasource: Prometheus
+
+prometheus-node-exporter:
+  tolerations:
+    - operator: Exists
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { memory: 128Mi }

@@ -141,6 +141,7 @@ plugins:
             Agents on EKS with AgentCore Primitives: Agents on EKS with AgentCore Primitives
             Claude Managed Agents on EKS: Claude Managed Agents on EKS
             Disaggregated Inference (Dynamo): Disaggregated Inference (Dynamo)
+            KV-Aware Routing (Dynamo): KV-Aware Routing (Dynamo)
             Ray + EFA on EKS: Ray + EFA on EKS
             Distributed Training: Distributed Training
             PyTorch Native: PyTorch Native
@@ -219,6 +220,7 @@ nav:
           - Ray + EFA on EKS: ai-infra/environment/ray-on-eks-efa/index.md
           - Megatron Bridge on KubeRay: ai-infra/environment/megatron-kuberay/index.md
           - Disaggregated Inference (Dynamo): ai-infra/environment/dynamo-disaggregated/index.md
+          - KV-Aware Routing (Dynamo): ai-infra/environment/dynamo-kv-routing/index.md
       - Reference Architectures:
           - ai-infra/architectures/index.md
           - Slurm-based GPU Training Cluster: ai-infra/architectures/large-scale-gpu-training.md
